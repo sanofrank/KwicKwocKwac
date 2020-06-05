@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>KWIC KWOC KWAC</title>
+		<link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<link href="//cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" rel="stylesheet">
+		<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+		<link href="assets/kwic.css" rel="stylesheet">
+		<link href="assets/util.css" rel="stylesheet">
+		<link href="assets/script.css" rel="stylesheet">
+	</head>
+	<body>
+		<div id="wrapper">
+			<nav id="top" class="navbar navbar-expand-md navbar-dark bg-dark  disable-select">
+					<a class="navbar-brand" href="#">KWIC KWOC KWAC</a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="navbarCollapse">
+						<ul class="navbar-nav mr-auto">
+							<li class="nav-item dropdown active">
+								<a class="nav-link dropdown-toggle" href="#" id="fileList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Files</a>
+								<div id="fileMenu" class="dropdown-menu" aria-labelledby="fileList">
+								</div>
+							</li>
+							<li class="nav-item dropdown active d-none" id="commandList">
+								<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Operations</a>
+								<div id="commandMenu" class="dropdown-menu" aria-labelledby="dropdown01">
+									<a class="dropdown-item" href="#" onclick='toggleStyles()'>Show annotations</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" href="#" onclick="downloadDoc('html')">Download HTML</a>
+									<a class="dropdown-item" href="#" onclick="downloadDoc('tei')">Download TEI</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" href="#" onclick="exportEntities('JSON')">Export entities as JSON</a>
+									<a class="dropdown-item" href="#" onclick="exportEntities('CSV')">Export entities as CSV</a>
+									<a class="dropdown-item editOnly" href="#" role="button" data-toggle="modal" data-target="#EntityUpload">Import entities</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item editOnly" href="#" onclick="emptyTrash()">Empty trash</a>
+								</div>
+							</li>
+						</ul>
+						<ul class="navbar-nav mr-auto">
+							<li class="nav-item active editOnly" id="saveButton">
+								<a class="nav-link" href="#" role="button" onClick="saveDoc()"><span class="oi oi-folder" title="Save document" aria-hidden="true"></span> <span>Save</span></a>
+							</li>
+						</ul>
+						<ul class="navbar-nav my-2 my-lg-0">
+							<li class="nav-item active" id="uploadButton">	
+								<a class="nav-link editOnly" href="#" role="button" data-toggle="modal" data-target="#FileUpload"><span class="oi oi-cloud-upload" title="Upload local HTML document" aria-hidden="true"></span> <span class="sr-only">Upload document</span></a>
+							</li>
+							<li class="nav-item active" id="editButton">
+								<a class="nav-link" href="#" role="button" onClick="toggleEdit()"><span class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span class="sr-only">Edit doc</span></a>
+							</li>
+							<li class="nav-item active">
+								<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span class="oi oi-question-mark border-light rounded-circle" title="Info about KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">About (current)</span></a>
+							</li>
+						</ul>
+					</div>
+				</nav>
+			<div id="main">
+				<div class="d-flex flex-column h-100" id="main">
+					<div class="row h-100">
+						<div class="col-3 h-100 pr-1 fs-3 mt-2 disable-select" id="left">
+							<div class="row h-50 pb-5" id="topPane">
+								<div class="col-12 h-100 pr-0 mb-4">
+									<ul class="nav nav-tabs  mr-auto" id="categoryTab" role="tablist">
+									</ul>
+									<div class="tab-content d-flex flex-column h-100" id="categoryPane">
+									</div>
+								</div>
+							</div>
+							<div class="row h-50 pb-5" id="bottomPane">
+								<div class="col-12 h-100 pr-0 mb-0">
+									<ul class="nav nav-tabs" id="otherTab" role="tablist">
+										<li class="nav-item dropPoint" data-level="scraps" data-id="scraps">
+											<a class="nav-link active" id="scraps-realtab" data-toggle="tab" href="#scraps-realpane" role="tab" aria-controls="scrapsPane" aria-selected="true">Scraps</a>
+										</li>
+										<li class="nav-item">
+											<a class="nav-link" id="info-tab" data-toggle="tab" href="#infoPane" role="tab" aria-controls="infoPane" aria-selected="false">Info</a>
+										</li>
+										<li class="nav-item ml-auto pointer dropPoint" data-level="trash" data-id="trash">
+											<a class="nav-link" id="trash-realtab" data-toggle="tab" data-target="#trash-realpane">
+												<span class="oi oi-trash" title="Trash pane" aria-hidden="true"></span> 
+												<span class="sr-only">Trash</span>
+											</a>
+										</li>
+									</ul>
+									<div class="tab-content d-flex flex-column h-100" id="otherPanes" data-level="scraps" data-id="scraps">
+										<div class="tab-pane scroll-col active ug-border ug-border-notop dropPoint h-100" id="scraps-realpane" role="tabpanel" aria-labelledby="scraps-realtab"  data-level="scraps" data-id="scraps">
+											<ul></ul>
+										</div>
+										<div class="tab-pane ug-border ug-border-notop scroll-col h-100" id="infoPane" role="tabpanel" aria-labelledby="info-tab">
+											<h1>Some info</h1>
+										</div>
+										<div class="tab-pane ug-border ug-border-notop dropPoint h-100" id="trash-realpane" role="tabpanel" aria-labelledby="trash-tab"  data-level="trash" data-id="trash">
+											<ul></ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>		
+						<div class="col-9 fs-9 h-100" id="right">
+							<nav id="tools" class="navbar  navbar-expand-md border ml-2 my-0 editOnly">
+								<div id="categoriesButton" class="btn-group mr-auto" role="group" aria-label="Basic example">
+								</div>
+								<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
+									<label class="small" title="Pressing ALT inverts behaviour">
+										Extend selection to word
+										<span class="switch">
+											<input type="checkbox" checked onchange="prefs('extend', this.checked)">
+											<span class="slider round"></span>
+										</span>
+									</label>
+									<label class="small" title="Pressing SHIFT inverts behaviour">
+										Mark all instances
+										<span class="switch">
+											<input type="checkbox" checked onchange="prefs('markall', this.checked)">
+											<span class="slider round"></span>
+										</span>
+									</label>
+								</div>
+							</nav>			
+							<div id="file" class="h-100 scroll-col">
+								<div class="jumbotron" id="title"><h1>Key Words In Context</h1> </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modals -->
+		<div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="aboutLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="aboutLabel">About KWIC KWOC KWAC</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+				<p>A test for KWIC KWOC KWAC visualization and editing</p>
+				<p class="text-center"><img src="assets/kwickwockwac.jpg" alt="an image of kwic, kwoc and kwac" title="The three nephews of Paperinik"></p>
+				<p>© 2020 Fabio Vitali. All rights reserved.</p>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		<div class="modal fade" id="prefs" tabindex="-1" role="dialog" aria-labelledby="prefsLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="prefsLabel">Preferences</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+				<form>
+				  <div class="form-group row">
+					<label for="widthControlRange" class="col-6">Left column's size:</label>
+					<span class="rangeExtreme col-1 p-0 pr-1">small</span>
+					<input type="range" class="form-control-range col-3" id="widthControlRange" min="2" max="10" value="4" step="1" onchange="prefs('width',this.value)">
+					<span class="rangeExtreme col-1 p-0 pl-1">large</span>
+				  </div>
+				  <div class="form-group row">
+					<label for="heightControlRange" class="col-6">Entity pane's size:</label>
+					<span class="rangeExtreme col-1 p-0 pr-1">short</span>
+					<input type="range" class="form-control-range col-3" id="heightControlRange" min="20" max="100" value="50" step="10" onchange="prefs('height',this.value)">
+					<span class="rangeExtreme col-1 p-0 pl-1">tall</span>
+				  </div>
+				  <div class="form-group row">
+					<div class="col-6">Sort entities:</div>
+					<div id="formStyleGroup" class="btn-group col-5 btn-group-toggle" data-toggle="buttons" role="group" aria-label="Choose Sort">
+						  <label class="btn btn-primary" id="pref-alpha">
+							<input type="radio" name="sort" autocomplete="off" value="alpha" onclick="prefs('sort',this.value)">Alpha
+						  </label>
+						  <label class="btn btn-primary" id="pref-count">
+							<input type="radio" name="sort" autocomplete="off" value="count" onclick="prefs('sort',this.value)">Count
+						  </label>
+						  <label class="btn btn-primary" id="pref-position">
+							<input type="radio" name="sort" autocomplete="off" value="position" onclick="prefs('sort',this.value)">Position
+						  </label>
+					</div>
+				  </div>
+				  <div class="form-group row">
+					<div class="col-6">Keyword style:</div>
+					<div id="formStyleGroup" class="btn-group col-5 btn-group-toggle" data-toggle="buttons" role="group" aria-label="Choose Style">
+						  <label class="btn btn-primary" id="pref-KWIC">
+							<input type="radio" name="style" autocomplete="off" value="KWIC" onclick="prefs('style',this.value)">KWIC
+						  </label>
+						  <label class="btn btn-primary" id="pref-KWOC">
+							<input type="radio" name="style" autocomplete="off" value="KWOC" onclick="prefs('style',this.value)">KWOC
+						  </label>
+						  <label class="btn btn-primary" id="pref-KWAC">
+							<input type="radio" name="style" autocomplete="off" value="KWAC" onclick="prefs('style',this.value)">KWAC
+						  </label>
+					</div>
+				  </div>
+				  <div class="form-group row">
+					<label for="formControlRange" class="col-6">Words around keywords:</label>
+					<input type="number" class="form-control col-5" id="WordsAroundControl" min="0" value="5" onchange="prefs('wordsaround',this.value)">
+				  </div>
+				</form>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		<div class="modal fade" id="EntityUpload" tabindex="-1" role="dialog" aria-labelledby="EntityUploadLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="EntityUploadLabel">Upload entities</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	<p>Select a local file containing a JSON or a CSV list of entities</p>
+				<input type="file" id="entityFiles" name="entityFiles" />
+				<p id="entityList"></p>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+				<button type="button" id="importEntities" class="btn btn-primary" data-dismiss="modal" onclick="addEntities()" disabled>Import entities</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		<div class="modal fade" id="FileUpload" tabindex="-1" role="dialog" aria-labelledby="FileUploadLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="FileUploadLabel">Upload Document</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			  </div>
+			  <div class="modal-body">
+			  	<p><label for="docFile">Select a local file containing a document in HTML format.</label></p>
+					<input type="file" id="docFile" name="docFile" />
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+				<button type="button" id="uploadFile" class="btn btn-primary" data-dismiss="modal" onclick="uploadDoc(uploadData)" disabled>Upload file</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+		<template id="categoryTpl0">
+			<li class="nav-item dropPoint" sid="{$id}-tab" data-level="category" data-id="{$id}">
+				<a class="nav-link" id="{$id}-tab" data-toggle="tab" href="#{$id}-pane" role="tab" aria-controls="{$id}">
+					{$label} ({$count})
+				</a>
+			</li>
+		</template>
+		<template id="categoryTpl1">	
+			<div class="tab-pane scroll-always ug-border ug-border-notop h-100 dropPoint" id="{$id}-pane" role="tabpanel" aria-labelledby="{$id}-tab"  data-level="category" data-id="{$id}">
+				<ul class="categoryContainer tree">
+					{$content}
+				</ul>
+			</div>
+		</template>
+		<template id="entityTpl">
+			<li class="entityContainer draggable dropPoint" id="{$id}" data-level="entity" data-id="{$id}" >
+				<a href="#" class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded bg-light w-100 treeExpand">
+					<span class="entityLabel">{$label}</span> 
+					<span class="d-inline-flex flex-nowrap mr-0">
+						<span class="badge badge-light em3"><span class="oi {$check} text-success"></span></span>
+						<span class="badge badge-primary em3">{$count}</span>
+						<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
+							<span class="oi oi-plus"></span>
+						</span>
+					</span>
+				</a>
+				<div class="collapse card entityCard" id="{$id}-menu">
+				  <h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
+				  	Details about {$label}
+				  </h6>
+				  <div class="card-body">
+					<form>
+					  <div class="row">
+						<label for="labelData-{$id}" class="col-4 small p-1">Label: </label>
+						<input type="text" name="labelData" class="form-control form-control-sm col-8" id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)" value="{$label}">
+					  </div>
+					  <div class="row">
+						<label for="sortData-{$id}" class="col-4 small p-1">Sort value: </label>
+						<div class="col-8 p-0">
+						  <div class="input-group mb-2">
+							<input type="text" name="sortData-{$id}" class="form-control form-control-sm flex-grow-1" id="sortData-{$id}" onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
+							<div class="input-group-append small">
+							  <div class="input-group-text">
+								<span class="oi oi-loop-circular" onclick="invertValue('{$id}','{$type}','#sortData-{$id}')"></span>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+					  <div class="row">
+						<label for="wikiData-{$id}" class="col-4 small p-1">Wikidata ID: </label>
+						<div class="col-8 p-0">
+						  <div class="input-group mb-2">
+							<input type="text" name="wikiData-{$id}" class="form-control form-control-sm flex-grow-1" id="wikiData-{$id}" onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}">
+							<div class="input-group-append small">
+							  <div class="input-group-text">
+								<span class="oi oi-magnifying-glass popoverToggle" id="popoverToggle-{$id}" data-label="{$label}" data-id="{$id}"></span>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+					</form>										
+				  </div>
+				</div>
+				<ul>
+					{$content}
+				</ul>
+			</li>
+		</template>
+		<template id="mentionTpl">	
+			<div class="{$style} draggable {$class}" id="list-{$id}" data-level="mention" data-id="{$id}" onclick="goto('#{$id}')">
+				{$content}
+			</div>
+		</template>
+
+				
+		<!-- Bootstrap core JavaScript
+		================================================== -->
+		<script src="//code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="//stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+		<script src="assets/util.js"></script>
+		<script src="assets/kwic.js"></script>
+		<script src="assets/script.js"></script>
+	</body>
+</html>

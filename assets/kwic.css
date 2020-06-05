@@ -1,0 +1,65 @@
+﻿
+.KWIC {
+    white-space: nowrap;
+    cursor: pointer; 
+    font-size: 0.8em;
+    display: table-row;
+}
+
+.KWIC .before {
+    text-align: right;
+    display: table-cell;
+    padding-right: 0.5em;
+}
+		
+.KWIC .label {
+    font-weight: bold; 
+    display: table-cell;
+    padding-right: 0.5em;
+}
+.KWIC .after {
+    display: table-cell;
+}
+
+.KWAC {
+    white-space: nowrap;
+    cursor: pointer; 
+    font-size: 0.8em;
+}
+
+.KWAC .before {
+}
+		
+.KWAC .label {
+    font-weight: bold; 
+}
+.KWAC .after {
+}
+.KWAC .after:after {
+    content: "... – ";
+}
+
+.KWOC {
+    white-space: nowrap;
+    cursor: pointer; 
+    font-size: 0.8em;
+    display: table-row;
+}
+
+.KWOC .label {
+    display: table-cell;		
+    font-weight: bold; 
+}
+.KWOC .label:after {
+    font-weight: bold; 
+    content: ": ";
+}
+.KWOC .whole {
+    display: table-cell;		
+}
+
+.mention {
+	box-sizing: border-box;
+	box-decoration-break: clone;	
+	-webkit-box-decoration-break: clone;
+}

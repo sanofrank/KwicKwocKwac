@@ -1,0 +1,245 @@
+﻿	@import url('//fonts.googleapis.com/css?family=Lato');
+	@import url('//fonts.googleapis.com/css2?family=Lato:wght@900&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Lato:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+html,
+body,
+#wrapper {
+	height: 100%;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
+}
+
+#left p, #left h1, #left h2, #left h3, #left  blockquote {
+	font-family: "Lato", tahoma, sans-serif !important; 
+}
+
+#infoPane p {
+	font-size: 90%;
+}
+#infoPane h3 {
+	font-size: 110%;
+}
+
+.wikidataItem {
+	font-size: 75%; 
+    margin-left: 0.2em; 
+    cursor: pointer; 	
+	border-radius: 4px; 
+}
+
+.short {
+	padding-top: 0.1em; 
+	padding-bottom: 0.1em;  
+}
+#main {
+  flex: 1;
+  overflow: hidden;
+}
+#top {
+  background: #1f132d;
+  height: 3rem;/* for snippet demo*/
+}
+.container,
+.row {
+  overflow: hidden;
+  /*height: 100%;  used h-100 class instead*/
+}
+.scroll-col {
+  overflow-y: auto;
+  overflow-x: hidden; 
+  /*height: 100%;  used h-100 class instead*/
+}
+
+.scroll-always {
+  overflow-y: scroll;
+  overflow-x: hidden; 
+  /*height: 100%;  used h-100 class instead*/
+}
+#title {
+	width: 90%;
+	margin: 0, auto; 
+}
+#file {
+	padding-left: 1em; 
+	padding-right: 1em; 
+}
+
+#file {
+	font-family: "Playfair Display", "Times New Roman", serif; 
+	font-size: 11pt; 
+	line-height: 120%;
+	text-align: justify;  
+}
+h1 {
+		padding: 1.5em;
+		background-color: #e9ecef;
+		border-radius: .3rem;
+		font-size: 180%; 
+		margin: 1em auto; 
+}
+h2 {
+		padding-top: 1.5em;
+		padding-bottom: 0.5em;
+		font-size: 130%; 
+		margin: 1em auto; 
+}
+blockquote {
+	font-size: 11pt; 
+	margin-left: 3em; 
+	font-style: italic; 
+}
+
+figcaption {
+	font-size: 90%;
+	font-style: italic; 
+	text-align: center;  
+	margin-top: 0.2em; 		
+}
+
+
+
+#whole {
+	display: none; 
+}
+		
+.pointer {
+	cursor: pointer; 
+}
+
+.entityContainer ul {
+    display: block;
+	overflow-x: auto;
+    padding: 0px;
+    white-space: nowrap;
+}
+/* https://stackoverflow.com/questions/10809995/css-disable-text-selection/15273197 */
+.disable-select {
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+}
+
+.fs-2 {
+	font-size: 0.75rem;
+}
+.fs-3 {
+	font-size: 0.80rem;
+}
+.fs-4 {
+	font-size: 0.85rem;
+}
+.fs-5 {
+	font-size: 0.90rem;
+}
+.fs-6 {
+	font-size: 0.95rem;
+}
+.fs-7 {
+	font-size: 1.00rem;
+}
+.fs-8 {
+	font-size: 1.05rem;
+}
+.fs-9 {
+	font-size: 1.10rem;
+}
+.fs-10 {
+	font-size: 1.15rem;
+}
+
+.h-10 {
+	height: 10% !important ;
+}
+.h-20 {
+	height: 20% !important ;
+}
+.h-30 {
+	height: 30% !important ;
+}
+.h-40 {
+	height: 40% !important ;
+}
+.h-50 {
+	height: 50% !important ;
+}
+.h-60 {
+	height: 60% !important ;
+}
+.h-70 {
+	height: 70% !important ;
+}
+.h-80 {
+	height: 80% !important ;
+}
+.h-90 {
+	height: 90% !important ;
+}
+.h-100 {
+	height: 100% !important ;
+}
+
+h1 {
+	font-size: 1.5em;
+}
+
+
+
+.em3 {
+	min-width: 3em; 
+}
+
+#trash-realtab.dragOver, #trash-realpane.dragOver {
+	background-color: #cccccc;
+}
+
+.dragOver {
+	background-color: #ffff00;
+}
+.dragEnd {
+	background-color: #ff00ff;
+}
+
+
+		.ug-border {
+			border: solid rgb(220,220,220) 1px;
+			padding: 10px;
+			margin-bottom: 15px; 
+		}
+		.ug-border-notop {
+			border-top: none;
+		}
+		
+		.tab-pane {
+			min-height: 100px; 
+		}
+		
+		.breath {
+			margin-top: 15px;
+		}
+		
+.rangeExtreme {
+	font-style:italic;
+	font-size: 0.8rem;
+}
+
+
+	figure {
+		display: block; 
+		max-width: 70%;
+		margin: 2em auto; 
+	}
+	figure img {
+		max-width: 100%; 
+	}
+	figcaption {
+		display: block; 
+		max-width: 100%; 
+	}
+
+

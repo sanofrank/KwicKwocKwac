@@ -1,0 +1,156 @@
+﻿		ul::-webkit-scrollbar {
+			display: none;
+		}
+		
+		ul.tree li {
+			list-style-type: none;
+			position: relative;
+		}
+
+		ul.tree li ul {
+			display: none;
+		}
+
+		ul.tree li.open > ul {
+			display: block;
+		}
+
+		ul.tree li a {
+			color: black;
+			text-decoration: none;
+		}
+
+		ul.tree li a:before {
+			height: 1em;
+			padding:0 .1em;
+			font-size: .8em;
+			display: block;
+			position: absolute;
+			left: -1.3em;
+			top: .2em;
+		}
+
+		ul.tree li > a:not(:last-child):before {
+			content: '+';
+		}
+
+		ul.tree li.open > a:not(:last-child):before {
+			content: '-';
+		}
+
+
+		/* Effect for GoTo function  */
+		.animate {
+			animation-name: bgcolor ;
+			animation-duration: 0.6s ; 
+			animation-iteration-count: 3;
+			animation-fill-mode: backwards;
+		}
+
+		@keyframes bgcolor {
+			from { 
+				background-color: #ffffff;  
+			}
+			to { 
+				background-color: #ffff00; 
+			}
+		}
+
+		/* Effect for loading of Wikidata info list */
+		/* credit: http://stephanwagner.me/only-css-loading-spinner  */
+		@keyframes spinner {
+			to { transform: rotate(360deg); }
+		}
+		@-webkit-keyframes spinner {
+			to { -webkit-transform: rotate(360deg); }
+		}
+		.spinner {
+			min-width: 24px;
+			min-height: 24px;
+		}
+		.spinner:before {
+			content:'Loading…';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 16px;
+			height: 16px;
+			margin-top: -10px;
+			margin-left: -10px;
+		}
+		.spinner:not(:required):before {
+			content: '';
+			border-radius: 50%;
+			border-top: 2px solid #03ade0;
+			border-right: 2px solid transparent;
+			animation: spinner .6s linear infinite;
+			-webkit-animation: spinner .6s linear infinite;
+		}
+
+		.loading {
+			position: relative;
+		}
+		
+		
+		
+		/* Effect for on/off sliders */
+		/* https://www.w3schools.com/howto/howto_css_switch.asp  */
+
+		.switch {
+			position: relative;
+			display: inline-block;
+			width: 2.0em;
+			height: 1.2em;
+		}
+
+		.switch input {
+		  opacity: 0;
+		  width: 0;
+		  height: 0;
+		}
+
+		.slider {
+		  position: absolute;
+		  cursor: pointer;
+		  top: 0;
+		  left: 0;
+		  right: 0;
+		  bottom: 0;
+		  background-color: #ccc;
+		  -webkit-transition: .4s;
+		  transition: .4s;
+		}
+
+		.slider:before {
+		  position: absolute;
+		  content: "";
+		  height: 0.8em;
+		  width: 0.8em;
+		  left: 0.13em;
+		  bottom: 0.2em;
+		  background-color: white;
+		  -webkit-transition: .4s;
+		  transition: .4s;
+		}
+
+		input:checked + .slider {
+		  background-color: #2196F3;
+		}
+
+		input:focus + .slider {
+		  box-shadow: 0 0 1px #2196F3;
+		}
+
+		input:checked + .slider:before {
+		  -webkit-transform: translateX(0.85em);
+		  -ms-transform: translateX(0.85em);
+		  transform: translateX(0.85em);
+		}
+
+		.slider.round {
+		  border-radius: 1.7em;
+		}
+
+		.slider.round:before {
+		  border-radius: 50%;
+		}
