@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "file-get-contents": "^1.0.0",
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {

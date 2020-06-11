@@ -316,19 +316,16 @@ $(document).ready(main);
 		}
 
 		function docList(list) {
-			console.log(list);
 			var menuItemTpl = 
 				`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
 					{$label}
 				</a>`	
 			for (var i=0; i<list.length; i++) {
-				console.log(list[i]);
 				$('#fileMenu').append(  menuItemTpl.tpl(list[i]) )
 			}			
 		}
 		
 		function categoriesList(list) {
-			console.log(list);
 			var categoryItemTpl = `
 				<button type="button" class="btn selectButton {$entity}" data-mark="{$entity}" onclick="doAction('{$letter}', event.altKey, event.shiftKey)">
 					{$label} ({$letter})
@@ -341,7 +338,6 @@ $(document).ready(main);
 	
 			var css = ""
 			for (var i in list) {
-				console.log("CATEGORIES",list[i]);
 				if (list[i].action=="wrap") {
 					$('#categoriesButton').append(  categoryItemTpl.tpl(list[i]) )
 					css += categoryCssTpl.tpl(list[i])
@@ -395,7 +391,7 @@ $(document).ready(main);
 		function load(file) {
 			$.ajax({
 				method: 'GET',
-				url: 'php/load.php?file='+file,
+				url: '/api/load?file='+file,
 				success: function(d) {
 					currentFilename = file; 
 					editMode = false; 
