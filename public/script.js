@@ -493,20 +493,34 @@ $(document).ready(main);
 				content: $('#file').html(),
 				editList: kwic.editList
 			}
+			console.log(data);
 			uploadDoc(data)
 		}
 		
 		// save a loaded document on the remote server
-		function uploadDoc(data) {
-			if (data) {
-				$.ajax({
-					method: 'POST',
-					url: "php/upload.php",
-					data: JSON.stringify(data),
-					success: ( (d) => alert("Document '{$filename}' was saved".tpl(data)) ),
-					error: ( (d) => alert('Could not save document') )
-				});
-			}
+		async function uploadDoc(data) {
+
+			const requestOptions = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			};
+
+			const response = await fetch('/api/upload',requestOptions);
+			const text = await response.text();
+			if(text) alert(text);
+			// console.log('uploadDoc',data);
+			// if (data) {
+			// 	$.ajax({
+			// 		method: 'POST',
+			// 		url: "/api/upload",
+			// 		data: JSON.stringify(data),
+			// 		success: ( (d) => alert("Document '{$filename}' was saved".tpl(data)) ),
+			// 		error: ( (d) => alert('Could not save document') )
+			// 	});
+			// }
 		}
 
 		// user is changing label, sort or wikidata Id
