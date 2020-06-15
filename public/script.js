@@ -54,10 +54,9 @@ $(document).ready(main);
 			kwic.setPrefs('loggedUser','Mario Rossi')  // fake login
 			
 			layoutSetup() 
-			
-			// Load data
-			$.get('/api/list'          ).done( (d) => docList(d)        ).fail( () => alert('No document to show') );
- 			$.get('/categories.json').done( (d) => categoriesList(d) ).fail( () => alert('No category loaded') );
+			 
+			fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch( () => alert('No document to show'));
+			fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch( () => alert('No category loaded'));
 
 			// setup event callbacks
 			basicCallbacks()
@@ -388,22 +387,19 @@ $(document).ready(main);
 /* ------------------------------------------------------------------------------ */
 		
 		// load and show a document
-		function load(file) {
-			$.ajax({
-				method: 'GET',
-				url: '/api/load?file='+file,
-				success: function(d) {
-					currentFilename = file; 
-					editMode = false; 
-					$('#file').html(d)
-					$('#file').animate({ scrollTop: 0 }, 400);			
-					$('#commandList').removeClass('d-none')
-					setupKWIC(documentLocation, false)
-				},
-				error: function(r) {
-					alert('Non ho potuto caricare il file '+file)
-				}
-			});
+		async function load(file){
+			let response = await fetch('/api/load?file='+file);
+			if(!response.ok) alert('Non ho potuto caricare il file '+file);
+			else {
+				let content = await response.text();
+
+				currentFilename = file; 
+				editMode = false; 
+				$('#file').html(content)
+				$('#file').animate({ scrollTop: 0 }, 400);			
+				$('#commandList').removeClass('d-none');
+				setupKWIC(documentLocation, false);
+			}
 		}
 
 		// switch to edit Mode and back
@@ -511,16 +507,6 @@ $(document).ready(main);
 			const response = await fetch('/api/upload',requestOptions);
 			const text = await response.text();
 			if(text) alert(text);
-			// console.log('uploadDoc',data);
-			// if (data) {
-			// 	$.ajax({
-			// 		method: 'POST',
-			// 		url: "/api/upload",
-			// 		data: JSON.stringify(data),
-			// 		success: ( (d) => alert("Document '{$filename}' was saved".tpl(data)) ),
-			// 		error: ( (d) => alert('Could not save document') )
-			// 	});
-			// }
 		}
 
 		// user is changing label, sort or wikidata Id

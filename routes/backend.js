@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const fs = require('fs');
 const fgc = require('file-get-contents');
-const mkdirp = require('mkdirp');
 const mkDir = require('make-dir');
 
 const dir = 'public/files';
@@ -73,7 +72,6 @@ router.post('/upload', async (req,res) => {
         let content = out.replace(regex,"");
         content.replace(regex,"");
         
-        console.log(newPath);
         if(content!== "" && !content.includes("Key Words In Context")){
             fs.writeFile(newPath,content, (err) => {
                 if(err) return res.status(400).send(`File ${file} non salvato corretamente`);

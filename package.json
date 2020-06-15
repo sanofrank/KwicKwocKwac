@@ -13,8 +13,7 @@
     "express": "^4.17.1",
     "file-get-contents": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
-    "make-dir": "^3.1.0",
-    "mkdirp": "^1.0.4"
+    "make-dir": "^3.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
