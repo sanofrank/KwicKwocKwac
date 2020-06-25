@@ -27,9 +27,12 @@ npm run dev
 
 This time is going to run nodemon a tool that will restart automatically the server when an edited file is saved. 
 
-Connect on locahost:3000 to open the application. To enter edit mode you need to login with this default credential:
+## Login
 
->ProgettoAldoMoro
->KwicKwocKwac
+Connect on locahost:3000 to open the application. To enter edit mode you need to login with the above default credential[^1].
 
-**THE .env FILE CONTAINS SENSITIVE INFORMATION THAT WILL BE USED FOR DEVELOPING PURPOSE ONLY.**
+|     username     |   password   |
+|:----------------:|:------------:|
+| ProgettoAldoMoro | KwicKwocKwac |
+
+[^1]THE .env FILE CONTAINS SENSITIVE INFORMATION THAT WILL BE USED FOR DEVELOPING PURPOSE ONLY.
