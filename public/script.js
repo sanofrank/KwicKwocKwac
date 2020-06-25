@@ -46,7 +46,7 @@ $(document).ready(main);
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
 
-		function main() {
+		async function main() {
 			editMode = false ; 
 			nullSelection = $('#file')[0]
 			var a = window.getSelection()
@@ -54,7 +54,30 @@ $(document).ready(main);
 			kwic.setPrefs('loggedUser','Mario Rossi')  // fake login
 			
 			layoutSetup() 
-			 
+			
+			//Onload authentication
+			const loginOptions = {
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include'
+			};
+
+			const response = await fetch('/api/verify',loginOptions);
+			const json = await response.json();
+			const aut = json.editmode;
+
+			if(aut){
+				$('#Login').modal('hide'); //close modal
+
+				$('#edit-mode').removeAttr('data-toggle'); //remove modal attributes
+				$('#edit-mode').removeAttr('data-target');
+
+				$("#edit-mode").attr("onclick","toggleEdit()"); //togleEdit() insted of login()
+
+				toggleEdit();
+			}
+
 			fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch( () => alert('No document to show'));
 			fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch( () => alert('No category loaded'));
 
@@ -399,6 +422,41 @@ $(document).ready(main);
 				$('#file').animate({ scrollTop: 0 }, 400);			
 				$('#commandList').removeClass('d-none');
 				setupKWIC(documentLocation, false);
+			}
+		}
+
+		// login user
+		async function login(){
+			
+			event.preventDefault();
+
+			let username = $('#usernameForm').val();
+			let password = $('#defaultForm-pass').val();
+
+			let data = {username,password};
+
+			const requestOptions = {
+				method: 'POST',
+            	headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data),
+				credentials: 'include'
+			};
+
+			const response = await fetch("/api/login",requestOptions);
+			const text = await response.text();
+
+			if(!response.ok) $('#error').text(text);
+			else{
+				$('#Login').modal('hide'); //close modal
+
+				$('#edit-mode').removeAttr('data-toggle'); //remove modal attributes
+				$('#edit-mode').removeAttr('data-target');
+
+				$("#edit-mode").attr("onclick","toggleEdit()"); //togleEdit() insted of login()
+
+				toggleEdit();
 			}
 		}
 
