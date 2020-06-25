@@ -29,10 +29,12 @@ This time is going to run nodemon a tool that will restart automatically the ser
 
 ## Login
 
-Connect on locahost:3000 to open the application. To enter edit mode you need to login with the above default credential[^1].
+Connect on locahost:3000 to open the application. 
+
+To enter edit mode you need to login with the above default credential[^1].
 
 |     username     |   password   |
 |:----------------:|:------------:|
 | ProgettoAldoMoro | KwicKwocKwac |
 
-[^1]THE .env FILE CONTAINS SENSITIVE INFORMATION THAT WILL BE USED FOR DEVELOPING PURPOSE ONLY.
+[^1]: THE .env FILE CONTAINS SENSITIVE INFORMATION THAT WILL BE USED FOR DEVELOPING PURPOSE ONLY.
