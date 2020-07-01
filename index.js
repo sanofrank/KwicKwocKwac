@@ -2,7 +2,9 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const mongo = require('./dbConfig');
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +25,7 @@ app.use(express.static('public'));
 
 //Middleware
 app.use(express.json({limit: '20mb'})); //json parser per mandare post request
+app.use(fileUpload());
 app.use(express.urlencoded( {extended : false})); //allow us to send data from front end to server
 //Route Middleware
 app.use('/api',listRoute);

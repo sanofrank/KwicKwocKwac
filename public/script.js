@@ -342,6 +342,11 @@ $(document).ready(main);
 				`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
 					{$label}
 				</a>`	
+
+			// if($('#fileMenu').children()){
+			// 	$('#fileMenu').empty();
+			// }
+
 			for (var i=0; i<list.length; i++) {
 				$('#fileMenu').append(  menuItemTpl.tpl(list[i]) )
 			}			
@@ -545,25 +550,35 @@ $(document).ready(main);
 			var data = {
 				filename: currentFilename,
 				content: $('#file').html(),
-				editList: kwic.editList
+				editList: kwic.editList,
+				type: 'html'
 			}
-			console.log(data);
 			uploadDoc(data)
 		}
 		
 		// save a loaded document on the remote server
 		async function uploadDoc(data) {
 
-			const requestOptions = {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data)
+			let requestOptions;
+						
+			if(data.type === 'html'){
+				requestOptions = {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(data)
+				};
+			}else{
+				requestOptions = {
+					method: 'POST',
+					body: data
+				};
 			};
 
 			const response = await fetch('/api/upload',requestOptions);
 			const text = await response.text();
+
 			if(text) alert(text);
 		}
 
@@ -714,22 +729,39 @@ $(document).ready(main);
 		// Load a file containing HTML to become a new document on the server. 
 		function uploadFileSetup(evt) {
 			var f = evt.target.files[0];
-			if (f.type.match('html|text')) {
+			if (f.type.match('html|text')){
 				var reader = new FileReader();
 				reader.onloadend = function(e) {
-					var d = e.target.result
+					var d = e.target.result; //content
 					if (validate(d)) {
 						uploadData = {
 							filename: f.name.replace(/\.[^/.]+$/, ""), // removes the filename extension
  							size: f.size,
-							content: d
+							content: d,
+							type: 'html'
 						}
 						$('#uploadFile').prop('disabled',false)
 					}
 				};
 				reader.readAsText(f);
-			}
-		}
+			};
+			if (f.type.match('application/vnd.openxmlformats-officedocument.wordprocessingml.document')){
+				var reader = new FileReader();
+				reader.onloadend = function(e) {
+					var d = e.target.result; //content
+					if (validate(d)) {
+
+						uploadData = new FormData();
+						uploadData.append('filename',f.name.replace(/\.[^/.]+$/, ""));
+						uploadData.append('file',f);
+						uploadData.append('type','docx');
+
+						$('#uploadFile').prop('disabled',false)
+					}
+				};
+				reader.readAsText(f);
+		};
+	};
 
 		function validate(t) {
 			// Qui ci si può mettere un po' di roba per verificare che il documento sia completo, corretto, ecc. 

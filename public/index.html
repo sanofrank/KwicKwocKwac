@@ -52,7 +52,7 @@
 								<a class="nav-link editOnly" href="#" role="button" data-toggle="modal" data-target="#FileUpload"><span class="oi oi-cloud-upload" title="Upload local HTML document" aria-hidden="true"></span> <span class="sr-only">Upload document</span></a>
 							</li>
 							<li class="nav-item active" id="editButton">
-								<a class="nav-link" id="edit-mode" href="#" role="button" data-toggle="modal" data-target="#Login"><span class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span class="sr-only">Edit doc</span></a>
+								<!-- onclick="toggleEdit()" --> <a class="nav-link" id="edit-mode" href="#" role="button" data-toggle="modal" data-target="#Login" ><span class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span class="sr-only">Edit doc</span></a>
 							</li>
 							<li class="nav-item active">
 								<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span class="oi oi-question-mark border-light rounded-circle" title="Info about KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">About (current)</span></a>
@@ -247,8 +247,8 @@
 				</button>
 			  </div>
 			  <div class="modal-body">
-			  	<p><label for="docFile">Select a local file containing a document in HTML format.</label></p>
-					<input type="file" id="docFile" name="docFile" />
+			  	<p><label for="docFile">Select a local file containing a document in DOCX or HTML format.</label></p>
+					<input type="file" accept=".html, .docx" id="docFile" name="docFile" />
 			  </div>
 			  <div class="modal-footer">
 				<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>

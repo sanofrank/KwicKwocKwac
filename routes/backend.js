@@ -2,10 +2,11 @@ const router = require('express').Router();
 const fs = require('fs');
 const fgc = require('file-get-contents');
 const mkDir = require('make-dir');
+const mammoth = require('mammoth');
 
 const dir = 'public/files';
-const src = /src=(["|\'])(?!http)/g;
-const href = /href=(["|\'])(?!http)/g;
+const src = /src=(["|\'])(?!http)(?!#footnote)/g;
+const href = /href=(["|\'])(?!http)(?!#footnote)/g;
 const out = [];
 
 let listing = new Promise((resolve, reject) => {
@@ -13,7 +14,7 @@ let listing = new Promise((resolve, reject) => {
         if (err) return console.log('ERROR',err);
         else {
             files.forEach(file => {
-                if (!file.includes('.', 0)) {
+                if (file.substring(0,1) !== '.') {
                     let obj = {
                         url: file,
                         label: file
@@ -54,29 +55,39 @@ router.get('/load', async (req, res) => {
 
 router.post('/upload', async (req,res) => {
     try{
-        let file = req.body.filename;
-        let out = req.body.content;
 
-        let path = `${dir}/${file}`;
-        let regex = new RegExp(path,'g');
+        let fileName = req.body.filename;
+        let path = `${dir}/${fileName}`;
+        let htmlPath = `${path}/index.html`;
+        let content;
 
-        if (file !== ""){
+        if (fileName !== ""){
             if(!fs.existsSync(path)){
-                const newDir = await mkDir(path);
-                console.log(newDir);
+                await mkDir(path);
             }
         }
+        //Conversione da DOCX a HTML
+        if(req.files && req.body.type.match('docx')){
+            
+            let docFile = req.files.file;
+            
+            const result = await mammoth.convertToHtml({buffer: docFile.data});
+            content = await result.value;
 
-        let newPath = `${path}/index.html`;
+        }else{
 
-        let content = out.replace(regex,"");
-        content.replace(regex,"");
-        
+            let out = req.body.content;
+            let regex = new RegExp(path,'g');
+
+            content = out.replace(regex,"");
+            content.replace(regex,"");
+        }
+
         if(content!== "" && !content.includes("Key Words In Context")){
-            fs.writeFile(newPath,content, (err) => {
-                if(err) return res.status(400).send(`File ${file} non salvato corretamente`);
+            fs.writeFile(htmlPath,content, (err) => {
+                if(err) return res.status(400).send(`File ${fileName} non salvato corretamente`);
             });
-            return res.send(`File ${file} salvato correttamente in ${newPath}`);
+            return res.send(`File ${fileName} salvato correttamente in ${htmlPath}`);
         };
 
         return res.send('File empty');
