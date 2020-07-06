@@ -20,55 +20,55 @@
 		"markAll": false,
 		"class": null
 	},
+	"bib": {
+		"letter": "B",
+		"action": "wrap",
+		"type":   "word",
+		"label":  "BibRef",
+		"sort": 1,
+		"entity": "bib",
+		"markAll": true,
+		"style": "background-image: radial-gradient(#e7fdfb 30%, #b2ffed 100%); border-radius: 4px;"
+	},
+	"quote": {
+		"letter": "Q",
+		"action": "wrap",
+		"type":   "word",
+		"label":  "Quotes",
+		"sort": 2,
+		"entity": "quote",
+		"markAll": true,
+		"style": "background-image: radial-gradient(#f0fde7 30%, #cfff82 100%); border-radius: 4px;"
+	},
 	"person": {
 		"letter": "P",
 		"action": "wrap",
 		"type":   "word",
-		"sort": 1,
+		"sort": 3,
 		"entity": "person",
 		"label": "People",
 		"markAll": true,
 		"style": "background-image: radial-gradient(#ffffdd 30%, #ffff5a 100%); border-radius: 4px;"
-	},
-	"organization": {
-		"letter": "O",
-		"action": "wrap",
-		"type":   "word",
-		"label": "Orgs",
-		"sort": 3,
-		"entity": "organization",
-		"markAll": true,
-		"style": "background-image: radial-gradient(#fde7f9 30%, #ffb2b2 100%); border-radius: 4px;"
 	},
 	"place": {
 		"letter": "L",
 		"action": "wrap",
 		"type":   "word",
 		"label": "Places",
-		"sort": 2,
+		"sort": 4,
 		"entity": "place",
 		"markAll": true,
 		"style": "background-image: radial-gradient(#edf1f4 30%, #bacdf5 100%); border-radius: 4px;"
 	},
-	"concept": {
-		"letter": "C",
+	"organization": {
+		"letter": "O",
 		"action": "wrap",
 		"type":   "word",
-		"label":  "Concepts",
-		"sort": 4,
-		"entity": "concept",
-		"markAll": true,
-		"style": "background-image: radial-gradient(#e7fdfb 30%, #b2ffed 100%); border-radius: 4px;"
-	},
-	"thing": {
-		"letter": "T",
-		"action": "wrap",
-		"type":   "word",
-		"label":  "Things",
+		"label": "Orgs",
 		"sort": 5,
-		"entity": "thing",
+		"entity": "organization",
 		"markAll": true,
-		"style": "background-image: radial-gradient(#f0fde7 30%, #cfff82 100%); border-radius: 4px;"
+		"style": "background-image: radial-gradient(#fde7f9 30%, #ffb2b2 100%); border-radius: 4px;"
 	},
 	"scraps": {
 		"entity": "scraps",

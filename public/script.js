@@ -33,6 +33,7 @@ var uploadData;	                         // the information about a file ready t
 var scrapShown;		                     // whether the Scraps pane is currently shown in the bottom left pane
 var trashShown;		                     // whether the trash pane is currently shown in the bottom left pane
 var editMode ;                           // whether the user can add or modify mentions in the document shown
+const spinner = document.getElementById("spinner");
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
 var draggableSelector  = '.draggable'    // selector for elements that can be dragged in the left pane
@@ -190,7 +191,15 @@ $(document).ready(main);
 		function onmouseup(event) {
 			var e = event.originalEvent || event
 			doAction(currKey, e.altKey, e.shiftKey)
-		}	
+		}
+		
+		function showSpinner() {
+			spinner.className = "show";
+		  }
+
+		function hideSpinner() {
+			spinner.className = spinner.className.replace("show", "");
+		}
 
 		// Callbacks for draggable elements
 		function dragstart(event) {
@@ -416,6 +425,7 @@ $(document).ready(main);
 		
 		// load and show a document
 		async function load(file){
+			showSpinner();
 			let response = await fetch('/api/load?file='+file);
 			if(!response.ok) alert('Non ho potuto caricare il file '+file);
 			else {
@@ -427,6 +437,7 @@ $(document).ready(main);
 				$('#file').animate({ scrollTop: 0 }, 400);			
 				$('#commandList').removeClass('d-none');
 				setupKWIC(documentLocation, false);
+				hideSpinner();
 			}
 		}
 
@@ -448,7 +459,7 @@ $(document).ready(main);
 				body: JSON.stringify(data),
 				credentials: 'include'
 			};
-
+			showSpinner();
 			const response = await fetch("/api/login",requestOptions);
 			const text = await response.text();
 
@@ -462,6 +473,7 @@ $(document).ready(main);
 				$("#edit-mode").attr("onclick","toggleEdit()"); //togleEdit() insted of login()
 
 				toggleEdit();
+				hideSpinner();
 			}
 		}
 
@@ -576,8 +588,10 @@ $(document).ready(main);
 				};
 			};
 
+			showSpinner();
 			const response = await fetch('/api/upload',requestOptions);
 			const text = await response.text();
+			hideSpinner();
 
 			if(text) alert(text);
 		}
