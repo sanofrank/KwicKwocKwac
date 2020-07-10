@@ -30,15 +30,15 @@ var kwic = new (function () {
 		return prefix + (lastId++)
 	}
 	
-	// if mentions are alreeady present in this file, find the largest one and set lastId to that+1
+	// if mentions are already present in this file, find the largest one and set lastId to that+1
 	function getLargestId(selection) {
 		// https://stackoverflow.com/questions/15371102/get-highest-id-using-javascript
 		return selection.reduce( (a, b) => {
-			return Math.max(a, (b.id.match(/\w+\-(\d+)/)||[,a])[1])
+			return Math.max(a, (b.id.match(/\w+\-(\d+)/)||[,a])[1]) // /w:word +:more word \-:"-" ():group \d:digits 
 		}, -1);
 	}
 
-	// is start and end anchors of a range are compatible the mention can be created. 
+	// If start and end anchors of a range are compatible the mention can be created. 
 	// If one or both of them belong to an existing mention, no worries since the existing mention will be removed anyway. 
 	function compatibleExtremes(range) {
 		if (range.startContainer.parentElement == range.endContainer.parentElement) return true
@@ -63,29 +63,34 @@ var kwic = new (function () {
 		p.removeChild(node)
 	}
 
+	//ADDED BIB BOOLEAN TO VERIFY BIBREF NODES
 	// insert a range within an element. Make sure to remove the overlapping mentions if they exist. 
-	function wrap(range, node, removeOverlaps) {
-		// save range extrenes here, since unwrapping elements will affect them later
+	function wrap(range, node, bib, removeOverlaps) {
+		// save range extremes here, since unwrapping elements will affect them later
+		console.log(bib);
 		var r = {
 			sc: range.startContainer, 
 			so: range.startOffset, 
 			ec: range.endContainer, 
 			eo: range.endOffset
 		}
-		if (range.startContainer.parentElement.classList.contains('mention')) 
+
+		if (range.startContainer.parentElement.classList.contains('mention') && !bib) 
 			unwrap(range.startContainer.parentElement)
-		if (range.endContainer.parentElement.classList.contains('mention')) 
+		if (range.endContainer.parentElement.classList.contains('mention') && !bib) 
 			unwrap(range.endContainer.parentElement)
 			
 		// if range was unwrapped, its extremes are no longer reliable. Use the ones stored in r instead. 
 		range.setStart(r.sc, r.so)
 		range.setEnd(r.ec, r.eo)
-		range.surroundContents(node); 
-		node.parentElement.normalize()
-		if (node.parentElement.classList.contains('mention')) unwrap(node)
-		var inner = node.querySelectorAll('.mention')
-		for (var i=0; i<inner.length; i++) {
-			unwrap(inner[i]) 
+		range.surroundContents(node); //moves content of the range into a new node, placing the new node at the start of the specified range
+		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
+		if (node.parentElement.classList.contains('mention') && !bib) unwrap(node)
+		if(!bib){
+			var inner = node.querySelectorAll('.mention')
+			for (var i=0; i<inner.length; i++) {
+				unwrap(inner[i]) 
+			}
 		}
 		return node
 	}
@@ -100,7 +105,7 @@ var kwic = new (function () {
 		// modify() method. IE 9 has both selection APIs but no modify() method.
 		if (window.getSelection && (sel = window.getSelection()).modify) {
 			sel = window.getSelection();
-			if (xor(alt, boundary && snap)) {
+			if (xor(alt, boundary && snap)) { //true if different
 				console.log('Before: '+sel.toString() )
 				// Detect if selection is backwards
 				var range = document.createRange();
@@ -371,14 +376,14 @@ var kwic = new (function () {
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "mention-" ;
 
-		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) {
+		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
 			if (!compatibleExtremes(nodeOrRange)) return {}
-			this.node = wrap(nodeOrRange,document.createElement('span'))
+			this.node = wrap(nodeOrRange,document.createElement('span'),false) 
 		}
 
-		var t = this.surroundingContent(this.node)
+		var t = this.surroundingContent(this.node) 
 		this.before = t.before || ""
 		this.after = t.after || ""
 		this.inner = t.inner  // this will remain the exact string in the document
@@ -405,7 +410,7 @@ var kwic = new (function () {
 			var blockElements = ['P', 'DIV', 'FIGCAPTION', 'LI', 'TR', 'DD', 'BODY']
 			var thisAtn = this.node.allTextNodes()
 			var container = this.node.parentElement 
-			while (blockElements.indexOf(container.nodeName) == -1) container = container.parentElement
+			while (blockElements.indexOf(container.nodeName) == -1) container = container.parentElement //while not arrived at the source
 			var atn = container.allTextNodes()
 			
 			var texts = {
@@ -517,6 +522,157 @@ var kwic = new (function () {
 		}
 		
 	}
+
+	//BibRef
+
+	this.BibRef = function(nodeOrRange, options){
+		if (!options) options = {}         // fallback object for inizialization
+		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization	
+		var prefix = "bibref-" ;
+
+		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) {
+			this.node = nodeOrRange	
+		} else {
+			if (!compatibleExtremes(nodeOrRange)) return {}
+			this.node = wrap(nodeOrRange,document.createElement('span'),true);
+		}
+
+		var t = this.surroundingContent(this.node) 
+		this.before = t.before || ""
+		this.after = t.after || ""
+		this.inner = t.inner  // this will remain the exact string in the document
+
+		this.id = this.node.id || getNewId(prefix)		
+		this.prop('id', this.id, false) ;
+		this.prop('category', options.category || "scraps", true)
+		this.prop('entity', options.entity || options.id || t.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "entity$1"), false)
+		this.prop('label', options.label, options.force) ;
+		this.prop('sort', options.sort, options.force) ;
+		this.prop('wikidataId', options.wikidataId, options.force) ;			
+
+		this.category = dataset.category || options.category 	// person, place, thing, etc. 
+		this.position = dataset.position || options.position || -1	// order in document, etc. 
+		this.entity = this.node.attributes.about.value
+		
+		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
+		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
+		if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
+
+	}
+
+	this.BibRef.prototype = {
+
+		surroundingContent: function() {
+			var blockElements = ['P', 'DIV', 'FIGCAPTION', 'LI', 'TR', 'DD', 'BODY']
+			var thisAtn = this.node.allTextNodes()
+			var container = this.node.parentElement 
+			while (blockElements.indexOf(container.nodeName) == -1) container = container.parentElement //while not arrived at the source
+			var atn = container.allTextNodes()
+			
+			var texts = {
+				before: "",
+				inner: this.node.innerHTML,
+				after: ""
+			}
+			
+			if (thisAtn[0].position !== 0) {
+				var i = thisAtn[0].position - 1
+				var words = []
+				while (i> -1 && words.length <= kwic.prefs.wordsAround+10) {
+					words = [...(atn[i--].textContent.split(/\s+/)), ...words]
+				}
+				var end = words.length-1
+				var start = words.length-1
+				var totalWords = 0
+				while (totalWords < kwic.prefs.wordsAround && 0 <= start)
+					if (words[start--].match(/\w+/)) 
+						totalWords++
+				texts.before = words.slice(start+1, end).join(" ")
+			}
+			if (thisAtn[thisAtn.length-1].position !== atn.length-1) {
+				i = thisAtn[thisAtn.length-1].position + 1
+				words = []
+				while (i< atn.length && words.length <= kwic.prefs.wordsAround+10) {
+					words = [...words, ...(atn[i++].textContent.split(/\s+/))]
+				}
+				var end = 0
+				var start = 0
+				var totalWords = 0
+				while (totalWords <= kwic.prefs.wordsAround && end < words.length)
+					if (words[end++].match(/\w+/)) 
+						totalWords++
+				texts.after = words.slice(start, end).join(" ")
+			}
+			return texts
+		},
+
+		prop: function(name,value, force=false) {
+			var beforeEdit = this.before + this.node.outerHTML +this.after	
+			switch (name) {
+				case 'id':
+					if (force || this.node.id== "") {
+						if (value!=='')
+							this.node.id = value
+					}
+					break; 
+				case 'category':
+					if (force) {
+						if (value) {
+							this.node.classList = []
+							this.node.classList.add('mention')
+							this.node.classList.add(value)
+						} else {
+							this.node.classList.remove(value)					
+						}
+					}
+					break; 
+				case 'entity':
+					if (force || this.node.attributes.about == undefined) {
+						if (value) {
+							this.node.setAttribute('about',value)
+						} else {
+							this.node.removeAttribute('about')
+						}
+					}
+					break;
+				default:
+					if (force || this.node.dataset[name]== undefined) {
+						if (value) {
+							this.node.dataset[name] = value
+						} else {
+							delete this.node.dataset[name]
+						}
+					}
+					break;
+			}
+			var afterEdit = this.before + this.node.outerHTML +this.after
+			kwic.addToEditList(beforeEdit, afterEdit)
+		},
+		switchTo: function(entity,force) {
+			this.prop('entity',entity.id,force)
+			this.prop('category', entity.category, force)
+			this.prop('sort','',force)
+			this.prop('label','',force)
+			this.prop('wikidataId','',force)
+		},
+		putToScraps: function() {
+			this.prop('entity','scraps',true)
+			this.prop('category', 'scraps', true)
+			this.prop('sort','',true)
+			this.prop('label','Scrapped mentions',true)
+			this.prop('wikidataId','',true)
+		},
+		putToTrash: function() {
+			this.prop('entity','trash',true)
+			this.prop('category', 'trash', true)
+			this.prop('sort','',true)
+			this.prop('label','Trashed mentions',true)
+			this.prop('wikidataId','',true)
+		},
+		unwrap: function() {
+			unwrap(this.node)
+		}
+	}
 	
 	// static methods
 	
@@ -582,7 +738,6 @@ var kwic = new (function () {
 		var content = ""
 		if (!tpl.categories) tpl.categories = "{$content}"
 		if (!tpl.entities) tpl.entities ="{$content}"
-
 		var sortedCategories = this.sortCategories(data) ;
 		for (var i=0; i<sortedCategories.length; i++) {
 			data[sortedCategories[i]].sortEntities()
@@ -591,11 +746,19 @@ var kwic = new (function () {
 			cat.count = cat.entities.length; 
 			for (var j=0; j<cat.entities.length; j++) {
 				var ent = {...cat.entities[j]}
+				var current = $(`.${ent.content}`);
 				ent.content = ""
 				ent.count = ent.mentions.length
 				ent.check = ent.wikidataId ? 'oi-check' : ''
 				if (tpl.mentions) {
+					var current = j+1;
+					var padNum = current.toString().padStart(4,'0');
+
 					for (var k=0; k<ent.mentions.length; k++) {
+						//Adding ref attribute
+						var current = $(`#${ent.mentions[k].id}`)[0];
+						current.dataset['ref'] = `${ent.category}_${padNum}`;
+
 						var mention = {...ent.mentions[k]} ;
 						mention.style = kwic.prefs.style; 
 						mention.content = kwic.templates[kwic.prefs.style].tpl(mention)
@@ -681,11 +844,17 @@ var kwic = new (function () {
 					}
 					for (var i in ranges) {
 						if (cat.action=='wrap') {
-							var m = new this.Mention(ranges[i], {
-								category: cat.entity
-							})
+							if(!cat.entity == "bib"){
+								var m = new this.Mention(ranges[i], {
+									category: cat.entity
+								})
+							}else{
+								var m = new this.BibRef(ranges[i],{
+									category: cat.entity
+								})
+							}
 							if (m.id) this.allMentions[m.id] = m
-							ret = true
+								ret = true			
 						}
 					}
 				}

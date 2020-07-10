@@ -50,10 +50,12 @@ $(document).ready(main);
 		async function main() {
 			editMode = false ; 
 			nullSelection = $('#file')[0]
-			var a = window.getSelection()
-			a.collapse(nullSelection,0)
+			/* Place the caret at the beginning of the #file element. */
+			var a = window.getSelection() //returns a Selection object representing the range of text selected by the user or the current position of the caret.
+			a.collapse(nullSelection,0) //collapses the current selection to a single point. The document is not modified.
 			kwic.setPrefs('loggedUser','Mario Rossi')  // fake login
 			
+			//Setting width and height of left and bottom panel, setting active class on current style and current sort
 			layoutSetup() 
 			
 			//Onload authentication
@@ -70,8 +72,9 @@ $(document).ready(main);
 
 			if(aut){
 				$('#Login').modal('hide'); //close modal
-
-				$('#edit-mode').removeAttr('data-toggle'); //remove modal attributes
+				
+				//remove modal attributes
+				$('#edit-mode').removeAttr('data-toggle'); 
 				$('#edit-mode').removeAttr('data-target');
 
 				$("#edit-mode").attr("onclick","toggleEdit()"); //togleEdit() insted of login()
@@ -97,6 +100,7 @@ $(document).ready(main);
 
 		function editCallbacks(editMode) {
 			if (editMode) {     
+				//on('event',where,function())
 				$(document).on('keydown',   document,   onkeydown)             // keyboard event
 				$(document).on('keyup',     document,   onkeyup)               // keyboard event
 				$(document).on('mousedown', documentLocation,   onmousedown)   // mouse event
@@ -203,7 +207,7 @@ $(document).ready(main);
 
 		// Callbacks for draggable elements
 		function dragstart(event) {
-			var e = event.originalEvent || event
+			var e = event.originalEvent || event //drag
 			var tg = e.target.dataset.id ? e.target : e.target.parentElement
 			var data = JSON.stringify(tg.dataset) 
 			scrapShown = false // Irrelevant whether the scrap tab is actually shown or not. Only set to force drag handler to show it only once
@@ -284,7 +288,7 @@ $(document).ready(main);
 			if (saveView) var view = getCurrentView()
 			kwic.cleanAll() 
 			mentions = kwic.findMentions('.mention',location); 
-			list = kwic.organize(mentions)
+			list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
 			var c0 = kwic.toHTML(
 				kwic.allCategories, 
 				{
@@ -430,6 +434,7 @@ $(document).ready(main);
 			if(!response.ok) alert('Non ho potuto caricare il file '+file);
 			else {
 				let content = await response.text();
+				hideSpinner();
 
 				currentFilename = file; 
 				editMode = false; 
@@ -437,7 +442,6 @@ $(document).ready(main);
 				$('#file').animate({ scrollTop: 0 }, 400);			
 				$('#commandList').removeClass('d-none');
 				setupKWIC(documentLocation, false);
-				hideSpinner();
 			}
 		}
 

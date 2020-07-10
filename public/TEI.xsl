@@ -45,7 +45,7 @@
 								</tei:bibl>
 							</xsl:for-each>
 						</tei:listBibl>
-						<moro:listQuote>
+						<tei:listQuote>
                             <xsl:for-each
                                 select="//html:span[contains(@class, 'quote')]/@about[generate-id() = generate-id(key('quotes', .)[1])]">
                                 <tei:quote xml:id="{current()}">
@@ -60,11 +60,11 @@
                                      />
                                 </tei:quote>
                             </xsl:for-each>
-                        </moro:listQuote>
+                        </tei:listQuote>
 						<tei:listPerson>
 							<!-- https://stackoverflow.com/questions/2291567/how-to-use-xslt-to-create-distinct-values -->
 							<xsl:for-each
-								select="//html:span[contains(@class, 'person')]/@about[generate-id() = generate-id(key('persons', .)[1])]">
+								select="//html:span[contains(@class, 'person')]/@data-ref[generate-id() = generate-id(key('persons', .)[1])]">
 								<tei:person xml:id="{current()}">
 									<xsl:variable name="label" select="//html:span[@data-label and @about = current()]/@data-label" />
 									<xsl:apply-templates
@@ -72,8 +72,8 @@
 										mode="inner">
 										<xsl:with-param name="label" select="$label" />
 									</xsl:apply-templates>
-									<xsl:apply-templates select="//html:span[@data-sort and @about = current()][1]" mode="sort" />
-									<xsl:apply-templates select="//html:span[@data-wikidata-id and @about = current()][1]" mode="wiki"
+									<xsl:apply-templates select="//html:span[@data-sort and @data-ref = current()][1]" mode="sort" />
+									<xsl:apply-templates select="//html:span[@data-wikidata-id and @data-ref = current()][1]" mode="wiki"
 									 />
 								</tei:person>
 							</xsl:for-each>
@@ -179,19 +179,19 @@
     </xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'person')]">
-		<tei:persName ref="#{@about}">
+		<tei:persName ref="#{@data-ref}">
 			<xsl:apply-templates />
 		</tei:persName>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'organization')]">
-		<tei:orgName ref="#{@about}">
+		<tei:orgName ref="#{@data-ref}">
 			<xsl:apply-templates />
 		</tei:orgName>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'place')]">
-		<tei:placeName ref="#{@about}">
+		<tei:placeName ref="#{@data-ref}">
 			<xsl:apply-templates />
 		</tei:placeName>
 	</xsl:template>

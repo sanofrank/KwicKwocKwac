@@ -75,13 +75,17 @@ router.post('/upload', async (req,res) => {
             content = await result.value;
 
         }else{
-
+            
+            let newPath = `files/${fileName}`;
+            
             let out = req.body.content;
-            let regex = new RegExp(path,'g');
+            let regex = new RegExp(newPath,'g');
 
             content = out.replace(regex,"");
             content.replace(regex,"");
         }
+
+        
 
         if(content!== "" && !content.includes("Key Words In Context")){
             fs.writeFile(htmlPath,content, (err) => {
