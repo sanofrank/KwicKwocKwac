@@ -3,15 +3,16 @@
 	xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns="http://www.tei-c.org/ns/1.0" exclude-result-prefixes="tei html">
 
 	<xsl:param name="title">No title</xsl:param>
+	<xsl:param name="author">Aldo Moro</xsl:param>
 	<xsl:param name="publication">No publication details</xsl:param>
 	<xsl:param name="source">No source details</xsl:param>
 
 	<xsl:output encoding="UTF-8" indent="yes" method="xml" />
-	<xsl:key name="bibref" match="html:span[contains(@class, 'bib')]/@about" use="." />
-	<xsl:key name="quotes" match="html:span[contains(@class, 'quote')]/@about" use="." />
 	<xsl:key name="persons" match="html:span[contains(@class, 'person')]/@about" use="." />
 	<xsl:key name="organizations" match="html:span[contains(@class, 'organization')]/@about" use="." />
 	<xsl:key name="places" match="html:span[contains(@class, 'place')]/@about" use="." />
+	<xsl:key name="bibref" match="html:span[contains(@class, 'bib')]/@about" use="." />
+	<xsl:key name="quotes" match="html:span[contains(@class, 'quote')]/@about" use="." />
 	<xsl:key name="innerStrings" match="html:span[contains(@class, 'mention')]/text()" use="." />
 
 	<xsl:template match="/">
@@ -22,6 +23,9 @@
 						<tei:title>
 							<xsl:value-of select="$title" />
 						</tei:title>
+						<tei:author>
+							<xsl:value-of select="$author" />
+						</tei:author>
 					</tei:titleStmt>
 					<tei:publicationStmt>
 						<tei:p>
@@ -29,10 +33,11 @@
 						</tei:p>
 					</tei:publicationStmt>
 					<tei:sourceDesc>
-						<tei:listBibl>
+						<tei:listPerson>
+							<!-- https://stackoverflow.com/questions/2291567/how-to-use-xslt-to-create-distinct-values -->
 							<xsl:for-each
-								select="//html:span[contains(@class, 'bib')]/@about[generate-id() = generate-id(key('bibref', .)[1])]">
-								<tei:bibl xml:id="{current()}">
+								select="//html:span[contains(@class, 'person')]/@about[generate-id() = generate-id(key('persons', .)[1])]">
+								<tei:person xml:id="{current()}">
 									<xsl:variable name="label" select="//html:span[@data-label and @about = current()]/@data-label" />
 									<xsl:apply-templates
 										select="//html:span[@about = current() and text()[generate-id() = generate-id(key('innerStrings', .)[1])]]"
@@ -41,39 +46,6 @@
 									</xsl:apply-templates>
 									<xsl:apply-templates select="//html:span[@data-sort and @about = current()][1]" mode="sort" />
 									<xsl:apply-templates select="//html:span[@data-wikidata-id and @about = current()][1]" mode="wiki"
-									/>
-								</tei:bibl>
-							</xsl:for-each>
-						</tei:listBibl>
-						<tei:listQuote>
-                            <xsl:for-each
-                                select="//html:span[contains(@class, 'quote')]/@about[generate-id() = generate-id(key('quotes', .)[1])]">
-                                <tei:quote xml:id="{current()}">
-                                    <xsl:variable name="label" select="//html:span[@data-label and @about = current()]/@data-label" />
-                                    <xsl:apply-templates
-                                        select="//html:span[@about = current() and text()[generate-id() = generate-id(key('innerStrings', .)[1])]]"
-                                        mode="inner">
-                                        <xsl:with-param name="label" select="$label" />
-                                    </xsl:apply-templates>
-                                    <xsl:apply-templates select="//html:span[@data-sort and @about = current()][1]" mode="sort" />
-                                    <xsl:apply-templates select="//html:span[@data-wikidata-id and @about = current()][1]" mode="wiki"
-                                     />
-                                </tei:quote>
-                            </xsl:for-each>
-                        </tei:listQuote>
-						<tei:listPerson>
-							<!-- https://stackoverflow.com/questions/2291567/how-to-use-xslt-to-create-distinct-values -->
-							<xsl:for-each
-								select="//html:span[contains(@class, 'person')]/@data-ref[generate-id() = generate-id(key('persons', .)[1])]">
-								<tei:person xml:id="{current()}">
-									<xsl:variable name="label" select="//html:span[@data-label and @about = current()]/@data-label" />
-									<xsl:apply-templates
-										select="//html:span[@about = current() and text()[generate-id() = generate-id(key('innerStrings', .)[1])]]"
-										mode="inner">
-										<xsl:with-param name="label" select="$label" />
-									</xsl:apply-templates>
-									<xsl:apply-templates select="//html:span[@data-sort and @data-ref = current()][1]" mode="sort" />
-									<xsl:apply-templates select="//html:span[@data-wikidata-id and @data-ref = current()][1]" mode="wiki"
 									 />
 								</tei:person>
 							</xsl:for-each>
@@ -121,6 +93,12 @@
 		</tei:TEI>
 	</xsl:template>
 
+    <xsl:template match="*">
+        <xsl:element name="{local-name()}">
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:element>
+    </xsl:template>
+
 	<xsl:template match="@*">
 		<xsl:copy>
 			<xsl:value-of select="." />
@@ -134,7 +112,12 @@
 	</xsl:template>
 
 	<xsl:template match="html:div[@id = 'file']">
-		<tei:div xml:id="ch001">
+		<tei:div xml:id="work">
+			<xsl:apply-templates />
+		</tei:div>
+	</xsl:template>
+	<xsl:template match="html:div[@id = 'intro-note']">
+		<tei:div xml:id="intro-note">
 			<xsl:apply-templates />
 		</tei:div>
 	</xsl:template>
@@ -166,34 +149,34 @@
 		</tei:span>
 	</xsl:template>
 
-	<xsl:template match="html:span[contains(@class,'bib')]">
-		<tei:bibl ref="#{@about}">
-			<xsl:apply-templates />
-		</tei:bibl>
-	</xsl:template>
-
-	<xsl:template match="html:span[contains(@class, 'quote')]">
-        <tei:quote ref="#{@about}">
-            <xsl:apply-templates />
-        </tei:quote>
-    </xsl:template>
-
 	<xsl:template match="html:span[contains(@class, 'person')]">
-		<tei:persName ref="#{@data-ref}">
+		<tei:persName ref="#{@about}">
 			<xsl:apply-templates />
 		</tei:persName>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'organization')]">
-		<tei:orgName ref="#{@data-ref}">
+		<tei:orgName ref="#{@about}">
 			<xsl:apply-templates />
 		</tei:orgName>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'place')]">
-		<tei:placeName ref="#{@data-ref}">
+		<tei:placeName ref="#{@about}">
 			<xsl:apply-templates />
 		</tei:placeName>
+	</xsl:template>
+
+	<xsl:template match="html:span[contains(@class, 'bib')]">
+		<tei:bibl>
+			<xsl:apply-templates />
+		</tei:bibl>
+	</xsl:template>
+
+	<xsl:template match="html:span[contains(@class, 'quote')]">
+		<tei:quote>
+			<xsl:apply-templates />
+		</tei:quote>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'person')]" mode="inner">
