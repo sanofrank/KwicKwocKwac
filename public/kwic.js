@@ -843,7 +843,7 @@ var kwic = new (function () {
 					}
 					for (var i in ranges) {
 						if (cat.action=='wrap') {
-							if(!cat.entity == "bib"){
+							if(cat.entity != "bib"){
 								var m = new this.Mention(ranges[i], {
 									category: cat.entity
 								})

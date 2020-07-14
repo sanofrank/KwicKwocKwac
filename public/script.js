@@ -546,8 +546,10 @@ $(document).ready(main);
 		// create a mention out of a selection
 		function doAction(key, alt, shift) {
 			sel = document.getSelection()
+
 			if(rangeAcceptable(sel,documentLocation) ) {
 				var action = kwic.doAction(key, alt, shift)
+				
 				if (action) {
 					setupKWIC(documentLocation, true)
 					sel.collapse(nullSelection,0)
