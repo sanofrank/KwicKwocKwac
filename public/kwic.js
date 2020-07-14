@@ -67,7 +67,6 @@ var kwic = new (function () {
 	// insert a range within an element. Make sure to remove the overlapping mentions if they exist. 
 	function wrap(range, node, bib, removeOverlaps) {
 		// save range extremes here, since unwrapping elements will affect them later
-		console.log(bib);
 		var r = {
 			sc: range.startContainer, 
 			so: range.startOffset, 

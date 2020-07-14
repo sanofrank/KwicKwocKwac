@@ -558,7 +558,7 @@ $(document).ready(main);
 		// selection completely belongs to the loaded document and is NOT the null selection
 		function rangeAcceptable(sel,selector) {
 			if (sel.anchorNode == nullSelection && sel.focusNode == nullSelection && sel.anchorOffset == 0 && sel.focusOffset==0) return false
-			return $(sel.anchorNode).parents(selector).length == 1 && $(sel.extentNode).parents(selector).length == 1
+			return $(sel.anchorNode).parents(selector).length == 1 && $(sel.focusNode).parents(selector).length == 1
 		}
 
 		// save the currently shown document on the remote server
