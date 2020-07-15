@@ -150,7 +150,7 @@ $(document).ready(main);
 				//show elements that need to appear only when in edit Mode
 				$('.editOnly').removeClass('d-none')	
 				$('#editButton').addClass('bg-primary')
-				$('body').addClass('showStyles')
+				$('#file').addClass('showStyles')
 
 			} else {
 				// disallow drag & drop
@@ -159,7 +159,7 @@ $(document).ready(main);
 				//hide elements that need to appear only when in edit Mode
 				$('.editOnly').addClass('d-none')			
 				$('#editButton').removeClass('bg-primary')
-				$('body').removeClass('showStyles')
+				$('#file').removeClass('showStyles')
 			}
 		}
 
@@ -288,7 +288,8 @@ $(document).ready(main);
 			if (saveView) var view = getCurrentView()
 			kwic.cleanAll() 
 			mentions = kwic.findMentions('.mention',location); 
-			list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
+			blocks = kwic.findBlocks('.block',location); //FIND ALL BLOCKS
+			list = kwic.organize(mentions,blocks) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
 			var c0 = kwic.toHTML(
 				kwic.allCategories, 
 				{
@@ -375,12 +376,22 @@ $(document).ready(main);
 					{$style}
 				}
 			`
+			// Temporary block class to manage bibref, quote and footnote styles
+			var categoryCssTpl_block = `
+			.showStyles .block.{$entity}, .selectButton.{$entity} {
+				{$style}
+			}
+		`
 	
 			var css = ""
 			for (var i in list) {
 				if (list[i].action=="wrap") {
 					$('#categoriesButton').append(  categoryItemTpl.tpl(list[i]) )
-					css += categoryCssTpl.tpl(list[i])
+					if(list[i].mention){
+						css += categoryCssTpl.tpl(list[i])
+					}else{
+						css += categoryCssTpl_block.tpl(list[i])
+					}
 				}
 			}			
 			setStylesheet(css, 'mentionsStyles')
@@ -490,7 +501,7 @@ $(document).ready(main);
 
 		// switch or hide the colored display of mentions 
 		function toggleStyles() {
-			$('body').toggleClass('showStyles')
+			$('#file').toggleClass('showStyles')
 			$('#styleButton').toggleClass('bg-primary')
 		}
 
@@ -549,7 +560,7 @@ $(document).ready(main);
 
 			if(rangeAcceptable(sel,documentLocation) ) {
 				var action = kwic.doAction(key, alt, shift)
-				
+
 				if (action) {
 					setupKWIC(documentLocation, true)
 					sel.collapse(nullSelection,0)
@@ -738,9 +749,17 @@ $(document).ready(main);
 		// empty trash, i.e., look for all mentions of category "trash" and remove the span around them
 		function emptyTrash() {
 			if (confirm("You are about to empty the trash. Continue?")) {
+				console.log(kwic.allMentions);
+				console.log(kwic.allBlock);
 				for (i in kwic.allMentions) { 
+					console.log(i);
 					if (kwic.allMentions[i].category == 'trash') 
 						kwic.allMentions[i].unwrap()
+				}
+				for (i in kwic.allBlock) { 
+					console.log(i);
+					if (kwic.allBlock[i].category == 'trash') 
+						kwic.allBlock[i].unwrap()
 				}
 				setupKWIC(documentLocation, true)			
 			}

@@ -23,6 +23,7 @@
 	"bib": {
 		"letter": "B",
 		"action": "wrap",
+		"mention": false,
 		"type":   "word",
 		"label":  "BibRef",
 		"sort": 1,
@@ -33,6 +34,7 @@
 	"quote": {
 		"letter": "Q",
 		"action": "wrap",
+		"mention": false,
 		"type":   "word",
 		"label":  "Quotes",
 		"sort": 2,
@@ -43,6 +45,7 @@
 	"person": {
 		"letter": "P",
 		"action": "wrap",
+		"mention": true,
 		"type":   "word",
 		"sort": 3,
 		"entity": "person",
@@ -53,6 +56,7 @@
 	"place": {
 		"letter": "L",
 		"action": "wrap",
+		"mention": true,
 		"type":   "word",
 		"label": "Places",
 		"sort": 4,
@@ -63,6 +67,7 @@
 	"organization": {
 		"letter": "O",
 		"action": "wrap",
+		"mention": true,
 		"type":   "word",
 		"label": "Orgs",
 		"sort": 5,

@@ -40,22 +40,31 @@ var kwic = new (function () {
 
 	// If start and end anchors of a range are compatible the mention can be created. 
 	// If one or both of them belong to an existing mention, no worries since the existing mention will be removed anyway. 
-	function compatibleExtremes(range) {
-		if (range.startContainer.parentElement == range.endContainer.parentElement) return true
+	function compatibleExtremes(range, mention) {
+		if (range.startContainer.parentElement == range.endContainer.parentElement) return true //Meaning that if the selection is plain, untouched and it's in the same node.
 
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
+
+		console.log("compatableExtremes",start,end);
 		
-		if (start.classList.contains('mention') )
+		if (start.classList.contains('mention') || start.classList.contains('block'))
 			start = start.parentElement // will remove it anyway
-		if (end.classList.contains('mention') )
-			var end = end.parentElement // will remove it anyway
-		
+		if (end.classList.contains('mention') || end.classList.contains('block'))
+			end = end.parentElement // will remove it anyway
+		// if (start.classList.contains('block') && !mention)
+		// 	start = start.parentElement // will remove it anyway
+		// if (end.classList.contains('block') && !mention)
+		// 	var end = end.parentElement // will remove it anyway
+		console.log(start,end);
+
+
 		return  start == end
 	}
 
 	// remove the tag wrapping a mention
 	function unwrap(node) {
+		console.log("unwrap",node);
 		var p = node.parentElement
 		while (node.childNodes.length>0) {
 			p.insertBefore(node.childNodes[0],node)		
@@ -65,8 +74,9 @@ var kwic = new (function () {
 
 	//ADDED BIB BOOLEAN TO VERIFY BIBREF NODES
 	// insert a range within an element. Make sure to remove the overlapping mentions if they exist. 
-	function wrap(range, node, bib, removeOverlaps) {
+	function wrap(range, node, mention, removeOverlaps) {
 		// save range extremes here, since unwrapping elements will affect them later
+		console.log(range);
 		var r = {
 			sc: range.startContainer, 
 			so: range.startOffset, 
@@ -74,23 +84,50 @@ var kwic = new (function () {
 			eo: range.endOffset
 		}
 
-		if (range.startContainer.parentElement.classList.contains('mention') && !bib) 
+		if (range.startContainer.parentElement.classList.contains('mention') && mention) 
 			unwrap(range.startContainer.parentElement)
-		if (range.endContainer.parentElement.classList.contains('mention') && !bib) 
+		if (range.endContainer.parentElement.classList.contains('mention') && mention) 
 			unwrap(range.endContainer.parentElement)
-			
-		// if range was unwrapped, its extremes are no longer reliable. Use the ones stored in r instead. 
-		range.setStart(r.sc, r.so)
-		range.setEnd(r.ec, r.eo)
+		if (range.startContainer.parentElement.classList.contains('block') && !mention) 
+			unwrap(range.startContainer.parentElement)
+		if (range.endContainer.parentElement.classList.contains('block') && !mention) 
+			unwrap(range.endContainer.parentElement)
+		//In case there's a mention on the end or start of range with a block element.	
+		if (range.endContainer.parentElement.classList.contains('mention') && !mention){ 
+			var endNode = range.endContainer.parentNode;
+
+			range.setStart(r.sc,r.so);
+			range.setEndAfter(endNode);
+		}	
+		if (range.startContainer.parentElement.classList.contains('mention') && !mention){
+			var startNode = range.startContainer.parentNode;
+
+			range.setStartBefore(startNode);
+			if(!endNode){
+				range.setEnd(r.ec,r.eo);
+			}
+		}	
+					
+		if(!endNode && !startNode){
+			range.setStart(r.sc, r.so)
+			range.setEnd(r.ec, r.eo)
+		}
 		range.surroundContents(node); //moves content of the range into a new node, placing the new node at the start of the specified range
 		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
-		if (node.parentElement.classList.contains('mention') && !bib) unwrap(node)
-		if(!bib){
+		if (node.parentElement.classList.contains('mention') && mention) unwrap(node)
+		if (node.parentElement.classList.contains('block') && !mention) unwrap(node)
+		if(mention){
 			var inner = node.querySelectorAll('.mention')
 			for (var i=0; i<inner.length; i++) {
 				unwrap(inner[i]) 
 			}
+		}else{
+			var inner = node.querySelectorAll('.block')
+			for (var i=0; i<inner.length; i++) {
+				unwrap(inner[i]) 
+			}
 		}
+		console.log("new NODE",node);
 		return node
 	}
 
@@ -374,12 +411,13 @@ var kwic = new (function () {
 		if (!options) options = {}         // fallback object for inizialization
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "mention-" ;
+		var mention = true;
 
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
-			if (!compatibleExtremes(nodeOrRange)) return {}
-			this.node = wrap(nodeOrRange,document.createElement('span'),false) 
+			if (!compatibleExtremes(nodeOrRange,mention)) return {}
+			this.node = wrap(nodeOrRange,document.createElement('span'),mention) 
 		}
 
 		var t = this.surroundingContent(this.node) 
@@ -522,18 +560,20 @@ var kwic = new (function () {
 		
 	}
 
-	//BibRef
+	//BIBREF
 
-	this.BibRef = function(nodeOrRange, options){
+	this.Block = function(nodeOrRange, options){
 		if (!options) options = {}         // fallback object for inizialization
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization	
-		var prefix = "bibref-" ;
+		var prefix = "block-" ;
+		var mention = false;
 
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) {
 			this.node = nodeOrRange	
+			console.log("this.node",this.node);
 		} else {
-			if (!compatibleExtremes(nodeOrRange)) return {}
-			this.node = wrap(nodeOrRange,document.createElement('span'),true);
+			if (!compatibleExtremes(nodeOrRange,mention)) return {}
+			this.node = wrap(nodeOrRange,document.createElement('span'),mention);
 		}
 
 		var t = this.surroundingContent(this.node) 
@@ -559,7 +599,7 @@ var kwic = new (function () {
 
 	}
 
-	this.BibRef.prototype = {
+	this.Block.prototype = {
 
 		surroundingContent: function() {
 			var blockElements = ['P', 'DIV', 'FIGCAPTION', 'LI', 'TR', 'DD', 'BODY']
@@ -618,7 +658,7 @@ var kwic = new (function () {
 					if (force) {
 						if (value) {
 							this.node.classList = []
-							this.node.classList.add('mention')
+							this.node.classList.add('block')
 							this.node.classList.add(value)
 						} else {
 							this.node.classList.remove(value)					
@@ -706,10 +746,29 @@ var kwic = new (function () {
 		}
 		return this.allMentions
 	}; 
+
+	// search for all elements of the 'block' class (as specified by the selector parameter) 
+	// and puts them in the allMention array
+	this.findBlocks = function(selector,location){
+		var p = $(selector,location)
+		lastId = getLargestId(p.get()) +1
+		for (i=0; i< p.length; i++){
+			var classes = Array.from(p[i].classList).filter( (j) => this.categoryList[j] !== undefined )
+			
+			var b = new this.Block(p[i], {
+				category: classes.length>0 ? classes[classes.length-1] : '',
+				position: i
+			})
+			this.allBlock[b.id] = b
+			console.log(this.allBlock);
+		}
+		return this.allBlock
+	}
 	
 	// organizes all mentions in a hierarchical array of arrays: categories containing entities containing mentions
 	this.organize = function() {
 		var mentions = this.allMentions
+		var blocks = this.allBlock
 		var entities = this.allEntities
 		var categories = this.allCategories
 		for (var i in mentions) {
@@ -720,6 +779,15 @@ var kwic = new (function () {
 				entities[mention.entity].append(mention, true)
 			}
 		}
+		//POPULATE ENTITY ARRAY WITH BLOCKS
+		for (var i in blocks){
+			var block = blocks[i]
+			if(!entities[block.entity]) {
+				entities[block.entity] = new this.Entity([block], {})
+			} else {
+				entities[block.entity].append(block, true)
+			}
+		}
 		for (var i in entities) {
 			var entity = entities[i]
 			if(!categories[entity.category]) {
@@ -728,15 +796,17 @@ var kwic = new (function () {
 				categories[entity.category].append(entity, false)
 			}			
 		}
+		console.log(categories);
 		return categories
 	}
 	
 	// creates an HTML structure out of a series of templates and some data. 
 	// HTMLstructures nests mention template within entity template within category template
 	this.toHTML= function(data, tpl) {
+		console.log(data);
 		var content = ""
 		if (!tpl.categories) tpl.categories = "{$content}"
-		if (!tpl.entities) tpl.entities ="{$content}"
+		if (!tpl.entities) tpl.entities = "{$content}"
 		var sortedCategories = this.sortCategories(data) ;
 		for (var i=0; i<sortedCategories.length; i++) {
 			data[sortedCategories[i]].sortEntities()
@@ -836,24 +906,28 @@ var kwic = new (function () {
 				var cat = this.categoryList[i]
 				var sel = snapSelection(cat.type, this.prefs.extend, alt)
 				if (sel) {
-					if (xor(shift, this.prefs.markAll && cat.markAll)) {
+					if (xor(shift, this.prefs.markAll && cat.markAll)) { //if just one of them is true, but not both.
 						var ranges = searchAll(context, sel.toString() )
 					} else {
 						var ranges = [sel.getRangeAt(0)]
 					}
 					for (var i in ranges) {
 						if (cat.action=='wrap') {
-							if(cat.entity != "bib"){
+							if(cat.mention){
 								var m = new this.Mention(ranges[i], {
 									category: cat.entity
 								})
+								if (m.id) this.allMentions[m.id] = m
+								ret = true
 							}else{
-								var m = new this.BibRef(ranges[i],{
+								var b = new this.Block(ranges[i],{
 									category: cat.entity
 								})
+								if (b.id) this.allBlock[b.id] = b
+								ret = true	
 							}
-							if (m.id) this.allMentions[m.id] = m
-								ret = true			
+							
+									
 						}
 					}
 				}
@@ -934,6 +1008,7 @@ var kwic = new (function () {
 		this.allCategories = {}
 		this.allEntities = {}
 		this.allMentions = {}
+		this.allBlock = {}
 	}
 
 

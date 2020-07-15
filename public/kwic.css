@@ -58,8 +58,10 @@
     display: table-cell;		
 }
 
-.mention {
+#file .mention, .block {
 	box-sizing: border-box;
 	box-decoration-break: clone;	
 	-webkit-box-decoration-break: clone;
 }
+
+
