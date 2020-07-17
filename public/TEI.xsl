@@ -3,7 +3,6 @@
 	xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns="http://www.tei-c.org/ns/1.0" exclude-result-prefixes="tei html">
 
 	<xsl:param name="title">No title</xsl:param>
-	<xsl:param name="author">Aldo Moro</xsl:param>
 	<xsl:param name="publication">No publication details</xsl:param>
 	<xsl:param name="source">No source details</xsl:param>
 
@@ -23,9 +22,6 @@
 						<tei:title>
 							<xsl:value-of select="$title" />
 						</tei:title>
-						<tei:author>
-							<xsl:value-of select="$author" />
-						</tei:author>
 					</tei:titleStmt>
 					<tei:publicationStmt>
 						<tei:p>
@@ -33,37 +29,6 @@
 						</tei:p>
 					</tei:publicationStmt>
 					<tei:sourceDesc>
-					<xsl:for-each
-								select="//html:span[contains(@class, 'bib')]/@about[generate-id() = generate-id(key('bibref', .)[1])]">
-								<tei:bibl xml:id="{current()}">
-									<xsl:variable name="label" select="//html:span[@data-label and @about = current()]/@data-label" />
-									<xsl:apply-templates
-										select="//html:span[@about = current() and text()[generate-id() = generate-id(key('innerStrings', .)[1])]]"
-										mode="inner">
-										<xsl:with-param name="label" select="$label" />
-									</xsl:apply-templates>
-									<xsl:apply-templates select="//html:span[@data-sort and @about = current()][1]" mode="sort" />
-									<xsl:apply-templates select="//html:span[@data-wikidata-id and @about = current()][1]" mode="wiki"
-									/>
-								</tei:bibl>
-							</xsl:for-each>
-						</tei:listBibl>
-						<tei:listQuote>
-                            <xsl:for-each
-                                select="//html:span[contains(@class, 'quote')]/@about[generate-id() = generate-id(key('quotes', .)[1])]">
-                                <tei:quote xml:id="{current()}">
-                                    <xsl:variable name="label" select="//html:span[@data-label and @about = current()]/@data-label" />
-                                    <xsl:apply-templates
-                                        select="//html:span[@about = current() and text()[generate-id() = generate-id(key('innerStrings', .)[1])]]"
-                                        mode="inner">
-                                        <xsl:with-param name="label" select="$label" />
-                                    </xsl:apply-templates>
-                                    <xsl:apply-templates select="//html:span[@data-sort and @about = current()][1]" mode="sort" />
-                                    <xsl:apply-templates select="//html:span[@data-wikidata-id and @about = current()][1]" mode="wiki"
-                                     />
-                                </tei:quote>
-                            </xsl:for-each>
-                        </tei:listQuote>
 						<tei:listPerson>
 							<!-- https://stackoverflow.com/questions/2291567/how-to-use-xslt-to-create-distinct-values -->
 							<xsl:for-each
