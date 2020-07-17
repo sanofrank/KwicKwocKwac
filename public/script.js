@@ -252,8 +252,11 @@ $(document).ready(main);
 			$(e.target).removeClass('dragEnd')
 			$(e.target).removeClass('dragOver')
 
-			var source = JSON.parse(e.dataTransfer.getData("text/plain"))
+			var source = JSON.parse(e.dataTransfer.getData("text/plain")) //getData from dragstart
 			var target = {...tg.dataset}
+			//source and target:
+			//level: "object type", id="object-id"
+			console.log("source,target",source,target);
 			kwic.mergeData(source, target)
 			setupKWIC(documentLocation, true)					
 			return true; 
@@ -298,7 +301,8 @@ $(document).ready(main);
 			) ;
 			var c1 = kwic.toHTML(
 				kwic.allCategories, 
-				{
+				{	
+					blocks: $('#blockTpl').html(),
 					mentions: $('#mentionTpl').html(),
 					entities: $('#entityTpl').html(),
 					categories: $('#categoryTpl1').html(),

@@ -363,6 +363,11 @@
 				{$content}
 			</div>
 		</template>
+		<template id="blockTpl">	
+			<div class="{$style} draggable {$class}" id="list-{$id}" data-level="block" data-id="{$id}" onclick="goto('#{$id}')">
+				{$content}
+			</div>
+		</template>
 
 				
 		<!-- Bootstrap core JavaScript
