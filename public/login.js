@@ -21,9 +21,10 @@ async function login(){
     if(!response.ok) {
         $('#errors').text(text);
     }else{
-        location.assign("http://localhost:3000/index");
+        const origin = window.location.origin;
+        location.assign(`${origin}/index`);
     }
-        
+
     }
 
     async function register(){
@@ -50,7 +51,8 @@ async function login(){
         const text = await response.text();
         if(!response.ok) $('#errors').text(text);
         else{
-            location.replace("https://localhost:3000/login");}
+            const origin = window.location.origin;
+            location.assign(`${origin}/login`);
         //document.getElementsByTagName('h1').innerHTML = `Benvenuto ${text}`
     }
 
