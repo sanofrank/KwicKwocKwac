@@ -55,6 +55,7 @@ async function login(){
             location.assign(`${origin}/login`);
         //document.getElementsByTagName('h1').innerHTML = `Benvenuto ${text}`
     }
+}
 
 
 
