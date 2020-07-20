@@ -4,7 +4,11 @@ const bcrypt = require('bcryptjs');
 const verify = require('./verifyToken');
 //const { pool } = require('../dbConfig');
 const User = require('../model/User');
-const { loginValidation } = require('../validation');
+const { loginValidation, registerValidation } = require('../validation');
+
+router.get('/index', verify, (req,res) => {
+    res.render("index.html");
+})
 
 router.post('/login', async (req,res) => {
 
@@ -28,13 +32,49 @@ router.post('/login', async (req,res) => {
     //res.header('auth-token',token).send(token);
     res.cookie('auth_token', token, 
     {
-        maxAge: 3600,
+        expires: new Date(Date.now() + 900000),        
         httpOnly: true,
         //secure: true
     })
-    res.send('Logged in');
 
-    // POSTGRES LOGIN
+    return res.send("logged in");
+});
+
+router.post('/register', async (req,res) => { // async finchè aspettiamo il salvataggio 
+    //VALEDATE DATA
+    const {error} = registerValidation(req.body);
+    if(error) return res.status(400).send(error.details[0].message); //bad request to show just the message error
+
+    //CHECKING USER ALREADY IN DATABASE
+    const emailExist = await User.findOne({email: req.body.email}); //check in the DB
+    if(emailExist) return res.status(400).send('Email already exists');
+    
+    //HASH PASSWORDS
+    const salt = await bcrypt.genSalt(10); //random generated data
+    const hashPassword = await bcrypt.hash(req.body.password,salt); //combines salt to hashes password
+
+    //CREATE A NEW USER
+    const user = new User ({
+        name: req.body.name,
+        email: req.body.email,
+        password: hashPassword 
+    });
+    try{
+    const savedUser = await user.save();
+    return res.send('Registered');
+    }catch(err){
+        res.status(400).send(err);
+    }
+});
+
+router.get('/verify', verify, (req,res) => {
+    res.json({editmode: true});
+});
+
+module.exports = router;
+
+
+// POSTGRES LOGIN
     // pool.query(
     //     `SELECT * FROM users WHERE name = $1`, [login.username], (error,result) =>{
     //         if(error) throw error;
@@ -66,10 +106,3 @@ router.post('/login', async (req,res) => {
     //         };
     //     }
     // );
-});
-
-router.get('/verify', verify, (req,res) => {
-    res.json({editmode: true});
-});
-
-module.exports = router;

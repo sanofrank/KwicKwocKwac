@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const verify = require('./routes/verifyToken');
 const fileUpload = require('express-fileupload');
 const mongo = require('./dbConfig');
 
@@ -21,7 +22,29 @@ app.use(cors({
 
 mongo.connect();
 
-app.use(express.static('public'));
+app.set('views', './public')
+app.engine('html', require('ejs').renderFile);
+
+
+app.get('/index', verify, (req,res) => {
+    res.render('index.html')
+})
+
+app.get('/login', (req,res) =>{
+    res.render("login.html");
+})
+
+app.get('/register', (req,res) =>{
+    res.render("register.html");
+})
+
+app.get('/', verify , function( req, res ) {
+    console.log("login");
+    res.redirect('/index')
+   });
+
+app.use(express.static('public'))
+
 
 //Middleware
 app.use(express.json({limit: '20mb'})); //json parser per mandare post request

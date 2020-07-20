@@ -1,0 +1,35 @@
+
+#container{
+    width: 100%;
+    margin:0 auto;
+    padding: 10em;
+}
+
+#form_container{
+    float: left;
+    width: 30%;
+    height: 30%;
+}
+
+.name{
+    font-family: 'Montserrat', sans-serif;   
+}
+
+#title{
+    font-size: 300%;
+}
+
+#subtitle{
+    font-size: 100%;
+}
+
+#title-div{
+    text-align: center;
+    padding: 2.5em;
+    float:right;
+    height: 100%;
+}
+
+#errors{
+    color:red;
+}

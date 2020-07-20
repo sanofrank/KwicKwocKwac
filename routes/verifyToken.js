@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 //Middleware function
-module.exports = function(req,res,next){
-    const token = req.cookies.auth_token; //Checking if the token exist in the header
-    if(!token) return res.json({ editmode: false});
+module.exports = (req,res,next) => {
+    const token = req.cookies.auth_token;
+    if(!token){  //Checking if the token exist in the header
+        return res.redirect('/login');
+    };
 
     try{
         const verified = jwt.verify(token,process.env.TOKEN_SECRET);

@@ -460,42 +460,6 @@ $(document).ready(main);
 			}
 		}
 
-		// login user
-		async function login(){
-			
-			event.preventDefault();
-
-			let username = $('#usernameForm').val();
-			let password = $('#defaultForm-pass').val();
-
-			let data = {username,password};
-
-			const requestOptions = {
-				method: 'POST',
-            	headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data),
-				credentials: 'include'
-			};
-			showSpinner();
-			const response = await fetch("/api/login",requestOptions);
-			const text = await response.text();
-
-			if(!response.ok) $('#error').text(text);
-			else{
-				$('#Login').modal('hide'); //close modal
-
-				$('#edit-mode').removeAttr('data-toggle'); //remove modal attributes
-				$('#edit-mode').removeAttr('data-target');
-
-				$("#edit-mode").attr("onclick","toggleEdit()"); //togleEdit() insted of login()
-
-				toggleEdit();
-				hideSpinner();
-			}
-		}
-
 		// switch to edit Mode and back
 		function toggleEdit() {
 			editMode = !editMode
@@ -851,6 +815,46 @@ $(document).ready(main);
 			document.body.removeChild(element);
 		}
 	
+/* ------------------------------------------------------------------------------ */
+/*                                                                                */
+/*                                LOGIN/SIGN UP                             	  */
+/*                                                                                */
+/* ------------------------------------------------------------------------------ */
+
+		async function login(){
+			
+			event.preventDefault();
+
+			let username = $('#usernameForm').val();
+			let password = $('#password').val();
+
+			let data = {username,password};
+
+			const requestOptions = {
+				method: 'POST',
+            	headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data),
+				credentials: 'include'
+			};
+			showSpinner();
+			const response = await fetch("/api/login",requestOptions);
+			const text = await response.text();
+
+			if(!response.ok) $('#error').text(text);
+			else{
+				$('#Login').modal('hide'); //close modal
+
+				$('#edit-mode').removeAttr('data-toggle'); //remove modal attributes
+				$('#edit-mode').removeAttr('data-target');
+
+				$("#edit-mode").attr("onclick","toggleEdit()"); //togleEdit() insted of login()
+
+				toggleEdit();
+				hideSpinner();
+			}
+		}
 
 
 
