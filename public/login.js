@@ -23,6 +23,9 @@ async function login(){
     }else{
         const origin = window.location.origin;
         location.assign(`${origin}/index`);
+         
+        console.log("Text");
+        console.log(text);
     }
 
     }

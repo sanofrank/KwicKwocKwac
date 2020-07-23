@@ -28,7 +28,7 @@ router.post('/login', async (req,res) => {
     if(!validPass) return res.status(400).send('Invalid password');
 
     //Create and assign token
-    const token = jwt.sign({uuid: user.uuid},process.env.TOKEN_SECRET); //pass some data to the token
+    const token = jwt.sign({id: user._id, username: user.name},process.env.TOKEN_SECRET); //pass some data to the token
     //res.header('auth-token',token).send(token);
     res.cookie('auth_token', token, 
     {
@@ -36,8 +36,7 @@ router.post('/login', async (req,res) => {
         httpOnly: true,
         //secure: true
     })
-
-    return res.send("logged in");
+    return res.send(user.name);
 });
 
 router.post('/register', async (req,res) => { // async finchè aspettiamo il salvataggio 

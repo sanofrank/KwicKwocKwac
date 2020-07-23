@@ -15,7 +15,7 @@
 	<body>
 		<div id="wrapper">
 			<nav id="top" class="navbar navbar-expand-md navbar-dark bg-dark  disable-select">
-					<a class="navbar-brand" href="#">KWIC KWOC KWAC</a>
+					<a class="navbar-brand" href="/">KWIC KWOC KWAC</a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
 					</button>
@@ -122,9 +122,13 @@
 											<span class="slider round"></span>
 										</span>
 									</label>
+									<label class="small" title="Chenge the document status to working, done, default">
+										Change the document status
+										<button id="status" type="button" class="btn btn-primary btn-sm" onclick="changeStatus()"></button>
+									</label>
 								</div>
 							</nav>			
-							<div id="file" class="h-100 scroll-col">
+							<div id="file" status="0" class="h-100 scroll-col">
 								<div class="jumbotron" id="title"><h1>Key Words In Context</h1> </div>
 							</div>
 						</div>

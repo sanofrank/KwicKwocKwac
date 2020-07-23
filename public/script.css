@@ -274,3 +274,35 @@ h1 {
 		animation: spin 1s infinite linear;
 	  }
 
+.bi{	
+	color: #017BFE;
+}
+
+.bi.default{
+	color: #017BFE;
+}
+
+.bi.working{
+	color: #EDD818;
+}
+
+.bi.done{
+	color: green;
+}
+
+.btn-sm {
+	border: none;
+	display: inline-block;
+  }
+
+#status.default{
+	background-color: #017BFE;
+}
+
+#status.working{
+	background-color: #EDD818;
+}
+
+#status.done{
+	background-color: green;
+}

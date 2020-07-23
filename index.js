@@ -27,6 +27,7 @@ app.engine('html', require('ejs').renderFile);
 
 
 app.get('/index', verify, (req,res) => {
+    console.log(req.params.user);
     res.render('index.html')
 })
 
@@ -39,7 +40,6 @@ app.get('/register', (req,res) =>{
 })
 
 app.get('/', verify , function( req, res ) {
-    console.log("login");
     res.redirect('/index')
    });
 

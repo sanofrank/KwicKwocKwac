@@ -82,6 +82,8 @@ $(document).ready(main);
 				toggleEdit();
 			}
 
+			
+
 			fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch( () => alert('No document to show'));
 			fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch( () => alert('No category loaded'));
 
@@ -359,6 +361,9 @@ $(document).ready(main);
 			var menuItemTpl = 
 				`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
 					{$label}
+					<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  						<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+					</svg>
 				</a>`	
 
 			// if($('#fileMenu').children()){
@@ -449,15 +454,20 @@ $(document).ready(main);
 			if(!response.ok) alert('Non ho potuto caricare il file '+file);
 			else {
 				let content = await response.text();
-				hideSpinner();
+				
 
-				currentFilename = file; 
+				currentFilename = file;
+				status = file.substring(file.length -1);
+
 				editMode = false; 
-				$('#file').html(content)
+				$('#file').html(content);
+				$('#file').attr("status",status);
+				setStatus(status);
 				$('#file').animate({ scrollTop: 0 }, 400);			
 				$('#commandList').removeClass('d-none');
 				setupKWIC(documentLocation, false);
 			}
+			hideSpinner();
 		}
 
 		// switch to edit Mode and back
@@ -580,6 +590,69 @@ $(document).ready(main);
 
 			if(text) alert(text);
 		}
+
+		function setStatus(status){
+
+			switch(status) {
+				case "0":
+					$("#status").addClass("default");
+					$("#status").html("Default");
+					break
+				case "1":
+					$("#status").addClass("working");
+					$("#status").html("Working");
+					break
+				case "2":
+					$("#status").addClass("done");
+					$("#status").html("Done");
+					break
+			}
+
+		}
+
+		async function changeStatus(){
+
+			let status;
+
+			if($("#status").hasClass("default")){
+				$("#status").removeClass("default");
+				$("#status").addClass("working");
+				$("#status").html("Working");
+				status = 1;
+			}else{
+				if($("#status").hasClass("working")){
+					$("#status").removeClass("working");
+					$("#status").addClass("done");
+					$("#status").html("Done");
+					status = 2;
+				}else{
+					if($("#status").hasClass("done")){
+						$("#status").removeClass("done");
+						$("#status").addClass("default");
+						$("#status").html("Default");
+						status = 0;
+					}
+				}
+			}
+			
+			let data = {
+				file: currentFilename,
+				status: status
+			}
+			
+			const statusOptions = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			}
+			
+			const response = await fetch('/api/change', statusOptions);
+			const text = await response.text();
+
+			currentFilename = text;
+			}
 
 		// user is changing label, sort or wikidata Id
 		function changeValue(field,id,value) {
@@ -815,46 +888,7 @@ $(document).ready(main);
 			document.body.removeChild(element);
 		}
 	
-/* ------------------------------------------------------------------------------ */
-/*                                                                                */
-/*                                LOGIN/SIGN UP                             	  */
-/*                                                                                */
-/* ------------------------------------------------------------------------------ */
 
-		async function login(){
-			
-			event.preventDefault();
-
-			let username = $('#usernameForm').val();
-			let password = $('#password').val();
-
-			let data = {username,password};
-
-			const requestOptions = {
-				method: 'POST',
-            	headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data),
-				credentials: 'include'
-			};
-			showSpinner();
-			const response = await fetch("/api/login",requestOptions);
-			const text = await response.text();
-
-			if(!response.ok) $('#error').text(text);
-			else{
-				$('#Login').modal('hide'); //close modal
-
-				$('#edit-mode').removeAttr('data-toggle'); //remove modal attributes
-				$('#edit-mode').removeAttr('data-target');
-
-				$("#edit-mode").attr("onclick","toggleEdit()"); //togleEdit() insted of login()
-
-				toggleEdit();
-				hideSpinner();
-			}
-		}
 
 
 
