@@ -60,5 +60,11 @@ async function login(){
     }
 }
 
+//Fake logout
+function logout() {
+    const origin = window.location.origin;
+    location.assign(`${origin}/login`);
+}
+
 
 

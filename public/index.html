@@ -52,7 +52,10 @@
 								<a class="nav-link editOnly" href="#" role="button" data-toggle="modal" data-target="#FileUpload"><span class="oi oi-cloud-upload" title="Upload local HTML document" aria-hidden="true"></span> <span class="sr-only">Upload document</span></a>
 							</li>
 							<li class="nav-item active" id="editButton">
-								<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()" ><span class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span class="sr-only">Edit doc</span></a> <!-- data-toggle="modal" data-target="#Login" --> 
+								<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()" ><span class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span class="sr-only">Edit doc</span></a> 
+							</li>
+							<li class="nav-item active">	
+								<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#logout"><span class="oi oi-account-logout" title="Logout from platform" aria-hidden="true"></span> <span class="sr-only">Logout</span></a>
 							</li>
 							<li class="nav-item active">
 								<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span class="oi oi-question-mark border-light rounded-circle" title="Info about KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">About (current)</span></a>
@@ -138,6 +141,23 @@
 		</div>
 
 		<!-- Modals -->
+		<div class="modal fade" id="logout" tabindex="-1" role="dialog" aria-labelledby="logoutLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <h5 class="modal-title" id="logoutLabel">Logout</h5>
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				  </button>
+				</div>
+				<div class="modal-body">
+				  <p>Are you sure you want to logout?</p>
+				  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+				  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="logout()">Yes</button>
+			  	</div>
+			</div>
+		  </div>
+		</div>
 		<div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="aboutLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -383,5 +403,6 @@
 		<script src="/util.js"></script>
 		<script src="/kwic.js"></script>
 		<script src="/script.js"></script>
+		<script src="./auth.js"></script>
 	</body>
 </html>

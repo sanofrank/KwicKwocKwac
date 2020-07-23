@@ -595,14 +595,17 @@ $(document).ready(main);
 
 			switch(status) {
 				case "0":
+					removeStatus("status");
 					$("#status").addClass("default");
 					$("#status").html("Default");
 					break
 				case "1":
+					removeStatus("status");
 					$("#status").addClass("working");
 					$("#status").html("Working");
 					break
 				case "2":
+					removeStatus("status");
 					$("#status").addClass("done");
 					$("#status").html("Done");
 					break
@@ -610,31 +613,20 @@ $(document).ready(main);
 
 		}
 
+		function removeStatus(status){
+			if($(`#${status}`).hasClass("default")) $(`#${status}`).removeClass("default"); 
+			if($(`#${status}`).hasClass("working")) $(`#${status}`).removeClass("working");
+			if($(`#${status}`).hasClass("done")) $(`#${status}`).removeClass("done");
+		}
+
 		async function changeStatus(){
 
 			let status;
 
-			if($("#status").hasClass("default")){
-				$("#status").removeClass("default");
-				$("#status").addClass("working");
-				$("#status").html("Working");
-				status = 1;
-			}else{
-				if($("#status").hasClass("working")){
-					$("#status").removeClass("working");
-					$("#status").addClass("done");
-					$("#status").html("Done");
-					status = 2;
-				}else{
-					if($("#status").hasClass("done")){
-						$("#status").removeClass("done");
-						$("#status").addClass("default");
-						$("#status").html("Default");
-						status = 0;
-					}
-				}
-			}
-			
+			if($("#status").hasClass("default")) status = 1;
+			if($("#status").hasClass("working")) status = 2;
+			if($("#status").hasClass("done"))	 status = 0;
+		
 			let data = {
 				file: currentFilename,
 				status: status
@@ -652,6 +644,25 @@ $(document).ready(main);
 			const text = await response.text();
 
 			currentFilename = text;
+
+			switch(status) {
+				case 0:
+					$("#status").removeClass("done");
+					$("#status").addClass("default");
+					$("#status").html("Default");
+					break
+				case 1:
+					$("#status").removeClass("default");
+					$("#status").addClass("working");
+					$("#status").html("Working");
+					break
+				case 2:
+					$("#status").removeClass("working");
+					$("#status").addClass("done");
+					$("#status").html("Done");
+					break
+			 }
+
 			}
 
 		// user is changing label, sort or wikidata Id
