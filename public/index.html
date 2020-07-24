@@ -30,6 +30,7 @@
 								<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Operations</a>
 								<div id="commandMenu" class="dropdown-menu" aria-labelledby="dropdown01">
 									<a class="dropdown-item" href="#" onclick='toggleStyles()'>Show annotations</a>
+									<a class="dropdown-item" href="#" onclick=''>Add Metadata</a>
 									<div class="dropdown-divider"></div>
 									<a class="dropdown-item" href="#" onclick="downloadDoc('html')">Download HTML</a>
 									<a class="dropdown-item" href="#" onclick="downloadDoc('tei')">Download TEI</a>
@@ -108,20 +109,28 @@
 						</div>		
 						<div class="col-9 fs-9 h-100" id="right">
 							<nav id="tools" class="navbar  navbar-expand-md border ml-2 my-0 editOnly">
+								<div class="btn-group-vertical btn-group-toggle mr-2" data-toggle="buttons">
+									<label class="btn btn-secondary active btn-sm">
+									  <input type="radio" name="options" id="option1" autocomplete="off" checked> Mentions
+									</label>
+									<label class="btn btn-secondary btn-sm">
+									  <input type="radio" name="options" id="option2" autocomplete="off"> References
+									</label>
+								</div>
 								<div id="categoriesButton" class="btn-group mr-auto" role="group" aria-label="Basic example">
 								</div>
 								<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
 									<label class="small" title="Pressing ALT inverts behaviour">
-										Extend selection to word
+										Extend selection to word (ALT or ⌥)
 										<span class="switch">
 											<input type="checkbox" checked onchange="prefs('extend', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
 									<label class="small" title="Pressing SHIFT inverts behaviour">
-										Mark all instances
+										Mark all instances (⇧)
 										<span class="switch">
-											<input type="checkbox" checked onchange="prefs('markall', this.checked)">
+											<input type="checkbox" checked onchange="prefs('markAll', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
@@ -152,9 +161,11 @@
 				</div>
 				<div class="modal-body">
 				  <p>Are you sure you want to logout?</p>
-				  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-				  <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="logout()">Yes</button>
-			  	</div>
+				  <div class="float-right">
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="logout()">Yes</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>				
+				  </div>
+				  </div>
 			</div>
 		  </div>
 		</div>

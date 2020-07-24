@@ -1,4 +1,4 @@
-﻿{
+{
 	"word" : {
 		"letter": "x",
 		"type":"word",
@@ -20,39 +20,39 @@
 		"markAll": false,
 		"class": null
 	},
-	"person": {
-		"letter": "P",
+	"bib": {
+		"letter": "B",
 		"action": "wrap",
-		"mention": true,
+		"mention": false,
 		"type":   "word",
+		"label":  "BibRef",
 		"sort": 1,
-		"entity": "person",
-		"label": "People",
+		"entity": "bib",
 		"markAll": true,
-		"style": "background-image: radial-gradient(#ffffdd 30%, #ffff5a 100%); border-radius: 4px;"
+		"style": "background-image: radial-gradient(#e7fdfb 30%, #b2ffed 100%); border-radius: 4px;"
 	},
-	"place": {
-		"letter": "L",
+	"quote": {
+		"letter": "Q",
 		"action": "wrap",
-		"mention": true,
+		"mention": false,
 		"type":   "word",
-		"label": "Places",
+		"label":  "Quotes",
 		"sort": 2,
-		"entity": "place",
+		"entity": "quote",
 		"markAll": true,
-		"style": "background-image: radial-gradient(#edf1f4 30%, #bacdf5 100%); border-radius: 4px;"
-	},
-	"organization": {
-		"letter": "O",
+		"style": "background-image: radial-gradient(#f0fde7 30%, #cfff82 100%); border-radius: 4px;"
+    },
+    "footnote": {
+        "letter": "F",
 		"action": "wrap",
-		"mention": true,
+		"mention": false,
 		"type":   "word",
-		"label": "Orgs",
+		"label":  "Footnote",
 		"sort": 3,
-		"entity": "organization",
+		"entity": "footnote",
 		"markAll": true,
-		"style": "background-image: radial-gradient(#fde7f9 30%, #ffb2b2 100%); border-radius: 4px;"
-	},
+		"style": "background-image: radial-gradient(#B67CCC 30%, #9B36C9 100%); border-radius: 4px;"
+    },
 	"scraps": {
 		"entity": "scraps",
 		"label": "Scraps",

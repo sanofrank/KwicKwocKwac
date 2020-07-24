@@ -24,15 +24,10 @@
 /* ------------------------------------------------------------------------------ */
 var kwic = new (function () {
 	var lastId = -1;                  // last specified id for new mentions
-	var lastId_block = -1;
 	
 	// generates the id for a mention
 	function getNewId(prefix) {
 		return prefix + (lastId++)
-	}
-
-	function getNewId_block(prefix){
-		return prefix + (lastId_block++);
 	}
 	
 	// if mentions are already present in this file, find the largest one and set lastId to that+1
@@ -307,57 +302,29 @@ var kwic = new (function () {
 	// entities are the individuals of the content: each person, each place, each concept, etc. is an entity
 	this.Entity = function(mentions, options, type) {
 		if (!options) options = {}         // fallback object for inizialization
-		if(type === "mention") {
+		var mentions = mentions || []   // fallback object for inizialization
+		var prefix = "entity-" ;
+	
+		this.mentions = []
+		var category = ""
+		var label = ""
+		var sort = ""
+		var wikidataId = ""
+		this.id = mentions[0].entity
+		this.position = Number.MAX_VALUE
+		var inners = []
 
-			var mentions = mentions || []   // fallback object for inizialization
-
-			var prefix = "entity-" ;
-		
-			this.mentions = []
-			var category = ""
-			var label = ""
-			var sort = ""
-			var wikidataId = ""
-			this.id = mentions[0].entity
-			this.position = Number.MAX_VALUE
-			var inners = []
-			for (var i=0; i<mentions.length; i++) {
-				mentions[i].entity = this.id
-				category = mentions[i].category || category
-				label = mentions[i].label || label
-				sort = mentions[i].sort || sort
-				wikidataId = mentions[i].wikidataId || wikidataId
-				inners.push(mentions[i].inner)
-				this.position = Math.min(this.position, mentions[i].position)
-				this.mentions.push(mentions[i])
+		for (var i=0; i<mentions.length; i++) {
+			mentions[i].entity = this.id
+			category = mentions[i].category || category
+			label = mentions[i].label || label
+			sort = mentions[i].sort || sort
+			wikidataId = mentions[i].wikidataId || wikidataId
+			inners.push(mentions[i].inner)
+			this.position = Math.min(this.position, mentions[i].position)
+			this.mentions.push(mentions[i])
 			}
-
-		}else{
 			
-			var blocks = mentions || [];
-			var prefix = "entity-" ;
-		
-			this.blocks = []
-			var category = ""
-			var label = ""
-			var sort = ""
-			var wikidataId = ""
-			this.id = blocks[0].entity
-			this.position = Number.MAX_VALUE
-			var inners = []
-			for (var i=0; i<blocks.length; i++) {
-				blocks[i].entity = this.id
-				category = blocks[i].category || category
-				label = blocks[i].label || label
-				sort = blocks[i].sort || sort
-				wikidataId = blocks[i].wikidataId || wikidataId
-				inners.push(blocks[i].inner)
-				this.position = Math.min(this.position, blocks[i].position)
-				this.blocks.push(blocks[i])
-			}
-
-		} 
-		
 		this.category = options.category || category || "scraps"
 		this.label = options.label || label
 		this.sort = options.sort || sort
@@ -406,7 +373,6 @@ var kwic = new (function () {
 		// change a property of this entity by changing the corresponding property of the first mention 
 		change: function(field,value, type) {
 			var done = false
-			if(type === "mention"){
 				for (var i=0; i<this.mentions.length; i++) {
 					if (this.mentions[i][field]) {
 						this.mentions[i].prop(field, value,true)
@@ -414,29 +380,14 @@ var kwic = new (function () {
 					}
 				}			
 				if (!done) this.mentions[0].prop(field, value)
-			}else{
-				for (var i=0; i<this.blocks.length; i++) {
-					if (this.blocks[i][field]) {
-						this.blocks[i].prop(field, value,true)
-						done = true
-					}
-				}			
-				if (!done) this.blocks[0].prop(field, value)
-			}
 		},
 		// assign this entity to a different category. 
 		switchTo: function(category,force,type) {
-			if(type == "mention"){
 				for (var i=0; i<this.mentions.length; i++) {
 					this.mentions[i].prop('category', category,force)
 				}
 				this.category = category	
-			}else{
-				for (var i=0; i<this.blocks.length; i++) {
-					this.blocks[i].prop('category', category,force)
-				}
-				this.category = category
-			}
+			
 		},
 		// assign this entity to scraps. 
 		putToScraps: function() {
@@ -603,158 +554,6 @@ var kwic = new (function () {
 		
 	}
 
-	//BIBREF
-
-	this.Block = function(nodeOrRange, options){
-		if (!options) options = {}         // fallback object for inizialization
-		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization	
-		var prefix = "block-" ;
-		var mention = false;
-
-		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) {
-			this.node = nodeOrRange	
-		} else {
-			if (!compatibleExtremes(nodeOrRange,mention)) return {}
-			this.node = wrap(nodeOrRange,document.createElement('span'),mention);
-		}
-
-		var t = this.surroundingContent(this.node) 
-		this.before = t.before || ""
-		this.after = t.after || ""
-		this.inner = t.inner  // this will remain the exact string in the document
-
-		this.id = this.node.id || getNewId_block(prefix)		
-		this.prop('id', this.id, false) ;
-		this.prop('category', options.category || "scraps", true)
-		this.prop('entity', options.entity || options.id || t.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "entity$1"), false)
-		this.prop('label', options.label, options.force) ;
-		this.prop('sort', options.sort, options.force) ;
-		this.prop('wikidataId', options.wikidataId, options.force) ;			
-
-		this.category = dataset.category || options.category 	// person, place, thing, etc. 
-		this.position = dataset.position || options.position || -1	// order in document, etc. 
-		this.entity = this.node.attributes.about.value
-		
-		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
-		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
-		if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
-
-	}
-
-	this.Block.prototype = {
-
-		surroundingContent: function() {
-			var blockElements = ['P', 'DIV', 'FIGCAPTION', 'LI', 'TR', 'DD', 'BODY']
-			var thisAtn = this.node.allTextNodes()
-			var container = this.node.parentElement 
-			while (blockElements.indexOf(container.nodeName) == -1) container = container.parentElement //while not arrived at the source
-			var atn = container.allTextNodes()
-			
-			var texts = {
-				before: "",
-				inner: this.node.innerHTML,
-				after: ""
-			}
-			
-			if (thisAtn[0].position !== 0) {
-				var i = thisAtn[0].position - 1
-				var words = []
-				while (i> -1 && words.length <= kwic.prefs.wordsAround+10) {
-					words = [...(atn[i--].textContent.split(/\s+/)), ...words]
-				}
-				var end = words.length-1
-				var start = words.length-1
-				var totalWords = 0
-				while (totalWords < kwic.prefs.wordsAround && 0 <= start)
-					if (words[start--].match(/\w+/)) 
-						totalWords++
-				texts.before = words.slice(start+1, end).join(" ")
-			}
-			if (thisAtn[thisAtn.length-1].position !== atn.length-1) {
-				i = thisAtn[thisAtn.length-1].position + 1
-				words = []
-				while (i< atn.length && words.length <= kwic.prefs.wordsAround+10) {
-					words = [...words, ...(atn[i++].textContent.split(/\s+/))]
-				}
-				var end = 0
-				var start = 0
-				var totalWords = 0
-				while (totalWords <= kwic.prefs.wordsAround && end < words.length)
-					if (words[end++].match(/\w+/)) 
-						totalWords++
-				texts.after = words.slice(start, end).join(" ")
-			}
-			return texts
-		},
-
-		prop: function(name,value, force=false) {
-			var beforeEdit = this.before + this.node.outerHTML +this.after	
-			switch (name) {
-				case 'id':
-					if (force || this.node.id== "") {
-						if (value!=='')
-							this.node.id = value
-					}
-					break; 
-				case 'category':
-					if (force) {
-						if (value) {
-							this.node.classList = []
-							this.node.classList.add('block')
-							this.node.classList.add(value)
-						} else {
-							this.node.classList.remove(value)					
-						}
-					}
-					break; 
-				case 'entity':
-					if (force || this.node.attributes.about == undefined) {
-						if (value) {
-							this.node.setAttribute('about',value)
-						} else {
-							this.node.removeAttribute('about')
-						}
-					}
-					break;
-				default:
-					if (force || this.node.dataset[name]== undefined) {
-						if (value) {
-							this.node.dataset[name] = value
-						} else {
-							delete this.node.dataset[name]
-						}
-					}
-					break;
-			}
-			var afterEdit = this.before + this.node.outerHTML +this.after
-			kwic.addToEditList(beforeEdit, afterEdit)
-		},
-		switchTo: function(entity,force) {
-			this.prop('entity',entity.id,force)
-			this.prop('category', entity.category, force)
-			this.prop('sort','',force)
-			this.prop('label','',force)
-			this.prop('wikidataId','',force)
-		},
-		putToScraps: function() {
-			this.prop('entity','scraps',true)
-			this.prop('category', 'scraps', true)
-			this.prop('sort','',true)
-			this.prop('label','Scrapped block',true)
-			this.prop('wikidataId','',true)
-		},
-		putToTrash: function() {
-			this.prop('entity','trash',true)
-			this.prop('category', 'trash', true)
-			this.prop('sort','',true)
-			this.prop('label','Trashed block',true)
-			this.prop('wikidataId','',true)
-		},
-		unwrap: function() {
-			unwrap(this.node)
-		}
-	}
-	
 	// static methods
 	
 	// non complete versioning mechanism for editing mentions
@@ -790,31 +589,13 @@ var kwic = new (function () {
 		console.log(this.allMentions);
 		return this.allMentions
 	}; 
-
-	// search for all elements of the 'block' class (as specified by the selector parameter) 
-	// and puts them in the allMention array
-	this.findBlocks = function(selector,location){
-		var p = $(selector,location)
-		lastId = getLargestId(p.get()) +1
-		for (i=0; i< p.length; i++){
-			var classes = Array.from(p[i].classList).filter( (j) => this.categoryList[j] !== undefined )
-			
-			var b = new this.Block(p[i], {
-				category: classes.length>0 ? classes[classes.length-1] : '',
-				position: i
-			})
-			this.allBlock[b.id] = b
-		}
-		console.log(this.allBlock);
-		return this.allBlock
-	}
 	
 	// organizes all mentions in a hierarchical array of arrays: categories containing entities containing mentions
 	this.organize = function() {
 		var mentions = this.allMentions
-		var blocks = this.allBlock
 		var entities = this.allEntities
 		var categories = this.allCategories
+
 		for (var i in mentions) {
 			var mention = mentions[i]
 			if(!entities[mention.entity]) {
@@ -823,15 +604,7 @@ var kwic = new (function () {
 				entities[mention.entity].append(mention, true)
 			}
 		}
-		//POPULATE ENTITY ARRAY WITH BLOCKS
-		for (var i in blocks){
-			var block = blocks[i]
-			if(!entities[block.entity]) {
-				entities[block.entity] = new this.Entity([block], {}, "block")
-			} else {
-				entities[block.entity].append(block, true)
-			}
-		}
+
 		for (var i in entities) {
 			var entity = entities[i]
 			if(!categories[entity.category]) {
@@ -850,93 +623,24 @@ var kwic = new (function () {
 		var content = ""
 		if (!tpl.categories) tpl.categories = "{$content}"
 		if (!tpl.entities) tpl.entities = "{$content}"
-		var sortedCategories = this.sortCategories(data) ;
+		var sortedCategories = this.sortCategories(data);
 		for (var i=0; i<sortedCategories.length; i++) {
 			data[sortedCategories[i]].sortEntities()
-			var mentionBool = data[sortedCategories[i]].mention; //Check if mention
 			var cat = {...data[sortedCategories[i]]}
-			console.log(mentionBool,data);
 			cat.content = ""
 			cat.count = cat.entities.length; 
 			for (var j=0; j<cat.entities.length; j++) {
 				var ent = {...cat.entities[j]}
-				var current = $(`.${ent.content}`);
 				ent.content = ""
+				ent.count = ent.mentions.length
 				ent.check = ent.wikidataId ? 'oi-check' : ''
-				if(mentionBool == true){
-					ent.count = ent.mentions.length
-					if (tpl.mentions) {
-						var current = j+1;
-						var padNum = current.toString().padStart(4,'0');
-	
-						for (var k=0; k<ent.mentions.length; k++) {
-							//Adding ref attribute
-							var current = $(`#${ent.mentions[k].id}`)[0];
-							current.dataset['ref'] = `${ent.category}_${padNum}`;
-	
-							var mention = {...ent.mentions[k]} ;
-							mention.style = kwic.prefs.style; 
-							mention.content = kwic.templates[kwic.prefs.style].tpl(mention)
-							ent.content += tpl.mentions.tpl(mention)
-						}
-					}	
-				}
-				if(mentionBool == false){
-					ent.count = ent.blocks.length
-					if (tpl.blocks) {
-						var current = j+1;
-						var padNum = current.toString().padStart(4,'0');
-	
-						for (var k=0; k<ent.blocks.length; k++) {
-							//Adding ref attribute
-							var current = $(`#${ent.blocks[k].id}`)[0];
-							current.dataset['ref'] = `${ent.category}_${padNum}`;
-	
-							var block = {...ent.blocks[k]} ;
-							block.style = kwic.prefs.style; 
-							block.content = kwic.templates[kwic.prefs.style].tpl(block)
-							ent.content += tpl.blocks.tpl(block)
-						}
+				if (tpl.mentions) {
+					for (var k=0; k<ent.mentions.length; k++) {
+						var mention = {...ent.mentions[k]} ;
+						mention.style = kwic.prefs.style; 
+						mention.content = kwic.templates[kwic.prefs.style].tpl(mention)
+						ent.content += tpl.mentions.tpl(mention)
 					}
-				}
-				if(mentionBool == undefined){
-					if(ent.mentions){
-					ent.count = ent.mentions.length
-					if (tpl.mentions) {
-						var current = j+1;
-						var padNum = current.toString().padStart(4,'0');
-	
-						for (var k=0; k<ent.mentions.length; k++) {
-							//Adding ref attribute
-							var current = $(`#${ent.mentions[k].id}`)[0];
-							current.dataset['ref'] = `${ent.category}_${padNum}`;
-	
-							var mention = {...ent.mentions[k]} ;
-							mention.style = kwic.prefs.style; 
-							mention.content = kwic.templates[kwic.prefs.style].tpl(mention)
-							ent.content += tpl.mentions.tpl(mention)
-						}
-					}
-					}
-					if(ent.blocks){
-						ent.count = ent.blocks.length;
-						if (tpl.blocks) {
-							var current = j+1;
-							var padNum = current.toString().padStart(4,'0');
-		
-							for (var k=0; k<ent.blocks.length; k++) {
-								//Adding ref attribute
-								var current = $(`#${ent.blocks[k].id}`)[0];
-								current.dataset['ref'] = `${ent.category}_${padNum}`;
-		
-								var block = {...ent.blocks[k]} ;
-								block.style = kwic.prefs.style; 
-								block.content = kwic.templates[kwic.prefs.style].tpl(block)
-								ent.content += tpl.blocks.tpl(block)
-							}
-						}
-					}	
-					
 				}
 				cat.content += tpl.entities.tpl(ent)
 			}
@@ -1025,15 +729,7 @@ var kwic = new (function () {
 								})
 								if (m.id) this.allMentions[m.id] = m
 								ret = true
-							}else{
-								var b = new this.Block(ranges[i],{
-									category: cat.entity
-								})
-								if (b.id) this.allBlock[b.id] = b
-								ret = true	
-							}
-							
-									
+							}		
 						}
 					}
 				}
@@ -1114,7 +810,6 @@ var kwic = new (function () {
 		this.allCategories = {}
 		this.allEntities = {}
 		this.allMentions = {}
-		this.allBlock = {}
 	}
 
 

@@ -86,6 +86,7 @@ $(document).ready(main);
 
 			fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch( () => alert('No document to show'));
 			fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch( () => alert('No category loaded'));
+			//fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No references loaded'));
 
 			// setup event callbacks
 			basicCallbacks()
@@ -293,8 +294,8 @@ $(document).ready(main);
 			if (saveView) var view = getCurrentView()
 			kwic.cleanAll() 
 			mentions = kwic.findMentions('.mention',location); 
-			blocks = kwic.findBlocks('.block',location); //FIND ALL BLOCKS
-			list = kwic.organize(mentions,blocks) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
+			//blocks = kwic.findBlocks('.block',location); //FIND ALL BLOCKS
+			list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
 			var c0 = kwic.toHTML(
 				kwic.allCategories, 
 				{
@@ -304,7 +305,6 @@ $(document).ready(main);
 			var c1 = kwic.toHTML(
 				kwic.allCategories, 
 				{	
-					blocks: $('#blockTpl').html(),
 					mentions: $('#mentionTpl').html(),
 					entities: $('#entityTpl').html(),
 					categories: $('#categoryTpl1').html(),
@@ -386,21 +386,17 @@ $(document).ready(main);
 				}
 			`
 			// Temporary block class to manage bibref, quote and footnote styles
-			var categoryCssTpl_block = `
-			.showStyles .block.{$entity}, .selectButton.{$entity} {
-				{$style}
-			}
-		`
+		// 	var categoryCssTpl_block = `
+		// 	.showStyles .block.{$entity}, .selectButton.{$entity} {
+		// 		{$style}
+		// 	}
+		// `
 	
 			var css = ""
 			for (var i in list) {
 				if (list[i].action=="wrap") {
 					$('#categoriesButton').append(  categoryItemTpl.tpl(list[i]) )
-					if(list[i].mention){
-						css += categoryCssTpl.tpl(list[i])
-					}else{
-						css += categoryCssTpl_block.tpl(list[i])
-					}
+					css += categoryCssTpl.tpl(list[i])
 				}
 			}			
 			setStylesheet(css, 'mentionsStyles')
@@ -802,17 +798,16 @@ $(document).ready(main);
 		function emptyTrash() {
 			if (confirm("You are about to empty the trash. Continue?")) {
 				console.log(kwic.allMentions);
-				console.log(kwic.allBlock);
 				for (i in kwic.allMentions) { 
 					console.log(i);
 					if (kwic.allMentions[i].category == 'trash') 
 						kwic.allMentions[i].unwrap()
 				}
-				for (i in kwic.allBlock) { 
-					console.log(i);
-					if (kwic.allBlock[i].category == 'trash') 
-						kwic.allBlock[i].unwrap()
-				}
+				// for (i in kwic.allBlock) { 
+				// 	console.log(i);
+				// 	if (kwic.allBlock[i].category == 'trash') 
+				// 		kwic.allBlock[i].unwrap()
+				// }
 				setupKWIC(documentLocation, true)			
 			}
 		}

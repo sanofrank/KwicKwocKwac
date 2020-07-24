@@ -49,39 +49,12 @@ router.get('/list', async (req, res) => {
                         label: opera,
                         stat: status
                     };
-                    console.log(obj)
                     out.push(obj);
                 }
             })
 
             return res.send(out);
         })
-
-        // let listing = new Promise((resolve, reject) => {
-        //     fs.readdir(dir, (err, files) => {
-        //         if (err) return console.log('ERROR',err);
-        //         else {
-        //             files.forEach(file => {
-        //                 if (file.substring(0,1) !== '.') {
-        //                     let split = file.split("_");
-        //                     console.log("split, username", split, username)
-        //                     if(split[0] === username){
-        //                         let obj = {
-        //                             url: file,
-        //                             label: file
-        //                         };
-        //                         out.push(obj);
-        //                     }
-        //                 };
-        //             });
-        //         };
-        //         resolve('success');
-        //     });
-        // });
-
-        // listing.then(
-        //    res.send(out)
-        // );
     } catch (err) {
         res.status(400).send(err);
     }
