@@ -37,6 +37,7 @@ const spinner = document.getElementById("spinner");
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
 var draggableSelector  = '.draggable'    // selector for elements that can be dragged in the left pane
+var referencingString  = '.dblclick'
 var droppableSelector  = '.dropPoint'    // selector for elements that can receive dreaggable elements in thee left pane
 
 $(document).ready(main);
@@ -113,6 +114,7 @@ $(document).ready(main);
 				$(document).on('dragover',  droppableSelector,  dragover)      // drag event
 				$(document).on('dragleave', droppableSelector,  dragleave)     // drag event
 				$(document).on('drop',      droppableSelector,  drop)          // drag event
+				$(document).on('dblclick',  referencingString,  dblclick)  // doubleclick event
 			} else {
 				$(document).off('keydown',   documentLocation,   onkeydown)    // keyboard event
 				$(document).off('keyup',     documentLocation,   onkeyup)      // keyboard event
@@ -123,6 +125,7 @@ $(document).ready(main);
 				$(document).off('dragover',  droppableSelector,  dragover)     // drag event
 				$(document).off('dragleave', droppableSelector,  dragleave)    // drag event
 				$(document).off('drop',      droppableSelector,  drop)		   // drag event
+				$(document).off('dblclick',  referencingString,  dblclick)  // doubleclick event
 			}
 		}
 		
@@ -138,7 +141,7 @@ $(document).ready(main);
 					placement: 'bottom', 
 					html: true, 
 					title: popoverTitle,
-					content: popover
+					content: popoverWiki
 				})
 				$('.entityCard').on('hide.bs.collapse',     function () {
 					$('.popoverToggle').popover('hide') ;
@@ -146,9 +149,18 @@ $(document).ready(main);
 				$(document).on('click', '.popoverHide',   function () {
 					$('.popoverToggle').popover('hide') ;
 				})
+
+				// $('.popoverToggle-mentions').popover({
+				// 	container: 'body',
+				// 	placement: 'right',
+				// 	html: true,
+				// 	title: `<span class="text-info">{$label}</span>`,
+				// 	content: popoverMention
+				// })
 				
 				// allow drag & drop
 				$(draggableSelector).attr('draggable', 'true')
+				$(".rs").addClass('dblclick')
 				
 				//show elements that need to appear only when in edit Mode
 				$('.editOnly').removeClass('d-none')	
@@ -157,7 +169,8 @@ $(document).ready(main);
 
 			} else {
 				// disallow drag & drop
-				$(draggableSelector).removeAttr('draggable')			
+				$(draggableSelector).removeAttr('draggable')
+				$(".rs").removeClass('dblclick')			
 
 				//hide elements that need to appear only when in edit Mode
 				$('.editOnly').addClass('d-none')			
@@ -263,6 +276,20 @@ $(document).ready(main);
 			kwic.mergeData(source, target)
 			setupKWIC(documentLocation, true)					
 			return true; 
+		}
+
+		function dblclick(e) {
+			e.preventDefault();
+			e.stopImmediatePropagation();
+
+			let parent = $(e.target).parent();
+			let id = $(parent).data('id');
+			let rs;
+
+			parent.hasClass('rs-active') ? rs = true : rs = false;
+
+			kwic.referencingString(id,rs);
+			setupKWIC(documentLocation,true);
 		}
 		
 		
@@ -680,7 +707,7 @@ $(document).ready(main);
 		}
 
 		// show the popover where the searched items from wikidata are shown		
-		function popover() {
+		function popoverWiki() {
 			// http://jsfiddle.net/wormmd/sb7bx5e4/
 			var popoverTpl = `
 				<li class="wikidataItem mb-1 bg-light">
@@ -708,6 +735,10 @@ $(document).ready(main);
 				$('#' + tmpId).removeClass('loading spinner').html(q);
 			})
 			return `<div id='{$tmpId}' class='loading spinner scroll-col'></div>`.tpl({tmpId:tmpId})
+		}
+
+		function popoverMention() {
+
 		}
 		
 		// wikidata matching entities have arrived and are shown in the popover

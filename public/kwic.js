@@ -425,7 +425,7 @@ var kwic = new (function () {
 		this.prop('entity', options.entity || options.id || t.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "entity$1"), false)
 		this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
-		this.prop('wikidataId', options.wikidataId, options.force) ;			
+		this.prop('wikidataId', options.wikidataId, options.force) ;
 
 		this.category = dataset.category || options.category 	// person, place, thing, etc. 
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
@@ -434,6 +434,7 @@ var kwic = new (function () {
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
 		if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
+		if (dataset.rs) this.rs = "rs-active" // this is the value used for displaying if the mention is a referenceString
 	}
 	this.Mention.prototype = {
 		// identify the text before and after the mention
@@ -518,6 +519,7 @@ var kwic = new (function () {
 					if (force || this.node.dataset[name]== undefined) {
 						if (value) {
 							this.node.dataset[name] = value
+							console.log(this.node.dataset);
 						} else {
 							delete this.node.dataset[name]
 						}
@@ -527,12 +529,18 @@ var kwic = new (function () {
 			var afterEdit = this.before + this.node.outerHTML +this.after
 			kwic.addToEditList(beforeEdit, afterEdit)
 		},
+		referenceString: function(rs,label) {
+			if(rs==true) this.node.classList.remove('metion-rs')
+			if(rs==false) this.node.classList.add('mention-rs');
+			this.prop('rs',label,true)
+		},
 		switchTo: function(entity,force) {
 			this.prop('entity',entity.id,force)
 			this.prop('category', entity.category, force)
 			this.prop('sort','',force)
 			this.prop('label','',force)
 			this.prop('wikidataId','',force)
+			this.prop('rs','',force)
 		},
 		putToScraps: function() {
 			this.prop('entity','scraps',true)
@@ -540,6 +548,7 @@ var kwic = new (function () {
 			this.prop('sort','',true)
 			this.prop('label','Scrapped mentions',true)
 			this.prop('wikidataId','',true)
+			this.prop('rs','',force)
 		},
 		putToTrash: function() {
 			this.prop('entity','trash',true)
@@ -547,6 +556,7 @@ var kwic = new (function () {
 			this.prop('sort','',true)
 			this.prop('label','Trashed mentions',true)
 			this.prop('wikidataId','',true)
+			this.prop('rs','',force)
 		},
 		unwrap: function() {
 			unwrap(this.node)
@@ -703,6 +713,18 @@ var kwic = new (function () {
 		if (data.categories)
 			data = data.categories
 		this.categoryList = data
+	}
+
+	this.referencingString = function(id,value) {
+		let m = this.allMentions[id];
+		let entity = m.entity;
+
+		if(value == true){
+			m.referenceString(value); //delete if already true
+		}else{
+			console.log("referencingString",m);
+			m.referenceString(value,entity); //add rs
+		}
 	}
 
 	// creates a mention from a text selection, taking care of extending the selection
