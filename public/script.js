@@ -97,7 +97,8 @@ $(document).ready(main);
 		
 		function basicCallbacks() {
 			$('#save').click(saveDoc)
-			$('#entityFile').change(uploadEntityFile);			
+			$('#entityFile').change(uploadEntityFile);
+			$('#fileParams').change(fileParams);
 			$('#docFile').change(uploadFileSetup);			
 			$(document).on('click',              expandableSelector, treeClick)
 		}
@@ -387,7 +388,7 @@ $(document).ready(main);
 		function docList(list) {
 			var menuItemTpl = 
 				`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
-					{$label}
+					{$label} / {$user}
 					<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
   						<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 					</svg>
@@ -480,7 +481,8 @@ $(document).ready(main);
 				
 
 				currentFilename = file;
-				status = file.substring(file.length -1);
+				split = file.split('_');
+				status = split[5];
 
 				editMode = false; 
 				$('#file').html(content);
@@ -576,18 +578,36 @@ $(document).ready(main);
 		}
 
 		// save the currently shown document on the remote server
-		function saveDoc() {
+		async function saveDoc() {
+
 			var data = {
 				filename: currentFilename,
 				content: $('#file').html(),
 				editList: kwic.editList,
 				type: 'html'
 			}
-			uploadDoc(data)
+
+			var saveOptions = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			};
+			showSpinner();
+			const response = await fetch('/api/save',saveOptions);
+			const text = await response.text();
+			hideSpinner();
+			if(text) alert(text);
 		}
 		
 		// save a loaded document on the remote server
 		async function uploadDoc(data) {
+
+			data.sez = $('#sezNumber').val();
+			data.vol = $('#volNumber').val();
+			data.tom = $('#tomNumber').val();
+			data.opera = $('#operaName').val();
 
 			let requestOptions;
 						
@@ -617,17 +637,17 @@ $(document).ready(main);
 		function setStatus(status){
 
 			switch(status) {
-				case "0":
+				case "default":
 					removeStatus("status");
 					$("#status").addClass("default");
 					$("#status").html("Default");
 					break
-				case "1":
+				case "working":
 					removeStatus("status");
 					$("#status").addClass("working");
 					$("#status").html("Working");
 					break
-				case "2":
+				case "done":
 					removeStatus("status");
 					$("#status").addClass("done");
 					$("#status").html("Done");
@@ -646,9 +666,9 @@ $(document).ready(main);
 
 			let status;
 
-			if($("#status").hasClass("default")) status = 1;
-			if($("#status").hasClass("working")) status = 2;
-			if($("#status").hasClass("done"))	 status = 0;
+			if($("#status").hasClass("default")) status = 'working';
+			if($("#status").hasClass("working")) status = 'done';
+			if($("#status").hasClass("done"))	 status = 'default';
 		
 			let data = {
 				file: currentFilename,
@@ -669,17 +689,17 @@ $(document).ready(main);
 			currentFilename = text;
 
 			switch(status) {
-				case 0:
+				case 'default':
 					$("#status").removeClass("done");
 					$("#status").addClass("default");
 					$("#status").html("Default");
 					break
-				case 1:
+				case 'working':
 					$("#status").removeClass("default");
 					$("#status").addClass("working");
 					$("#status").html("Working");
 					break
-				case 2:
+				case 'done':
 					$("#status").removeClass("working");
 					$("#status").addClass("done");
 					$("#status").html("Done");
@@ -843,41 +863,53 @@ $(document).ready(main);
 			}
 		}
 
+		function fileParams() {
+
+			var vol = $('#volNumber').val();
+			var tom = $('#tomNumber').val();
+			var opera = $('#operaName').val();
+
+			if(vol != '' && tom != '' && opera != ''){
+				$('#docFile').prop('disabled', false)
+			}
+		}
+
 		// Load a file containing HTML to become a new document on the server. 
 		function uploadFileSetup(evt) {
 			var f = evt.target.files[0];
+
 			if (f.type.match('html|text')){
-				var reader = new FileReader();
-				reader.onloadend = function(e) {
-					var d = e.target.result; //content
-					if (validate(d)) {
-						uploadData = {
-							filename: f.name.replace(/\.[^/.]+$/, ""), // removes the filename extension
- 							size: f.size,
-							content: d,
-							type: 'html'
+					var reader = new FileReader();
+					reader.onloadend = function(e) {
+						var d = e.target.result; //content
+						if (validate(d)) {
+							uploadData = {
+								filename: f.name.replace(/\.[^/.]+$/, ""), // removes the filename extension
+								size: f.size,
+								content: d,
+								type: 'html'
+							}
+							$('#uploadFile').prop('disabled',false)
 						}
-						$('#uploadFile').prop('disabled',false)
-					}
+					};
+					reader.readAsText(f);
 				};
-				reader.readAsText(f);
+				if (f.type.match('application/vnd.openxmlformats-officedocument.wordprocessingml.document')){
+					var reader = new FileReader();
+					reader.onloadend = function(e) {
+						var d = e.target.result; //content
+						if (validate(d)) {
+	
+							uploadData = new FormData();
+							uploadData.append('filename',f.name.replace(/\.[^/.]+$/, ""));
+							uploadData.append('file',f);
+							uploadData.append('type','docx');
+	
+							$('#uploadFile').prop('disabled',false)
+						}
+					};
+					reader.readAsText(f);
 			};
-			if (f.type.match('application/vnd.openxmlformats-officedocument.wordprocessingml.document')){
-				var reader = new FileReader();
-				reader.onloadend = function(e) {
-					var d = e.target.result; //content
-					if (validate(d)) {
-
-						uploadData = new FormData();
-						uploadData.append('filename',f.name.replace(/\.[^/.]+$/, ""));
-						uploadData.append('file',f);
-						uploadData.append('type','docx');
-
-						$('#uploadFile').prop('disabled',false)
-					}
-				};
-				reader.readAsText(f);
-		};
 	};
 
 		function validate(t) {

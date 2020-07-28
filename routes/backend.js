@@ -18,39 +18,35 @@ router.get('/list', async (req, res) => {
 
         const verified = jwt.verify(token,process.env.TOKEN_SECRET);
         const username = verified.username;
+        let su = false;
         const out = [];
+
+        if(username === "ProgettoAldoMoro" || username === "Francesco Paolucci") su = true; 
 
         fs.readdir(dir, (err,files) => {
             if (err) return console.log('ERROR',err);
             
             files.forEach(file => {
-                let split = file.split("_");
-
-                if(split[0] === username){
-                    let volume = split[1];
-                    let tomo = split[2];
-                    let opera = split[3].replace(/([A-Z])/g, ' $1').trim()
-                    let status = split[4];
-
-                    switch(status){
-                        case "0":
-                            status = "default";
-                            break
-                        case "1":
-                            status = "working";
-                            break
-                        case "2":
-                            status = "done";
-                            break
-                    }
+                if(file.substring(0,1) !== '.'){
+                    let split = file.split("_");
                     
+                    let user = split[0];
+                    let sezione = split[1]
+                    let volume = split[2];
+                    let tomo = split[3];
+                    let opera = split[4] //.replace(/([A-Z])/g, ' $1').trim()
+                    let status = split[5];
+
                     let obj = {
+                        user: user,
                         url: file,
                         label: opera,
                         stat: status
                     };
-                    out.push(obj);
-                }
+
+                    if(user === username && su == false) out.push(obj);
+                    if(su == true) out.push(obj);
+                } 
             })
 
             return res.send(out);
@@ -78,13 +74,23 @@ router.get('/load', async (req, res) => {
 
 router.post('/upload', async (req,res) => {
     try{
+        const token = req.cookies.auth_token;
+        if(!token) res.status(400).send("No token provided");
 
-        let fileName = req.body.filename;
+        const verified = jwt.verify(token,process.env.TOKEN_SECRET);
+        const username = verified.username;
+
+        let opera = req.body.opera;
+        let sez = req.body.sez;
+        let vol = req.body.vol;
+        let tom = req.body.tom;
+        let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_0`
+
         let path = `${dir}/${fileName}`;
         let htmlPath = `${path}/index.html`;
         let content;
 
-        if (fileName !== ""){
+        if (opera !== ""){
             if(!fs.existsSync(path)){
                 await mkDir(path);
             }
@@ -112,9 +118,9 @@ router.post('/upload', async (req,res) => {
 
         if(content!== "" && !content.includes("Key Words In Context")){
             fs.writeFile(htmlPath,content, (err) => {
-                if(err) return res.status(400).send(`File ${fileName} non salvato corretamente`);
+                if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
             });
-            return res.send(`File ${fileName} salvato correttamente in ${htmlPath}`);
+            return res.send(`File ${opera} salvato correttamente in ${htmlPath}`);
         };
 
         return res.send('File empty');
@@ -124,36 +130,81 @@ router.post('/upload', async (req,res) => {
     }
 });
 
+router.post('/save' , async (req,res) => {
+    
+    try{
+        let filename = req.body.filename;
+        console.log(req.body);
+        let path = `${dir}/${filename}`;
+        let htmlPath = `${path}/index.html`;
+        let content;
+
+        if (filename !== ""){
+            if(!fs.existsSync(path)){
+                await mkDir(path);
+            }
+        }
+
+        let newPath = `files/${filename}`;
+
+        let out = req.body.content;
+        let regex = new RegExp(newPath,'g');
+
+        content = out.replace(regex,"");
+        content.replace(regex,"");
+
+        console.log("content",content);
+        if(content!== "" && !content.includes("Key Words In Context")){
+            fs.writeFile(htmlPath,content, (err) => {
+                if(err) return res.status(400).send(`File non salvato corretamente`);
+            });
+            return res.send(`File salvato correttamente in ${htmlPath}`);
+        };
+
+        return res.send('File empty');
+
+    }catch(err){
+        res.status(400).send(err)
+    }
+})
+
 router.post('/change' , (req,res) => {
 
     let fileName = req.body.file;
     let status = req.body.status;
-    let newFileName, substring;
-
-    console.log(req.body);
+    let newFileName, substring, split, old_status;
 
     switch(status) {
-        case 0:
-            substring = fileName.substring(0,fileName.length -2);
-            newFileName = substring.concat('_0');
+        case 'default':
+            split = fileName.split('_');
+            old_status = split[5];
+
+            substring = fileName.substring(0, fileName.length - old_status.length);
+            newFileName = substring.concat('_default');
 
             fs.rename(`${dir}/${fileName}`, `${dir}/${newFileName}` , function(err) {
                 if ( err ) return res.status(400).send(`File ${fileName} non trovato`);
                 return res.send(newFileName)
             });
             break
-        case 1:
-            substring = fileName.substring(0,fileName.length - 2);
-            newFileName = substring.concat('_1');
+        case 'working':
+            split = fileName.split('_');
+            old_status = split[5];
+
+            substring = fileName.substring(0, fileName.length - old_status.length);
+            newFileName = substring.concat('_working');
 
             fs.rename(`${dir}/${fileName}`, `${dir}/${newFileName}` , function(err) {
                 if ( err ) return res.status(400).send(`File ${fileName} non trovato`);
                 return res.send(newFileName)
             });
             break 
-        case 2:
-            substring = fileName.substring(0,fileName.length - 2);
-            newFileName = substring.concat('_2');
+        case 'done':
+            split = fileName.split('_');
+            old_status = split[5];
+
+            substring = fileName.substring(0, fileName.length - old_status.length);
+            newFileName = substring.concat('_done');
             
             fs.rename(`${dir}/${fileName}`, `${dir}/${newFileName}` , function(err) {
                 if ( err ) return res.status(400).send(`File ${fileName} non trovato`);

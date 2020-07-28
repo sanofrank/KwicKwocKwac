@@ -62,7 +62,7 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
     const savedUser = await user.save();
     return res.send('Registered');
     }catch(err){
-        res.status(400).send(err);
+        res.status(400).send("catch error",err);
     }
 });
 

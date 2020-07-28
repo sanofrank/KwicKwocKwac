@@ -40,8 +40,9 @@ async function login(){
         const name = $('#username').val();
         const email = $('#email').val();
         const password = $('#password').val();
-    
-        const data = { name, email, password }
+        const confirmPassword = $('#confirmPassword').val();
+
+        const data = { name, email, password, confirmPassword }
         //var raw = "{	\n	\"name\" : \"prova\"\n	\"email\": \"prova@gmail.com\",\n	\"password\": \"prova\"\n}";
     
         const requestOptions = {

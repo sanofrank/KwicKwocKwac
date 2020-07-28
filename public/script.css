@@ -306,3 +306,7 @@ h1 {
 #status.done{
 	background-color: green;
 }
+
+#fileParams{
+	margin-top: 1em
+}
