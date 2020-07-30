@@ -383,22 +383,33 @@ $(document).ready(main);
 			}
 		}
 
-		function docList(list) {
+		function docList(elements) {
 			var menuItemTpl = 
 				`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
-					{$label} / {$user}
+					{$label}
 					<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
   						<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 					</svg>
-				</a>`	
-
-			// if($('#fileMenu').children()){
-			// 	$('#fileMenu').empty();
-			// }
-
-			for (var i=0; i<list.length; i++) {
-				$('#fileMenu').append(  menuItemTpl.tpl(list[i]) )
-			}			
+				</a>`
+			var menuItemTplSu = 
+			`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
+				{$label} <span class=" border border-primary rounded text-primary">{$user}</span>
+				<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+				</svg>				
+			</a>`
+			
+			if(elements.su){
+				for (var i=0; i<elements.list.length; i++) {
+					$('#fileMenu').append(  menuItemTplSu.tpl(elements.list[i]) )
+				}
+			}
+			if(!elements.su){
+				for (var i=0; i<elements.list.length; i++) {
+					$('#fileMenu').append(  menuItemTpl.tpl(elements.list[i]))
+				}
+			}
+						
 		}
 		
 		function categoriesList(list) {
@@ -543,7 +554,7 @@ $(document).ready(main);
 
 		// scroll main document to position of a mention (when clicking on a mention in the left pane)
 		function goto(id) {
-			var t = $(id)[0].offsetTop - 120;
+			var t = $(id)[0].offsetTop - 100;
 			$('#file').animate({ scrollTop: t }, 400);
 			$(id).addClass('animate');
 			setTimeout(function(){

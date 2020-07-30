@@ -38,18 +38,24 @@ router.get('/list', async (req, res) => {
                     let status = split[5];
 
                     let obj = {
-                        user: user,
                         url: file,
                         label: opera,
                         stat: status
                     };
 
                     if(user === username && su == false) out.push(obj);
-                    if(su == true) out.push(obj);
+                    if(su == true) {
+                        obj.user = user;
+                        out.push(obj)}
                 } 
             })
 
-            return res.send(out);
+            let final = {
+                su: su,
+                list: out
+            }
+
+            return res.send(final);
         })
     } catch (err) {
         res.status(400).send(err);

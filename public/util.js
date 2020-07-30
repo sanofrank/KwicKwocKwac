@@ -105,8 +105,9 @@
 		}
 
 		// the poor man's interpolation function for templates. ©FV
-		String.prototype.tpl = function(o,removeAll) { 
+		String.prototype.tpl = function(o, removeAll) { 
 			var r = this ; 
+
 			for (var i in o) { 
 				r = r.replace(new RegExp("\\{\\$"+i+"\\}", 'g'),o[i]) 
 			} 
