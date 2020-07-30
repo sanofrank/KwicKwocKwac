@@ -161,15 +161,33 @@
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'organization')]">
-		<tei:orgName ref="#{@data-ref}">
-			<xsl:apply-templates />
-		</tei:orgName>
+		<xsl:choose>
+			<xsl:when test="@data-rs">
+				<tei:rs ref="#{@data-ref}">
+					<xsl:apply-templates />
+				</tei:rs>
+			</xsl:when>
+			<xsl:otherwise>
+				<tei:orgName ref="#{@data-ref}">
+					<xsl:apply-templates />
+				</tei:orgName>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'place')]">
-		<tei:placeName ref="#{@data-ref}">
-			<xsl:apply-templates />
-		</tei:placeName>
+		<xsl:choose>
+			<xsl:when test="@data-rs">
+				<tei:rs ref="#{@data-ref}">
+					<xsl:apply-templates />
+				</tei:rs>
+			</xsl:when>
+			<xsl:otherwise>
+				<tei:placeName ref="#{@data-ref}">
+					<xsl:apply-templates />
+				</tei:placeName>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'bib')]">
