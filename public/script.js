@@ -165,7 +165,7 @@ $(document).ready(main);
 				$('.editOnly').removeClass('d-none')	
 				$('#editButton').addClass('bg-primary')
 				$('#file').addClass('showStyles')
-
+		
 			} else {
 				// disallow drag & drop
 				$(draggableSelector).removeAttr('draggable')

@@ -108,40 +108,42 @@
 							</div>
 						</div>		
 						<div class="col-9 fs-9 h-100" id="right">
-							<nav id="tools" class="navbar  navbar-expand-md border ml-2 my-0 editOnly bg-light">
-								<div class="btn-group-vertical btn-group-toggle mr-2" data-toggle="buttons">
-									<label class="btn btn-secondary active btn-sm">
-									  <input type="radio" name="options" id="option1" autocomplete="off" onclick="showMentions()" checked> Mentions
-									</label>
-									<label class="btn btn-secondary btn-sm">
-									  <input type="radio" name="options" id="option2" autocomplete="off" onclick="showReferences()"> References
-									</label>
-								</div>
-								<div id="categoriesButton" class="btn-group mr-auto" role="group" aria-label="Basic example">
-								</div>
-								<div id="referencesButton" class="btn-group mr-auto" role="group" aria-label="References" style="display:none">
-								</div>
-								<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
-									<label class="small" title="Pressing ALT inverts behaviour">
-										Extend selection to word (ALT or ⌥)
-										<span class="switch">
-											<input type="checkbox" checked onchange="prefs('extend', this.checked)">
-											<span class="slider round"></span>
-										</span>
-									</label>
-									<label class="small" title="Pressing SHIFT inverts behaviour">
-										Mark all instances (⇧)
-										<span class="switch">
-											<input type="checkbox" checked onchange="prefs('markAll', this.checked)">
-											<span class="slider round"></span>
-										</span>
-									</label>
-									<label class="small" title="Chenge the document status to working, done, default">
-										Change the document status
-										<button id="status" type="button" class="btn btn-primary btn-sm" onclick="changeStatus()"></button>
-									</label>
-								</div>
-							</nav>			
+							<div id="nav-container">
+								<nav id="tools" class="navbar  navbar-expand-md border ml-2 my-0 editOnly bg-light">
+									<div class="btn-group-vertical btn-group-toggle mr-2" data-toggle="buttons">
+										<label class="btn btn-secondary active btn-sm">
+										  <input type="radio" name="options" id="option1" autocomplete="off" onclick="showMentions()" checked> Mentions
+										</label>
+										<label class="btn btn-secondary btn-sm">
+										  <input type="radio" name="options" id="option2" autocomplete="off" onclick="showReferences()"> References
+										</label>
+									</div>
+									<div id="categoriesButton" class="btn-group mr-auto" role="group" aria-label="Basic example">
+									</div>
+									<div id="referencesButton" class="btn-group mr-auto" role="group" aria-label="References" style="display:none">
+									</div>
+									<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
+										<label class="small" title="Pressing ALT inverts behaviour">
+											Extend selection to word (ALT or ⌥)
+											<span class="switch">
+												<input type="checkbox" checked onchange="prefs('extend', this.checked)">
+												<span class="slider round"></span>
+											</span>
+										</label>
+										<label class="small" title="Pressing SHIFT inverts behaviour">
+											Mark all instances (⇧)
+											<span class="switch">
+												<input type="checkbox" checked onchange="prefs('markAll', this.checked)">
+												<span class="slider round"></span>
+											</span>
+										</label>
+										<label class="small" title="Chenge the document status to working, done, default">
+											Change the document status
+											<button id="status" type="button" class="btn btn-primary btn-sm" onclick="changeStatus()"></button>
+										</label>
+									</div>
+								</nav>				
+							</div>
 							<div id="file" status="default" class="h-100 scroll-col">
 								<div class="jumbotron" id="title"><h1>Key Words In Context</h1> </div>
 							</div>

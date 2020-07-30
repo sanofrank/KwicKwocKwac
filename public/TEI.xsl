@@ -146,9 +146,18 @@
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'person')]">
-		<tei:persName ref="#{@data-ref}">
-			<xsl:apply-templates />
-		</tei:persName>
+		<xsl:choose>
+			<xsl:when test="@data-rs">
+				<tei:rs ref="#{@data-ref}">
+					<xsl:apply-templates />
+				</tei:rs>
+			</xsl:when>
+			<xsl:otherwise>
+				<tei:persName ref="#{@data-ref}">
+					<xsl:apply-templates />
+				</tei:persName>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'organization')]">
