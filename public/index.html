@@ -108,16 +108,18 @@
 							</div>
 						</div>		
 						<div class="col-9 fs-9 h-100" id="right">
-							<nav id="tools" class="navbar  navbar-expand-md border ml-2 my-0 editOnly">
+							<nav id="tools" class="navbar  navbar-expand-md border ml-2 my-0 editOnly bg-light">
 								<div class="btn-group-vertical btn-group-toggle mr-2" data-toggle="buttons">
 									<label class="btn btn-secondary active btn-sm">
-									  <input type="radio" name="options" id="option1" autocomplete="off" checked> Mentions
+									  <input type="radio" name="options" id="option1" autocomplete="off" onclick="showMentions()" checked> Mentions
 									</label>
 									<label class="btn btn-secondary btn-sm">
-									  <input type="radio" name="options" id="option2" autocomplete="off"> References
+									  <input type="radio" name="options" id="option2" autocomplete="off" onclick="showReferences()"> References
 									</label>
 								</div>
 								<div id="categoriesButton" class="btn-group mr-auto" role="group" aria-label="Basic example">
+								</div>
+								<div id="referencesButton" class="btn-group mr-auto" role="group" aria-label="References" style="display:none">
 								</div>
 								<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
 									<label class="small" title="Pressing ALT inverts behaviour">

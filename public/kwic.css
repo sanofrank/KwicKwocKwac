@@ -58,7 +58,7 @@
     display: table-cell;		
 }
 
-#file .mention, .block {
+#file .mention {
 	box-sizing: border-box;
 	box-decoration-break: clone;	
 	-webkit-box-decoration-break: clone;
@@ -71,3 +71,4 @@
 .rs-active {
     background-color: yellow;
 }
+

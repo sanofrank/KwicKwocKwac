@@ -180,7 +180,7 @@ router.post('/change' , (req,res) => {
             old_status = split[5];
 
             substring = fileName.substring(0, fileName.length - old_status.length);
-            newFileName = substring.concat('_default');
+            newFileName = substring.concat('default');
 
             fs.rename(`${dir}/${fileName}`, `${dir}/${newFileName}` , function(err) {
                 if ( err ) return res.status(400).send(`File ${fileName} non trovato`);
@@ -192,7 +192,7 @@ router.post('/change' , (req,res) => {
             old_status = split[5];
 
             substring = fileName.substring(0, fileName.length - old_status.length);
-            newFileName = substring.concat('_working');
+            newFileName = substring.concat('working');
 
             fs.rename(`${dir}/${fileName}`, `${dir}/${newFileName}` , function(err) {
                 if ( err ) return res.status(400).send(`File ${fileName} non trovato`);
@@ -204,7 +204,7 @@ router.post('/change' , (req,res) => {
             old_status = split[5];
 
             substring = fileName.substring(0, fileName.length - old_status.length);
-            newFileName = substring.concat('_done');
+            newFileName = substring.concat('done');
             
             fs.rename(`${dir}/${fileName}`, `${dir}/${newFileName}` , function(err) {
                 if ( err ) return res.status(400).send(`File ${fileName} non trovato`);

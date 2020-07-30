@@ -207,6 +207,9 @@ var kwic = new (function () {
 	// this variable will contain directions to create and organize mentions according to categories. 
 	this.categoryList = {}
 
+	// this variable will contain directions to create and organize blocks according to references. 
+	this.referenceList = {}
+
 	// preferences for this kwic. 
 	this.prefs = {
 		loggedUser: 'none',
@@ -434,7 +437,7 @@ var kwic = new (function () {
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
 		if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
-		if (dataset.rs) this.rs = "rs-active" // this is the value used for displaying if the mention is a referenceString
+		if (dataset.rs) this.rs = `rs-active ${options.category}` // this is the value used for displaying if the mention is a referenceString
 	}
 	this.Mention.prototype = {
 		// identify the text before and after the mention
@@ -713,6 +716,13 @@ var kwic = new (function () {
 		if (data.categories)
 			data = data.categories
 		this.categoryList = data
+	}
+
+	// generates the list of references loaded from the references.json file
+	this.setReferences = function(data) {
+		if(data.references)
+			data = data.references
+		this.referenceList = data
 	}
 
 	this.referencingString = function(id,value) {

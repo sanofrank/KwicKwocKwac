@@ -50,7 +50,7 @@ body,
   /*height: 100%;  used h-100 class instead*/
 }
 .scroll-col {
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden; 
   /*height: 100%;  used h-100 class instead*/
 }
@@ -66,7 +66,12 @@ body,
 }
 #file {
 	padding-left: 1em; 
-	padding-right: 1em; 
+	padding-right: 1em;
+
+}
+
+#file.showStyles {
+	padding-bottom: 8em;
 }
 
 #file {

@@ -83,11 +83,9 @@ $(document).ready(main);
 				toggleEdit();
 			}
 
-			
-
 			fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch( () => alert('No document to show'));
 			fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch( () => alert('No category loaded'));
-			//fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No references loaded'));
+			fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch( () => alert('No reference loaded'));
 
 			// setup event callbacks
 			basicCallbacks()
@@ -409,17 +407,11 @@ $(document).ready(main);
 					{$label} ({$letter})
 				</button>`
 			var categoryCssTpl = `
-				.showStyles .mention.{$entity}, .selectButton.{$entity} {
+				.showStyles .mention.{$entity}, .selectButton.{$entity}, .rs-active.{$entity}{
 					{$style}
 				}
 			`
-			// Temporary block class to manage bibref, quote and footnote styles
-		// 	var categoryCssTpl_block = `
-		// 	.showStyles .block.{$entity}, .selectButton.{$entity} {
-		// 		{$style}
-		// 	}
-		// `
-	
+
 			var css = ""
 			for (var i in list) {
 				if (list[i].action=="wrap") {
@@ -430,6 +422,31 @@ $(document).ready(main);
 			setStylesheet(css, 'mentionsStyles')
 			kwic.setCategories(list)
 			
+		}
+
+		//Add reference list style and right panel
+
+		function referencesList(list) {
+
+			let referenceItemTpl = `
+				<button type="button" class="btn selectButton {$entity}" data-mark="{$entity}" onclick="doAction('{$letter}',event.altKey,event.shiftKey)">
+					{$label} ({$letter})
+				</button> `
+			
+			let referenceCssTpl = `
+				.showStyles .block.{$entity}, .selectButton.{$entity} {
+					{$style}
+				} `
+
+			var css = "";
+			for (var i in list) {
+				if(list[i].action == "wrap") {
+					$('#referencesButton').append(referenceItemTpl.tpl(list[i]));
+					css += referenceCssTpl.tpl(list[i]);
+				}
+			}
+			setStylesheet(css, 'blocksStyle');
+			kwic.setReferences(list);
 		}
 
 		function prefs(type, input) {
@@ -508,9 +525,25 @@ $(document).ready(main);
 			$('#styleButton').toggleClass('bg-primary')
 		}
 
+		// show references hide mentions
+		function showReferences() {
+			if($('#referencesButton').is(':hidden')){
+				$('#referencesButton').show();
+				$('#categoriesButton').hide();
+			}
+		}
+
+		// show mentions hide references
+		function showMentions() {
+			if($('#categoriesButton').is(':hidden')){
+				$('#categoriesButton').show();
+				$('#referencesButton').hide();
+			}
+		}
+
 		// scroll main document to position of a mention (when clicking on a mention in the left pane)
 		function goto(id) {
-			var t = $(id)[0].offsetTop - 100;
+			var t = $(id)[0].offsetTop - 120;
 			$('#file').animate({ scrollTop: t }, 400);
 			$(id).addClass('animate');
 			setTimeout(function(){
