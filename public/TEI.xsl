@@ -148,7 +148,7 @@
 	<xsl:template match="html:span[contains(@class, 'person')]">
 		<xsl:choose>
 			<xsl:when test="@data-rs">
-				<tei:rs ref="#{@data-ref}">
+				<tei:rs ref="#{@data-ref}" type="person">
 					<xsl:apply-templates />
 				</tei:rs>
 			</xsl:when>
@@ -163,7 +163,7 @@
 	<xsl:template match="html:span[contains(@class, 'organization')]">
 		<xsl:choose>
 			<xsl:when test="@data-rs">
-				<tei:rs ref="#{@data-ref}">
+				<tei:rs ref="#{@data-ref}" type="organization">
 					<xsl:apply-templates />
 				</tei:rs>
 			</xsl:when>
@@ -178,7 +178,7 @@
 	<xsl:template match="html:span[contains(@class, 'place')]">
 		<xsl:choose>
 			<xsl:when test="@data-rs">
-				<tei:rs ref="#{@data-ref}">
+				<tei:rs ref="#{@data-ref}" type="place">
 					<xsl:apply-templates />
 				</tei:rs>
 			</xsl:when>
