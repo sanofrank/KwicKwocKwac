@@ -29,6 +29,12 @@ var kwic = new (function () {
 	function getNewId(prefix) {
 		return prefix + (lastId++)
 	}
+
+	//Quote Id
+	function getNewQuoteId(prefix,footnoteRef) {
+		let num = footnoteRef.textContent().replace( /^\D+/g, '');
+		return prefix + (num);
+	}
 	
 	// if mentions are already present in this file, find the largest one and set lastId to that+1
 	function getLargestId(selection) {
@@ -40,11 +46,14 @@ var kwic = new (function () {
 
 	// If start and end anchors of a range are compatible the mention can be created. 
 	// If one or both of them belong to an existing mention, no worries since the existing mention will be removed anyway. 
-	function compatibleExtremes(range, mention) {
+	function compatibleExtremes(range, quote) {
 		if (range.startContainer.parentElement == range.endContainer.parentElement) return true //Meaning that if the selection is plain, untouched and it's in the same node.
 
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
+
+		if(start.id.includes('footnote') && quote) start = start.closest('p') //returns nearest closest ancestor
+		if(end.id.includes('footnote') && quote) end = end.closest('p')
 		
 		if (start.classList.contains('mention') || start.classList.contains('block'))
 			start = start.parentElement // will remove it anyway
@@ -67,7 +76,6 @@ var kwic = new (function () {
 	// insert a range within an element. Make sure to remove the overlapping mentions if they exist. 
 	function wrap(range, node, mention, removeOverlaps) {
 		// save range extremes here, since unwrapping elements will affect them later
-		console.log(range);
 		var r = {
 			sc: range.startContainer, 
 			so: range.startOffset, 
@@ -121,6 +129,48 @@ var kwic = new (function () {
 		return node
 	}
 
+	function wrapQuote(range,node,footnote,removeOverlaps){
+		
+		var r = {
+			sc: range.startContainer, 
+			so: range.startOffset, 
+			ec: range.endContainer, 
+			eo: range.endOffset
+		}
+		console.log(r);
+
+		if (range.startContainer.parentElement.classList.contains('quote')) 
+			unwrap(range.startContainer.parentElement)
+		if (range.endContainer.parentElement.classList.contains('quote')) 
+			unwrap(range.endContainer.parentElement)
+		if (range.startContainer.parentElement != range.endContainer.parentElement){
+			if(range.startContainer.parentElement.tagName == "P"){
+				r.ec = range.startContainer;
+				console.log(r);
+			}
+			if(range.endContainer.parentElement.tagName == "P"){
+				r.sc = r.endContainer;
+			}
+		}	
+
+		range.setStart(r.sc, r.so)
+		range.setEnd(r.ec, r.eo)
+
+		console.log(range);
+
+		range.surroundContents(node); //moves content of the range into a new node, placing the new node at the start of the specified range
+		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
+		if (node.parentElement.classList.contains('quote')) unwrap(node)
+
+		var inner = node.querySelectorAll('.quote')
+		for (var i=0; i<inner.length; i++) {
+			unwrap(inner[i]) 
+		}
+
+		return node
+		
+	}
+
 	// if the selection is not composed of whole words, and the action requires whole words,
 	// extend the selection to the whole words around it 
 	function snapSelection(boundary, snap, alt) {
@@ -158,7 +208,7 @@ var kwic = new (function () {
 				sel.modify("extend", direction[0], boundary);
 				console.log('After: '+sel.toString() )
 			}
-		} else if ( (sel = document.selection) && sel.type != "Control") {
+		} else if ( (sel = document.selection) && sel.type != "Control") { // IE below 9
 			if (xor(alt, boundary && snap)) {
 				var textRange = sel.createRange();
 				if (textRange.text) {
@@ -174,6 +224,25 @@ var kwic = new (function () {
 		}
 		return sel.isCollapsed?null:sel; 
 	}		
+
+	// extend selection to apex if selected
+
+	function snapSelectionRef(boundary, snap, alt){
+		let sel;
+
+		if(window.getSelection && (sel = window.getSelection()).modify){
+			sel = window.getSelection();
+			
+			if(xor(alt,boundary && snap)) {
+				//EMPTY FOR NOW
+			}
+		}else if ( (sel = document.selection) && sel.type != "Control") { // IE below 9
+			if (xor(alt, boundary && snap)) {
+				//EMPTY FOR NOW
+			}
+		}
+		return sel;
+	}
 
 	// search for a text and return the text node(s) containing the text (even across text nodes)
 	function searchAll(context, text) {
@@ -522,7 +591,6 @@ var kwic = new (function () {
 					if (force || this.node.dataset[name]== undefined) {
 						if (value) {
 							this.node.dataset[name] = value
-							console.log(this.node.dataset);
 						} else {
 							delete this.node.dataset[name]
 						}
@@ -567,6 +635,71 @@ var kwic = new (function () {
 		
 	}
 
+
+	// REFERENCE OBJECTS
+
+	this.Quote = function(nodeOrRange, options) {
+		
+		console.log(nodeOrRange);
+		if (!options) options = {}         // fallback object for inizialization
+		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
+		var prefix = "quote-" ;
+		var quote = true;
+
+		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
+			this.node = nodeOrRange	
+		} else {
+			if (!compatibleExtremes(nodeOrRange,quote)) return {}
+			this.node = wrapQuote(nodeOrRange,document.createElement('span'),quote)
+			console.log(this.node);
+		}
+
+		this.id = this.node.id || getNewQuoteId(prefix,options.footnoteRef)
+		this.prop('id', this.id, false) ;
+		this.prop('reference', options.reference || "scraps", true)
+		this.prop('footnoteRef', options.footnoteRef);
+		this.prop('footnoteText', options.footnoteText)
+		this.prop('sort', options.sort, options.force) ;
+
+		this.category = dataset.category || options.category 	// person, place, thing, etc. 
+		this.position = dataset.position || options.position || -1	// order in document, etc. 
+		
+		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
+		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
+	}
+	this.Quote.prototype = {
+		prop: function(name,value, force=false) {
+			switch (name) {
+				case 'id':
+					if (force || this.node.id== "") {
+						if (value!=='')
+							this.node.id = value
+					}
+					break; 
+				case 'reference':
+					if (force) {
+						if (value) {
+							this.node.classList = []
+							this.node.classList.add('quote')
+							this.node.classList.add(value)
+						} else {
+							this.node.classList.remove(value)					
+						}
+					}
+					break; 
+				default:
+					if (force || this.node.dataset[name]== undefined) {
+						if (value) {
+							this.node.dataset[name] = value
+						} else {
+							delete this.node.dataset[name]
+						}
+					}
+					break;
+			}
+		},
+	}
+
 	// static methods
 	
 	// non complete versioning mechanism for editing mentions
@@ -599,7 +732,6 @@ var kwic = new (function () {
 			this.allMentions[m.id] = m
 			
 		}
-		console.log(this.allMentions);
 		return this.allMentions
 	}; 
 	
@@ -626,7 +758,6 @@ var kwic = new (function () {
 				categories[entity.category].append(entity, false)
 			}			
 		}
-		console.log("CATEGORIES",categories);
 		return categories
 	}
 	
@@ -694,7 +825,6 @@ var kwic = new (function () {
 			} else if (sourceData.level=='mention' && targetData.level == 'entity') {
 				var source = this.allMentions[sourceData.id]
 				var target = this.allEntities[targetData.id]
-				console.log("MERGE DATA: source,target",source,target);
 				source.switchTo(target,true)
 			} else if (sourceData.level == 'mention' && targetData.level == 'scraps') {
 				var source = this.allMentions[sourceData.id]
@@ -732,7 +862,6 @@ var kwic = new (function () {
 		if(value == true){
 			m.referenceString(value); //delete if already true
 		}else{
-			console.log("referencingString",m);
 			m.referenceString(value,entity); //add rs
 		}
 	}
@@ -768,6 +897,41 @@ var kwic = new (function () {
 			}
 		}
 		return ret; 
+	}
+
+	// creates a reference from a text selection which behave differently if it's a quote, a bib ref
+	// or a footnote. 
+	this.doActionReference = function(key, alt, shift) {
+		let context = $(documentLocation)[0];
+		let ret = false;
+		for (var i in this.referenceList) {
+			if (this.referenceList[i].letter == key){
+				let ref = this.referenceList[i]
+				let sel = snapSelectionRef(ref.type, this.prefs.extend, alt)
+				if(sel){
+					var ranges = [sel.getRangeAt(0)]
+					console.log(ranges);
+					for (var i in ranges){
+						if(ref.action == 'wrap') {
+							if(ranges[i].endContainer.parentNode.id.includes('footnote')) {
+								let footnoteRef = ranges[i].endContainer.parentNode;
+								let href = footnoteRef.getAttribute('href');
+								let footnote = $(href);
+								let footnoteText = footnote[0].childNodes[0].textContent;
+
+								var q = new this.Quote(ranges[i], {
+									reference: ref.entity,
+								 	footnoteRef: footnoteRef,
+								 	footnoteText: footnoteText
+								})
+								console.log(q)							
+							}
+						}
+					}
+				}
+			}
+		}
+		return ret;
 	}
 	
 	// creates a list of all entities ready to be exported as a JSON or CSV file

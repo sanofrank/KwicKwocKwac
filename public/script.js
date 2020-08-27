@@ -33,6 +33,7 @@ var uploadData;	                         // the information about a file ready t
 var scrapShown;		                     // whether the Scraps pane is currently shown in the bottom left pane
 var trashShown;		                     // whether the trash pane is currently shown in the bottom left pane
 var editMode ;                           // whether the user can add or modify mentions in the document shown
+var referenceMode;             			 // whether the reference panel is shown
 const spinner = document.getElementById("spinner");
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
@@ -539,14 +540,18 @@ $(document).ready(main);
 		// show references hide mentions
 		function showReferences() {
 			if($('#referencesButton').is(':hidden')){
+				referenceMode = true;
+
 				$('#referencesButton').show();
-				$('#categoriesButton').hide();
+				$('#categoriesButton').hide();			
 			}
 		}
 
 		// show mentions hide references
 		function showMentions() {
 			if($('#categoriesButton').is(':hidden')){
+				referenceMode = false;
+
 				$('#categoriesButton').show();
 				$('#referencesButton').hide();
 			}
@@ -606,7 +611,9 @@ $(document).ready(main);
 			sel = document.getSelection()
 
 			if(rangeAcceptable(sel,documentLocation) ) {
-				var action = kwic.doAction(key, alt, shift)
+				let action;
+
+				referenceMode ? action = kwic.doActionReference(key, alt, shift) : action = kwic.doAction(key, alt, shift); // If reference mode is active change action options
 
 				if (action) {
 					setupKWIC(documentLocation, true)
@@ -648,14 +655,19 @@ $(document).ready(main);
 		// save a loaded document on the remote server
 		async function uploadDoc(data) {
 
-			data.sez = $('#sezNumber').val();
-			data.vol = $('#volNumber').val();
-			data.tom = $('#tomNumber').val();
-			data.opera = $('#operaName').val();
+			sez = $('#sezNumber').val();
+			vol = $('#volNumber').val();
+			tom = $('#tomNumber').val();
+			opera = $('#operaName').val();
 
 			let requestOptions;
 						
 			if(data.type === 'html'){
+				data.sez = sez;
+				data.vol = vol;
+				data.tom = tom;
+				data.opera = opera;
+
 				requestOptions = {
 					method: 'POST',
 					headers: {
@@ -664,6 +676,11 @@ $(document).ready(main);
 					body: JSON.stringify(data)
 				};
 			}else{
+				data.append("sez",sez);
+				data.append("vol",vol);
+				data.append("tom",tom);
+				data.append("opera",opera);
+
 				requestOptions = {
 					method: 'POST',
 					body: data
