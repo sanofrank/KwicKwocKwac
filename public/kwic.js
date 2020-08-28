@@ -143,18 +143,11 @@ var kwic = new (function () {
 			unwrap(range.startContainer.parentElement)
 		if (range.endContainer.parentElement.classList.contains('quote')) 
 			unwrap(range.endContainer.parentElement)
-		if (range.startContainer.parentElement != range.endContainer.parentElement){
-			if(range.startContainer.parentElement.tagName == "P"){
-				r.ec = range.startContainer;
-				console.log(r);
-			}
-			if(range.endContainer.parentElement.tagName == "P"){
-				r.sc = r.endContainer;
-			}
-		}	
-
-		range.setStart(r.sc, r.so)
-		range.setEnd(r.ec, r.eo)
+		if (range.endContainer.parentNode.tagName != 'P'){
+			range.setStart(r.sc, r.so);
+			console.log(r.ec.parentNode.parentNode);
+			range.setEnd(r.ec.parentNode.parentNode,r.eo);
+		}
 
 		console.log(range);
 
@@ -232,9 +225,31 @@ var kwic = new (function () {
 
 		if(window.getSelection && (sel = window.getSelection()).modify){
 			sel = window.getSelection();
-			
 			if(xor(alt,boundary && snap)) {
-				//EMPTY FOR NOW
+				// Detect if selection is backwards
+				var range = document.createRange();
+				range.setStart(sel.anchorNode, sel.anchorOffset);
+				range.setEnd(sel.focusNode, sel.focusOffset);
+				var backwards = range.collapsed;
+				range.detach();
+
+				// modify() works on the focus of the selection
+				var endNode = sel.focusNode, endOffset = sel.focusOffset;
+				sel.collapse(sel.anchorNode, sel.anchorOffset);
+
+				var direction = [];
+				if (backwards) {
+					direction = ['backward', 'forward'];
+				} else {
+					direction = ['forward', 'backward'];
+				}
+
+				sel.modify("move", direction[0], "character");
+				sel.modify("move", direction[1], boundary);
+				sel.extend(endNode, endOffset);
+				sel.modify("extend", direction[1], "character");
+				sel.modify("extend", direction[0], boundary);
+				console.log('After: '+sel.toString() )
 			}
 		}else if ( (sel = document.selection) && sel.type != "Control") { // IE below 9
 			if (xor(alt, boundary && snap)) {
@@ -242,6 +257,23 @@ var kwic = new (function () {
 			}
 		}
 		return sel;
+	}
+
+	//Find footnote reference on a quote selection
+	function getSupNode(container){
+
+		let sib = {
+			next: container.nextSibiling,
+			pre: container.previousSibiling,
+		}
+		
+		for( var i in sib){
+			for( var j in sib[i].childNodes){
+				if(j.id.includes('footnote')) var sup = sib[i];
+			}
+		}
+
+		return sup;
 	}
 
 	// search for a text and return the text node(s) containing the text (even across text nodes)
@@ -909,30 +941,34 @@ var kwic = new (function () {
 				let ref = this.referenceList[i]
 				let sel = snapSelectionRef(ref.type, this.prefs.extend, alt)
 				if(sel){
-					var ranges = [sel.getRangeAt(0)]
-					console.log(ranges);
-					for (var i in ranges){
-						if(ref.action == 'wrap') {
-							if(ranges[i].endContainer.parentNode.id.includes('footnote')) {
-								let footnoteRef = ranges[i].endContainer.parentNode;
-								let href = footnoteRef.getAttribute('href');
-								let footnote = $(href);
-								let footnoteText = footnote[0].childNodes[0].textContent;
+					var range = sel.getRangeAt(0)
+					console.log(range)
+					if(ref.action == 'wrap') {
+						var sup;
 
-								var q = new this.Quote(ranges[i], {
-									reference: ref.entity,
-								 	footnoteRef: footnoteRef,
-								 	footnoteText: footnoteText
-								})
-								console.log(q)							
-							}
-						}
+						if(range.endContainer.nextSibiling) sup = getSupNode(range.endContainer);
+						if(range.startContainer.previousSibiling) sup = getSupNode(range.startContainer);
+							console.log(sup);
+							let footnoteRef = range.endContainer.parentNode;
+							let href = footnoteRef.getAttribute('href');
+							let footnote = $(href);
+							let footnoteText = footnote[0].childNodes[0].textContent;
+
+							var q = new this.Quote(range, {
+								reference: ref.entity,
+								footnoteRef: footnoteRef,
+								footnoteText: footnoteText
+							})
+							console.log(q)							
+						
+					}
 					}
 				}
 			}
+			return ret;
 		}
-		return ret;
-	}
+		
+
 	
 	// creates a list of all entities ready to be exported as a JSON or CSV file
 	this.compactEntities = function(type) {

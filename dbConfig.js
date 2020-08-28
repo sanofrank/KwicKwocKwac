@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const doteenv = require('dotenv');
+const dotenv = require('dotenv');
 //const { Pool } = require('pg');
 
-doteenv.config();
+dotenv.config();
 
 // POSTGRES CONFIG
 // //caching information about connection information
@@ -25,7 +25,7 @@ let mongo = {
         process.env.DB_CONNECT,
         { useNewUrlParser: true},
         () => console.log('Connected to DB',mongoose.connection.readyState)
-        ).catch(error => console.log('there is a problem :(',error));
+        ).catch(error => console.log('connaction failed',error));
     }
 };
 
