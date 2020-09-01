@@ -24,6 +24,7 @@
 /* ------------------------------------------------------------------------------ */
 var kwic = new (function () {
 	var lastId = -1;                  // last specified id for new mentions
+	var lastQuoteId = -1;
 	
 	// generates the id for a mention
 	function getNewId(prefix) {
@@ -31,9 +32,8 @@ var kwic = new (function () {
 	}
 
 	//Quote Id
-	function getNewQuoteId(prefix,footnoteRef) {
-		let num = footnoteRef.textContent().replace( /^\D+/g, '');
-		return prefix + (num);
+	function getNewQuoteId(prefix) {
+		return prefix + (lastQuoteId++)
 	}
 	
 	// if mentions are already present in this file, find the largest one and set lastId to that+1
@@ -51,9 +51,6 @@ var kwic = new (function () {
 
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
-
-		if(start.id.includes('footnote') && quote) start = start.closest('p') //returns nearest closest ancestor
-		if(end.id.includes('footnote') && quote) end = end.closest('p')
 		
 		if (start.classList.contains('mention') || start.classList.contains('block'))
 			start = start.parentElement // will remove it anyway
@@ -222,19 +219,33 @@ var kwic = new (function () {
 
 	function snapSelectionRef(boundary, snap, alt){
 		let sel;
+		let footnoteNode;
+
+		var rangeObj = {
+			sel,
+			range,
+			footnoteNode
+		};
 
 		if(window.getSelection && (sel = window.getSelection()).modify){
 			sel = window.getSelection();
+			console.log(sel);
 			if(xor(alt,boundary && snap)) {
 				// Detect if selection is backwards
 				var range = document.createRange();
 				range.setStart(sel.anchorNode, sel.anchorOffset);
-				range.setEnd(sel.focusNode, sel.focusOffset);
+				range.setEnd(sel.anchorNode, sel.anchorNode.length);
 				var backwards = range.collapsed;
 				range.detach();
+				var parent;
 
+				if(sel.focusNode.parentNode.tagName == "A"){
+				 	parent = sel.focusNode.parentNode;
+				}
+				
+				console.log(range,sel);
 				// modify() works on the focus of the selection
-				var endNode = sel.focusNode, endOffset = sel.focusOffset;
+				var endNode = sel.anchorNode, endOffset = sel.anchorNode.length;
 				sel.collapse(sel.anchorNode, sel.anchorOffset);
 
 				var direction = [];
@@ -247,8 +258,8 @@ var kwic = new (function () {
 				sel.modify("move", direction[0], "character");
 				sel.modify("move", direction[1], boundary);
 				sel.extend(endNode, endOffset);
-				sel.modify("extend", direction[1], "character");
-				sel.modify("extend", direction[0], boundary);
+				//sel.modify("extend", direction[1], "character");
+				//sel.modify("extend", direction[0], boundary);
 				console.log('After: '+sel.toString() )
 			}
 		}else if ( (sel = document.selection) && sel.type != "Control") { // IE below 9
@@ -256,24 +267,30 @@ var kwic = new (function () {
 				//EMPTY FOR NOW
 			}
 		}
-		return sel;
+
+		rangeObj.sel = sel;
+		rangeObj.range = range;
+		rangeObj.footnoteNode = parent;
+
+		return rangeObj;
 	}
 
 	//Find footnote reference on a quote selection
-	function getSupNode(container){
+	function getFootnote(container){
+		let footnote;
+		let href = container.getAttribute("href");
 
-		let sib = {
-			next: container.nextSibiling,
-			pre: container.previousSibiling,
-		}
-		
-		for( var i in sib){
-			for( var j in sib[i].childNodes){
-				if(j.id.includes('footnote')) var sup = sib[i];
-			}
+
+		let footnoteNode = $(href);
+		let footnoteNum = container.textContent.replace( /\D+/g, '');
+		let footnoteText = footnoteNode[0].firstChild.textContent;
+
+		return footnote = {
+			footnoteNode,
+			footnoteNum,
+			footnoteText
 		}
 
-		return sup;
 	}
 
 	// search for a text and return the text node(s) containing the text (even across text nodes)
@@ -672,28 +689,28 @@ var kwic = new (function () {
 
 	this.Quote = function(nodeOrRange, options) {
 		
-		console.log(nodeOrRange);
+		console.log(options);
 		if (!options) options = {}         // fallback object for inizialization
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
-		var prefix = "quote-" ;
-		var quote = true;
+		var prefix = "cit-" ;
+		var mention = false;
 
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
-			if (!compatibleExtremes(nodeOrRange,quote)) return {}
-			this.node = wrapQuote(nodeOrRange,document.createElement('span'),quote)
+			if (!compatibleExtremes(nodeOrRange,mention)) return {}
+			this.node = wrap(nodeOrRange,document.createElement('span'),mention)
 			console.log(this.node);
 		}
 
-		this.id = this.node.id || getNewQuoteId(prefix,options.footnoteRef)
+		this.id = this.node.id || getNewQuoteId(prefix) 
 		this.prop('id', this.id, false) ;
 		this.prop('reference', options.reference || "scraps", true)
-		this.prop('footnoteRef', options.footnoteRef);
+		this.prop('footnoteRef', options.footnoteNum);
 		this.prop('footnoteText', options.footnoteText)
 		this.prop('sort', options.sort, options.force) ;
 
-		this.category = dataset.category || options.category 	// person, place, thing, etc. 
+		this.reference = dataset.reference || options.reference 	// person, place, thing, etc. 
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
 		
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
@@ -712,7 +729,7 @@ var kwic = new (function () {
 					if (force) {
 						if (value) {
 							this.node.classList = []
-							this.node.classList.add('quote')
+							this.node.classList.add('block')
 							this.node.classList.add(value)
 						} else {
 							this.node.classList.remove(value)					
@@ -934,33 +951,28 @@ var kwic = new (function () {
 	// creates a reference from a text selection which behave differently if it's a quote, a bib ref
 	// or a footnote. 
 	this.doActionReference = function(key, alt, shift) {
-		let context = $(documentLocation)[0];
 		let ret = false;
 		for (var i in this.referenceList) {
 			if (this.referenceList[i].letter == key){
 				let ref = this.referenceList[i]
-				let sel = snapSelectionRef(ref.type, this.prefs.extend, alt)
+				let selection = snapSelectionRef(ref.type, this.prefs.extend, alt)
 				if(sel){
-					var range = sel.getRangeAt(0)
-					console.log(range)
+					console.log("SELECTION",selection);
+					var range = selection.sel.getRangeAt(0)
+					console.log("doActionRefe",range);
 					if(ref.action == 'wrap') {
 						var sup;
+						var footnote;
 
-						if(range.endContainer.nextSibiling) sup = getSupNode(range.endContainer);
-						if(range.startContainer.previousSibiling) sup = getSupNode(range.startContainer);
-							console.log(sup);
-							let footnoteRef = range.endContainer.parentNode;
-							let href = footnoteRef.getAttribute('href');
-							let footnote = $(href);
-							let footnoteText = footnote[0].childNodes[0].textContent;
-
-							var q = new this.Quote(range, {
-								reference: ref.entity,
-								footnoteRef: footnoteRef,
-								footnoteText: footnoteText
-							})
-							console.log(q)							
-						
+						if(selection.footnoteNode) footnote = getFootnote(selection.footnoteNode);
+		
+						var q = new this.Quote(range, {
+							reference: ref.entity,
+							footnote: footnote.footnoteNode,
+							footnoteNum: footnote.footnoteNum,
+							footnoteText: footnote.footnoteText
+						})
+						console.log(q)												
 					}
 					}
 				}
@@ -968,8 +980,6 @@ var kwic = new (function () {
 			return ret;
 		}
 		
-
-	
 	// creates a list of all entities ready to be exported as a JSON or CSV file
 	this.compactEntities = function(type) {
 		var list = []
