@@ -24,7 +24,7 @@
 /* ------------------------------------------------------------------------------ */
 var kwic = new (function () {
 	var lastId = -1;                  // last specified id for new mentions
-	var lastQuoteId = -1;
+	var lastQuoteId = 0;
 	
 	// generates the id for a mention
 	function getNewId(prefix) {
@@ -79,7 +79,7 @@ var kwic = new (function () {
 			ec: range.endContainer, 
 			eo: range.endOffset
 		}
-
+		console.log("WRAP",range);
 		if (range.startContainer.parentElement.classList.contains('mention') && mention) 
 			unwrap(range.startContainer.parentElement)
 		if (range.endContainer.parentElement.classList.contains('mention') && mention) 
@@ -126,7 +126,8 @@ var kwic = new (function () {
 		return node
 	}
 
-	function wrapQuote(range,node,footnote,removeOverlaps){
+	function wrapQuote(range,node){
+		let documentFragment;
 		
 		var r = {
 			sc: range.startContainer, 
@@ -134,23 +135,56 @@ var kwic = new (function () {
 			ec: range.endContainer, 
 			eo: range.endOffset
 		}
-		console.log(r);
 
 		if (range.startContainer.parentElement.classList.contains('quote')) 
 			unwrap(range.startContainer.parentElement)
 		if (range.endContainer.parentElement.classList.contains('quote')) 
 			unwrap(range.endContainer.parentElement)
-		if (range.endContainer.parentNode.tagName != 'P'){
-			range.setStart(r.sc, r.so);
-			console.log(r.ec.parentNode.parentNode);
-			range.setEnd(r.ec.parentNode.parentNode,r.eo);
+		if (range.endContainer.parentElement.tagName == "A"){
+			console.log("footnote",range);
+			
+			let footnote = range.endContainer.parentElement;
+
+			while(footnote != null && !footnote.classList.contains('quote')){
+				console.log(footnote);
+				footnote = footnote.parentElement;
+			}
+			if(footnote){
+				console.log("unwrap footnote",footnote);
+				unwrap(footnote);
+				range.setEndAfter(r.ec.parentNode.parentNode);
+				console.log("range after unwrap",range);
+			}else{
+				console.log(range);
+
+				let parent = range.endContainer.parentElement;
+
+				while(parent.previousSibling == null){
+					parent = parent.parentNode;
+				}
+				console.log(parent);
+
+				range.setEndAfter(parent);
+			}
+		}else{
+			range.setEnd(r.ec,r.eo);
 		}
 
 		console.log(range);
 
-		range.surroundContents(node); //moves content of the range into a new node, placing the new node at the start of the specified range
+		range.setStart(r.sc, r.so)
+		//range.setEnd(r.ec, r.eo)
+
+		documentFragment = range.extractContents();
+			
+		node.appendChild(documentFragment);
+		//console.log(span);
+
+		range.insertNode(node);
 		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
 		if (node.parentElement.classList.contains('quote')) unwrap(node)
+		console.log("Parent",node.parentNode);
+		//if (node.parentNode.nextSiblings.classList.contains('quote')) unwrap(node);
 
 		var inner = node.querySelectorAll('.quote')
 		for (var i=0; i<inner.length; i++) {
@@ -179,7 +213,7 @@ var kwic = new (function () {
 				range.setEnd(sel.focusNode, sel.focusOffset);
 				var backwards = range.collapsed;
 				range.detach();
-
+				
 				// modify() works on the focus of the selection
 				var endNode = sel.focusNode, endOffset = sel.focusOffset;
 				sel.collapse(sel.anchorNode, sel.anchorOffset);
@@ -218,8 +252,9 @@ var kwic = new (function () {
 	// extend selection to apex if selected
 
 	function snapSelectionRef(boundary, snap, alt){
-		let sel;
-		let footnoteNode;
+		var sel;
+		var range;
+		var footnoteNode = null;
 
 		var rangeObj = {
 			sel,
@@ -228,24 +263,46 @@ var kwic = new (function () {
 		};
 
 		if(window.getSelection && (sel = window.getSelection()).modify){
+
 			sel = window.getSelection();
-			console.log(sel);
+			range = document.createRange();
+			range.setStart(sel.anchorNode, sel.anchorOffset);
+
+			var endNode, endOffset, startNode, startOffset;
+
+			if(sel.anchorNode.parentNode.tagName == "A") footnoteNode = sel.anchorNode.parentNode;
+			if(sel.focusNode.parentNode.tagName == "A") footnoteNode = sel.focusNode.parentNode;
+
+			if(sel.focusNode.parentNode.tagName == "A"){
+				footnoteNode = sel.focusNode.parentNode;
+				let parent = footnoteNode;
+
+				while(parent.previousSibling == null){
+					parent = parent.parentNode;
+				}
+				console.log(parent);
+
+				endNode = parent, endOffset = parent.length;
+				range.setEndAfter(parent);
+			}
+			if(sel.anchorNode.parentNode.tagName == "A"){
+				footnoteNode = sel.anchorNode.parentNode;
+				//TO DO
+			
+			}
+
+			//if(!footnoteNode){
+				endNode = sel.focusNode, endOffset = sel.focusOffset;
+				range.setEnd(sel.focusNode,sel.focusOffset);
+			//}
+
+			var backwards = range.collapsed;
+			range.detach();
+
 			if(xor(alt,boundary && snap)) {
 				// Detect if selection is backwards
-				var range = document.createRange();
-				range.setStart(sel.anchorNode, sel.anchorOffset);
-				range.setEnd(sel.anchorNode, sel.anchorNode.length);
-				var backwards = range.collapsed;
-				range.detach();
-				var parent;
-
-				if(sel.focusNode.parentNode.tagName == "A"){
-				 	parent = sel.focusNode.parentNode;
-				}
-				
-				console.log(range,sel);
 				// modify() works on the focus of the selection
-				var endNode = sel.anchorNode, endOffset = sel.anchorNode.length;
+				
 				sel.collapse(sel.anchorNode, sel.anchorOffset);
 
 				var direction = [];
@@ -255,22 +312,44 @@ var kwic = new (function () {
 					direction = ['forward', 'backward'];
 				}
 
-				sel.modify("move", direction[0], "character");
-				sel.modify("move", direction[1], boundary);
-				sel.extend(endNode, endOffset);
-				//sel.modify("extend", direction[1], "character");
-				//sel.modify("extend", direction[0], boundary);
-				console.log('After: '+sel.toString() )
+				if(footnoteNode){
+					sel.modify("move", direction[0], "character");
+					sel.modify("move", direction[1], boundary);
+					sel.extend(endNode, endOffset);
+					sel.modify("extend", direction[1], "character");
+					sel.modify("extend", direction[0], boundary);
+					console.log('After: '+sel.toString() )
+					range.setStart(sel.anchorNode,sel.anchorOffset);
+					console.log("after",sel);
+				}else{
+					sel.modify("move", direction[0], "character");
+					sel.modify("move", direction[1], boundary);
+					sel.extend(endNode, endOffset);
+					sel.modify("extend", direction[1], "character");
+					sel.modify("extend", direction[0], boundary);
+					console.log('After: '+sel.toString() )
+					console.log("after",sel);
+				}
+				
 			}
 		}else if ( (sel = document.selection) && sel.type != "Control") { // IE below 9
 			if (xor(alt, boundary && snap)) {
-				//EMPTY FOR NOW
+				var textRange = sel.createRange();
+				if (textRange.text) {
+					textRange.expand(boundary);
+					// Move the end back to not include the word's trailing space(s),
+					// if necessary
+					while (/\s$/.test(textRange.text)) {
+						textRange.moveEnd("character", -1);
+					}
+					textRange.select();
+				}
 			}
 		}
 
 		rangeObj.sel = sel;
 		rangeObj.range = range;
-		rangeObj.footnoteNode = parent;
+		rangeObj.footnoteNode = footnoteNode;
 
 		return rangeObj;
 	}
@@ -698,9 +777,10 @@ var kwic = new (function () {
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
-			if (!compatibleExtremes(nodeOrRange,mention)) return {}
-			this.node = wrap(nodeOrRange,document.createElement('span'),mention)
-			console.log(this.node);
+			//DA AGGIUNGERE CONTROLLO ESTREMI
+			//if (!compatibleExtremes(nodeOrRange,mention)) return {}
+			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
+			this.node = wrapQuote(nodeOrRange,document.createElement('span'));			
 		}
 
 		this.id = this.node.id || getNewQuoteId(prefix) 
@@ -711,6 +791,9 @@ var kwic = new (function () {
 		this.prop('sort', options.sort, options.force) ;
 
 		this.reference = dataset.reference || options.reference 	// person, place, thing, etc. 
+		this.footnoteNode = options.footnoteNode || null;
+		this.footnoteNum = options.footnoteNum || null;
+		this.footnoteText = options.footnoteText || null;
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
 		
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
@@ -925,6 +1008,7 @@ var kwic = new (function () {
 			if (this.categoryList[i].letter == key) {
 				var cat = this.categoryList[i]
 				var sel = snapSelection(cat.type, this.prefs.extend, alt)
+				console.log(sel);
 				if (sel) {
 					if (xor(shift, this.prefs.markAll && cat.markAll)) { //if just one of them is true, but not both.
 						var ranges = searchAll(context, sel.toString() )
@@ -932,6 +1016,8 @@ var kwic = new (function () {
 						var ranges = [sel.getRangeAt(0)]
 					}
 					for (var i in ranges) {
+						console.log(ranges);
+						//console.log(ciao);
 						if (cat.action=='wrap') {
 							if(cat.mention){
 								var m = new this.Mention(ranges[i], {
@@ -958,21 +1044,27 @@ var kwic = new (function () {
 				let selection = snapSelectionRef(ref.type, this.prefs.extend, alt)
 				if(sel){
 					console.log("SELECTION",selection);
-					var range = selection.sel.getRangeAt(0)
-					console.log("doActionRefe",range);
+					var range = selection.range;
+					//console.log(ciao);
 					if(ref.action == 'wrap') {
-						var sup;
-						var footnote;
+						var footnote,q;
 
-						if(selection.footnoteNode) footnote = getFootnote(selection.footnoteNode);
-		
-						var q = new this.Quote(range, {
-							reference: ref.entity,
-							footnote: footnote.footnoteNode,
-							footnoteNum: footnote.footnoteNum,
-							footnoteText: footnote.footnoteText
-						})
-						console.log(q)												
+						if(selection.footnoteNode){
+							footnote = getFootnote(selection.footnoteNode);
+							q = new this.Quote(range, {
+								reference: ref.entity,
+								footnote: footnote.footnoteNode,
+								footnoteNum: footnote.footnoteNum,
+								footnoteText: footnote.footnoteText
+							})
+						}else{
+							q = new this.Quote(range, {
+								reference: ref.entity,
+							})
+						} 
+						console.log(q)	
+						this.allQuotes[q.id] = q;	
+						console.log(this.allQuotes);
 					}
 					}
 				}
@@ -1052,6 +1144,7 @@ var kwic = new (function () {
 		this.allCategories = {}
 		this.allEntities = {}
 		this.allMentions = {}
+		this.allQuotes = {}
 	}
 
 
