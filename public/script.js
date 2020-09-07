@@ -319,45 +319,90 @@ $(document).ready(main);
 
 		function setupKWIC(location, saveView) {
 			if (saveView) var view = getCurrentView()
-			kwic.cleanAll() 
-			mentions = kwic.findMentions('.mention',location); 
-			//blocks = kwic.findBlocks('.block',location); //FIND ALL BLOCKS
-			list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
-			var c0 = kwic.toHTML(
-				kwic.allCategories, 
-				{
-					categories: $('#categoryTpl0').html(),
-				}
-			) ;
-			var c1 = kwic.toHTML(
-				kwic.allCategories, 
-				{	
-					mentions: $('#mentionTpl').html(),
-					entities: $('#entityTpl').html(),
-					categories: $('#categoryTpl1').html(),
-				}
-			) ;
-			$('#categoryTab').html(c0)
-			$('#categoryPane').html(c1)
-			$('#categoryTab .nav-link').first().addClass('active')
-			$('#categoryPane .tab-pane').first().addClass('active')
-			$('#categoryTab').append(`
-				<li class="nav-item ml-auto pointer">
-					<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
-						<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span> 
-						<span class="sr-only">Preferences</span>
-					</a>
-				</li>`)
-			$('#scraps-realpane').html("")
-			$('#scraps-realpane').html($('#scraps-pane').html())
-			$('#scraps-tab').remove()
-			$('#scraps-pane').remove()
-			$('#trash-realpane').html("")
-			$('#trash-realpane').html($('#trash-pane').html())
-			$('#trash-tab').remove()
-			$('#trash-pane').remove()
-			editSetup(editMode)
-			if (saveView) setCurrentView(view)
+			kwic.cleanAll();
+			if(referenceMode){
+				quotes = kwic.findQuotes('.quote',location);
+				console.log(quotes);
+				list = kwic.organizeQuotes(quotes);
+				console.log(list);
+				var r0 = kwic.toHTMLref (
+					kwic.allReferences,
+					{
+						references: $('#referenceTpl0').html(),
+					}
+				);
+				var r1 = kwic.toHTMLref(
+					kwic.allReferences,
+					{
+						quotes: $('#quoteTpl').html(),
+						citations: $('#citationTpl').html(),
+						references: $('#referenceTpl1').html()
+					}
+				);
+				$('#categoryTab').html(r0);
+				$('#categoryPane').html(r1);
+				$('#categoryTab .nav-link').first().addClass('active')
+				$('#categoryPane .tab-pane').first().addClass('active')
+				$('#categoryTab').append(`
+					<li class="nav-item ml-auto pointer">
+						<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
+							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span> 
+							<span class="sr-only">Preferences</span>
+						</a>
+					</li>`)
+				$('#scraps-realpane').html("")
+				$('#scraps-realpane').html($('#scraps-pane').html())
+				$('#scraps-tab').remove()
+				$('#scraps-pane').remove()
+				$('#trash-realpane').html("")
+				$('#trash-realpane').html($('#trash-pane').html())
+				$('#trash-tab').remove()
+				$('#trash-pane').remove()
+				editSetup(editMode)
+				if (saveView) setCurrentView(view)
+				
+			}else{
+				kwic.cleanAll() 
+				mentions = kwic.findMentions('.mention',location); 
+				//blocks = kwic.findBlocks('.block',location); //FIND ALL BLOCKS
+				list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
+				console.log(list);
+				var c0 = kwic.toHTML(
+					kwic.allCategories, 
+					{
+						categories: $('#categoryTpl0').html(),
+					}
+				) ;
+				var c1 = kwic.toHTML(
+					kwic.allCategories, 
+					{	
+						mentions: $('#mentionTpl').html(),
+						entities: $('#entityTpl').html(),
+						categories: $('#categoryTpl1').html(),
+					}
+				) ;
+				$('#categoryTab').html(c0)
+				$('#categoryPane').html(c1)
+				$('#categoryTab .nav-link').first().addClass('active')
+				$('#categoryPane .tab-pane').first().addClass('active')
+				$('#categoryTab').append(`
+					<li class="nav-item ml-auto pointer">
+						<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
+							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span> 
+							<span class="sr-only">Preferences</span>
+						</a>
+					</li>`)
+				$('#scraps-realpane').html("")
+				$('#scraps-realpane').html($('#scraps-pane').html())
+				$('#scraps-tab').remove()
+				$('#scraps-pane').remove()
+				$('#trash-realpane').html("")
+				$('#trash-realpane').html($('#trash-pane').html())
+				$('#trash-tab').remove()
+				$('#trash-pane').remove()
+				editSetup(editMode)
+				if (saveView) setCurrentView(view)
+			}
 		}
 		
 		function getCurrentView() {
@@ -629,7 +674,8 @@ $(document).ready(main);
 				referenceMode = true;
 
 				$('#referencesButton').show();
-				$('#categoriesButton').hide();			
+				$('#categoriesButton').hide();
+				setupKWIC(documentLocation,true);
 			}
 		}
 
@@ -640,6 +686,7 @@ $(document).ready(main);
 
 				$('#categoriesButton').show();
 				$('#referencesButton').hide();
+				setupKWIC(documentLocation,true);
 			}
 		}
 

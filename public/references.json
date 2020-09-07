@@ -13,13 +13,6 @@
 		"markAll": false,
 		"class": null
 	},
-	"block": {
-		"letter": "z",
-		"type":"block",
-		"action": "select",
-		"markAll": false,
-		"class": null
-	},
 	"bib": {
 		"letter": "B",
 		"action": "wrap",
@@ -41,17 +34,6 @@
 		"entity": "quote",
 		"markAll": true,
 		"style": "background-image: radial-gradient(#f0fde7 30%, #cfff82 100%); border-radius: 4px;"
-    },
-    "footnote": {
-        "letter": "F",
-		"action": "wrap",
-		"mention": false,
-		"type":   "word",
-		"label":  "Footnote",
-		"sort": 3,
-		"entity": "footnote",
-		"markAll": true,
-		"style": "background-image: radial-gradient(#B67CCC 30%, #9B36C9 100%); border-radius: 4px;"
     },
 	"scraps": {
 		"entity": "scraps",
