@@ -24,7 +24,7 @@
 /* ------------------------------------------------------------------------------ */
 var kwic = new (function () {
 	var lastId = -1;                  // last specified id for new mentions
-	var lastQuoteId = 0;
+	var lastQuoteId = -1;
 	
 	// generates the id for a mention
 	function getNewId(prefix) {
@@ -449,7 +449,9 @@ var kwic = new (function () {
 				`,
 		KWOC:  `<span class="label">{$inner}</span>
 				<span class="whole">{$before} {$inner} {$after}</span>
-				`
+				`,
+		none: `<span class="label">{$inner}</span>
+				`	
 	}
 
 	// categories are the main organization of types: persons, places, concepts, terms, etc.	
@@ -766,12 +768,115 @@ var kwic = new (function () {
 
 	// REFERENCE OBJECTS
 
-	this.Quote = function(nodeOrRange, options) {
+	this.Reference = function(citations, options) {
+		if (!options) options = {}         // fallback object for inizialization
+		var citations = citations || []   // fallback object for inizialization
+		var prefix = "reference-" ;
 		
+		this.id = citations[0].reference
+		this.citations = citations
+		this.label = options.label || kwic.referenceList[this.id].label
+		this.type = options.type || kwic.referenceList[this.id].type
+		this.mention = options.mention || kwic.referenceList[this.id].mention;
+		this.sort = options.sort || kwic.referenceList[this.id].sort
+		
+		this.sortFunctions ={
+			'alpha': function(a,b) {
+				var asort = a.sort || a.label || a.id
+				var bsort = b.sort || b.label || b.id
+				return asort.localeCompare(bsort)
+			},
+			'count': function(a,b) {
+				return b.mentions.length - a.mentions.length
+			},
+			'position': function(a,b) {
+				return a.position - b.position
+			}
+		}
+
+				return this; 	
+		
+	}
+	this.Reference.prototype = {
+		// add a new category
+		append: function(citation, override=false) {
+			if (override) {
+				citation.reference = this.id
+			}
+			this.citations.push(citation)
+		
+		},
+		// sort categories
+		sortCitations: function() {
+			this.citations.sort(this.sortFunctions[kwic.prefs.sort]);
+		}
+	}
+
+	this.Citation = function(quotes, options, type) {
+		if (!options) options = {}         // fallback object for inizialization
+		var quotes = quotes || []   // fallback object for inizialization
+		var prefix = "citation-" ;
+	
+		this.quotes = []
+		var reference = ""
+		var label = ""
+		var sort = ""
+		this.id = quotes[0].citation
+		this.position = Number.MAX_VALUE
+		var inners = []
+
+		for (var i=0; i<quotes.length; i++) {
+			quotes[i].citation = this.id
+			reference = quotes[i].reference || reference
+			label = quotes[i].label || label
+			sort = quotes[i].sort || sort
+			inners.push(quotes[i].inner)
+			this.position = Math.min(this.position, quotes[i].position)
+			this.quotes.push(quotes[i])
+			}
+			
+		this.reference = options.reference || reference || "scraps"
+		this.label = options.label || label || quotes[0].id
+		this.sort = options.sort || sort
+		
+		if (!this.label) {
+			var inn = {}
+			var max = 0
+			var el = ''
+			for (var i in inners) {
+				if (!inn[inners[i]]) inn[inners[i]] = 0
+				inn[inners[i]]++
+				if (inn[inners[i]] > max) {
+					el = inners[i]
+					max = inn[inners[i]]
+				}
+			}
+			this.change('label',el, type)
+			this.label = el
+		}
+		
+		return this; 	
+	}
+
+	this.Citation.prototype = {
+	// change a property of this entity by changing the corresponding property of the first mention 
+	change: function(field,value, type) {
+	var done = false
+		for (var i=0; i<this.quotes.length; i++) {
+			if (this.quotes[i][field]) {
+				this.quotes[i].prop(field, value,true)
+				done = true
+			}
+		}			
+		if (!done) this.quotes[0].prop(field, value)
+	}	
+	}
+
+	this.Quote = function(nodeOrRange, options) {
 		console.log(options);
 		if (!options) options = {}         // fallback object for inizialization
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
-		var prefix = "cit-" ;
+		var prefix = "quote-" ;
 		var mention = false;
 
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
@@ -783,9 +888,12 @@ var kwic = new (function () {
 			this.node = wrapQuote(nodeOrRange,document.createElement('span'));			
 		}
 
+		this.inner = this.node.innerHTML;
+
 		this.id = this.node.id || getNewQuoteId(prefix) 
 		this.prop('id', this.id, false) ;
 		this.prop('reference', options.reference || "scraps", true)
+		this.prop('citation', options.citation || options.id || `${prefix}[${lastQuoteId}]`, false)
 		this.prop('footnoteRef', options.footnoteNum);
 		this.prop('footnoteText', options.footnoteText)
 		this.prop('sort', options.sort, options.force) ;
@@ -795,6 +903,7 @@ var kwic = new (function () {
 		this.footnoteNum = options.footnoteNum || null;
 		this.footnoteText = options.footnoteText || null;
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
+		this.citation = this.node.attributes.about.value
 		
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
@@ -819,6 +928,15 @@ var kwic = new (function () {
 						}
 					}
 					break; 
+				case 'citation':
+					if (force || this.node.attributes.about == undefined) {
+						if (value) {
+							this.node.setAttribute('about',value)
+						} else {
+							this.node.removeAttribute('about')
+						}
+					}
+					break;
 				default:
 					if (force || this.node.dataset[name]== undefined) {
 						if (value) {
@@ -856,7 +974,7 @@ var kwic = new (function () {
 		lastId = getLargestId(p.get()) +1
 		for (i=0; i< p.length; i++) {
 			var classes = Array.from(p[i].classList).filter( (j) => this.categoryList[j] !== undefined )
-			
+			console.log("findMentions", classes[classes.length-1]);
 			var m = new this.Mention(p[i], {
 				category: classes.length>0 ? classes[classes.length-1] : '',
 				position: i
@@ -865,7 +983,25 @@ var kwic = new (function () {
 			
 		}
 		return this.allMentions
-	}; 
+	};
+
+	this.findQuotes = function(selector, location){
+		var p = $(selector,location)
+		lastQuoteId = getLargestId(p.get()) +1
+		console.log(p)
+		for (i=0; i<p.length; i++){
+			var classes = Array.from(p[i].classList).filter( (j) => this.referenceList[j] !== undefined )
+			console.log(classes[classes.length-1]);
+			var q = new this.Quote(p[i], {
+				reference: classes.length>0 ? classes[classes.length-1] : '',
+				position: i
+			})
+			this.allQuotes[q.id] = q
+		
+		}
+
+		return this.allQuotes;
+	}
 	
 	// organizes all mentions in a hierarchical array of arrays: categories containing entities containing mentions
 	this.organize = function() {
@@ -891,6 +1027,32 @@ var kwic = new (function () {
 			}			
 		}
 		return categories
+	}
+
+	// organizes all quotes in a hierarchical array of arrays
+	this.organizeQuotes = function() {
+		var quotes = this.allQuotes;
+		var citations = this.allCitations;
+		var references = this.allReferences;
+
+		for (var i in quotes) {
+			var quote = quotes[i];
+			if(!citations[quote.citation]) {
+				citations[quote.citation] = new this.Citation([quote], {}, "quote")
+			} else {
+				citations[quote.citation].append(quote, true)
+			}
+		}
+
+		for (var i in citations) {
+			var citation = citations[i];
+			if(!references[citation.reference]) {
+				references[citation.reference] = new this.Reference([citation], {})
+			} else {
+				references[citation.reference].append(citation, false)
+			}
+		}
+		return references;
 	}
 	
 	// creates an HTML structure out of a series of templates and some data. 
@@ -923,6 +1085,37 @@ var kwic = new (function () {
 			content += tpl.categories.tpl(cat)
 		}
 		return content; 
+	}
+
+	// HTML structures that nest quotes template within entity template within reference template
+	this.toHTMLref = function(data,tpl){
+		var content = "";
+		if (!tpl.references) tpl.references = "{$content}"
+		if (!tpl.citations) tpl.citations = "{$content}"
+		var sortedReferences = this.sortReferences(data);
+		for (var i=0; i<sortedReferences.length; i++) {
+			data[sortedReferences[i]].sortCitations()
+			var ref = {...data[sortedReferences[i]]}
+			ref.content = ""
+			ref.count = ref.citations.length;
+			for (var j = 0; j<ref.citations.length; j++) {
+				var cit = {...ref.citations[j]}
+				cit.content = ""
+				cit.count = cit.quotes.length
+				//WIKIDATA ID
+				if (tpl.quotes){
+					for (var k=0; k<cit.quotes.length; k++){
+						var quote = {...cit.quotes[k]};
+						quote.content = kwic.templates['none'].tpl(quote)
+						cit.content += tpl.quotes.tpl(quote)
+					}
+				}
+				ref.content += tpl.citations.tpl(cit)
+			}
+			content += tpl.references.tpl(ref)
+		}
+		return content;
+
 	}
 	
 	// associates an entity or a mention to another entity or to another category. 
@@ -970,6 +1163,11 @@ var kwic = new (function () {
 	
 	// sorts categories according to the sort parameter in the categories.json file
 	this.sortCategories = function(data) {
+		return Object.keys(data).sort( (a,b) => data[a].sort - data[b].sort );
+	}
+
+	// sort references according to the sort parameter in the references.json file
+	this.sortReferences = function(data) {
 		return Object.keys(data).sort( (a,b) => data[a].sort - data[b].sort );
 	}
 	
@@ -1062,9 +1260,12 @@ var kwic = new (function () {
 								reference: ref.entity,
 							})
 						} 
-						console.log(q)	
-						this.allQuotes[q.id] = q;	
-						console.log(this.allQuotes);
+						console.log(q)
+						if(q.id){
+							this.allQuotes[q.id] = q;
+							console.log(this.allQuotes);
+						}
+						ret = true;
 					}
 					}
 				}
@@ -1144,6 +1345,9 @@ var kwic = new (function () {
 		this.allCategories = {}
 		this.allEntities = {}
 		this.allMentions = {}
+		
+		this.allReferences = {}
+		this.allCitations = {}
 		this.allQuotes = {}
 	}
 

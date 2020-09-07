@@ -13,13 +13,6 @@
 		"markAll": false,
 		"class": null
 	},
-	"block": {
-		"letter": "z",
-		"type":"block",
-		"action": "select",
-		"markAll": false,
-		"class": null
-	},
 	"bib": {
 		"letter": "B",
 		"action": "wrap",

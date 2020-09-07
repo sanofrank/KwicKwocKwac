@@ -339,6 +339,82 @@
 		</div>
 		</div>
 
+		<template id="referenceTpl0">
+			<li class="nav-item dropPoint" sid="{$id}-tab" data-level="reference" data-id="{$id}">
+				<a class="nav-link" id="{$id}-tab" data-toggle="tab" href="#{$id}-pane" role="tab" aria-controls="{$id}">
+					{$label} ({$count})
+				</a>
+			</li>
+		</template>
+		<template id="referenceTpl1">	
+			<div class="tab-pane scroll-always ug-border ug-border-notop h-100 dropPoint" id="{$id}-pane" role="tabpanel" aria-labelledby="{$id}-tab"  data-level="category" data-id="{$id}">
+				<ul class="categoryContainer tree">
+					{$content}
+				</ul>
+			</div>
+		</template>
+		<template id="citationTpl">
+			<li class="entityContainer draggable dropPoint" id="{$id}" data-level="citation" data-id="{$id}" >
+				<a href="#" class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded bg-light w-100 treeExpand">
+					<span class="entityLabel">{$label}</span> 
+					<span class="d-inline-flex flex-nowrap mr-0">
+						<span class="badge badge-light em3"><span class="oi {$check} text-success"></span></span>
+						<span class="badge badge-primary em3">{$count}</span>
+						<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
+							<span class="oi oi-plus"></span>
+						</span>
+					</span>
+				</a>
+				<div class="collapse card entityCard" id="{$id}-menu">
+				  <h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
+				  	Details about {$label}
+				  </h6>
+				  <div class="card-body">
+					<form>
+					  <div class="row">
+						<label for="labelData-{$id}" class="col-4 small p-1">Label: </label>
+						<input type="text" name="labelData" class="form-control form-control-sm col-8" id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)" value="{$label}">
+					  </div>
+					  <div class="row">
+						<label for="sortData-{$id}" class="col-4 small p-1">Sort value: </label>
+						<div class="col-8 p-0">
+						  <div class="input-group mb-2">
+							<input type="text" name="sortData-{$id}" class="form-control form-control-sm flex-grow-1" id="sortData-{$id}" onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
+							<div class="input-group-append small">
+							  <div class="input-group-text">
+								<span class="oi oi-loop-circular" onclick="invertValue('{$id}','{$type}','#sortData-{$id}')"></span>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+					  <div class="row">
+						<label for="wikiData-{$id}" class="col-4 small p-1">Wikidata ID: </label>
+						<div class="col-8 p-0">
+						  <div class="input-group mb-2">
+							<input type="text" name="wikiData-{$id}" class="form-control form-control-sm flex-grow-1" id="wikiData-{$id}" onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}">
+							<div class="input-group-append small">
+							  <div class="input-group-text">
+								<span class="oi oi-magnifying-glass popoverToggle" id="popoverToggle-{$id}" data-label="{$label}" data-id="{$id}"></span>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+					</form>										
+				  </div>
+				</div>
+				<ul>
+					{$content}
+				</ul>
+			</li>
+		</template>
+		<template id="quoteTpl">	
+				<div class="{$style} draggable popoverToggle-mentions rs {$rs} {$class}" id="list-{$id}" data-level="mention" data-id="{$id}" onclick="goto('#{$id}')">
+					{$content}
+			</div>
+		</template>
+
 		<template id="categoryTpl0">
 			<li class="nav-item dropPoint" sid="{$id}-tab" data-level="category" data-id="{$id}">
 				<a class="nav-link" id="{$id}-tab" data-toggle="tab" href="#{$id}-pane" role="tab" aria-controls="{$id}">
