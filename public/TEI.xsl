@@ -5,6 +5,7 @@
 	<xsl:param name="title">No title</xsl:param>
 	<xsl:param name="publication">No publication details</xsl:param>
 	<xsl:param name="source">No source details</xsl:param>
+	<xsl:param name="authority">Edizione nazionale delle opere di Aldo Moro</xsl:param>
 
 	<xsl:output encoding="UTF-8" indent="yes" method="xml" />
 	<xsl:key name="persons" match="html:span[contains(@class, 'person')]/@about" use="." />
@@ -15,22 +16,34 @@
 	<xsl:key name="innerStrings" match="html:span[contains(@class, 'mention')]/text()" use="." />
 
 	<xsl:template match="/">
-		<tei:TEI>
+		<tei:TEI xmlns="http://www.tei-c.org/ns/1.0">
 			<tei:teiHeader>
 				<tei:fileDesc>
 					<tei:titleStmt>
 						<tei:title>
 							<xsl:value-of select="$title" />
 						</tei:title>
+						<tei:author role="">
+							<!--NOME AUTORE-->
+							<!--RUOLO AUTORE-->
+						</tei:author>
+						<tei:principal>
+							<!--NOME RICERCATORE-->
+						</tei:principal>
 					</tei:titleStmt>
 					<tei:publicationStmt>
-						<tei:p>
-							<xsl:value-of select="$publication" />
-						</tei:p>
+						<tei:authority>
+							<xsl:value-of select="$authority" />
+						</tei:authority>
+						<tei:idno>
+							<!--IDENTIFICATORE-->
+						</tei:idno>
 					</tei:publicationStmt>
 					<tei:sourceDesc>
+						<tei:p>
+							<!--metadato RIFERIMENTO BIBLIOGRAFICO / SEGNATURA ARCHIVISTICA (PROVENANCE) da inserire-->
+						</tei:p>
 						<tei:listPerson>
-							<!-- https://stackoverflow.com/questions/2291567/how-to-use-xslt-to-create-distinct-values -->
 							<xsl:for-each
 								select="//html:span[contains(@class, 'person')]/@about[generate-id() = generate-id(key('persons', .)[1])]">
 								<tei:person xml:id="{current()}">
@@ -80,6 +93,222 @@
 						</tei:listPlace>
 					</tei:sourceDesc>
 				</tei:fileDesc>
+				<tei:encodingDesc>
+					<tei:tagsDecl partial="true">
+						<tei:namespace name="http://www.tei-c.org/ns/1.0">
+							<tei:tagUsage gi="author">
+								<tei:classSpec type="atts">
+									<tei:attList>
+										<tei:attDef ident="role">
+											<tei:valList>
+												<tei:valItem ident="role.01">
+													<tei:gloss>Delegato Aspirante della Gioventù Cattolica</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.02">
+													<tei:gloss>Studente</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.03">
+													<tei:gloss>Membro della FUCI</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.04">
+													<tei:gloss>Presidente del circolo di Bari della FUCI</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.05">
+													<tei:gloss>Assistente volontario alla cattedra di diritto e procedura penale</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.06">
+													<tei:gloss>Presidente nazionale della FUCI</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.07">
+													<tei:gloss>Professore di Filosofia del Diritto</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.08">
+													<tei:gloss>Membro del Movimento Laureati dell’Azione Cattolica</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.09">
+													<tei:gloss>Membro dell’Ufficio stampa del governo Badoglio</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.10">
+													<tei:gloss>Giornalista e commentatore politico</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.11">
+													<tei:gloss>Presidente del Comitato direttivo provvisorio per la FUCI meridionale</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.12">
+													<tei:gloss>Segretario Centrale del Movimento Laureati dell’Azione Cattolica</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.13">
+													<tei:gloss>Direttore di “Studium”</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.14">
+													<tei:gloss>Membro dell’Assemblea Costituente</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.15">
+													<tei:gloss>Vicepresidente del gruppo democristiano alla Costituente</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.16">
+													<tei:gloss>Membro della Camera dei Deputati</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.17">
+													<tei:gloss>Sottosegretario al ministero degli Affari Esteri con delega per l’Emigrazione</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.18">
+													<tei:gloss>Membro dell’Unione Giuristi Cattolici</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.19">
+													<tei:gloss>Membro di Iniziativa Democratica</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.20">
+													<tei:gloss>Professore di diritto penale</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.21">
+													<tei:gloss>Professore di diritto e procedura penale</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.22">
+													<tei:gloss>Membro della Commissione parlamentare di esame del disegno di legge relativo alla co-stituzione e al funzionamento della Corte Costituzionale</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.23">
+													<tei:gloss>Presidente del gruppo DC alla Camera</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.24">
+													<tei:gloss>Ministro di Grazia e Giustizia</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.25">
+													<tei:gloss>Consigliere nazionale della DC</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.26">
+													<tei:gloss>Ministro della Pubblica Istruzione</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.27">
+													<tei:gloss>Segretario politico della DC</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.28">
+													<tei:gloss>Presidente del Consiglio</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.29">
+													<tei:gloss>Titolare ad interim del ministero degli Esteri</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.30">
+													<tei:gloss>Ministro degli Esteri</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.31">
+													<tei:gloss>Presidente della Commissione Affari Esteri della Camera</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.32">
+													<tei:gloss>Presidente di turno della Comunità Europea</tei:gloss>
+												</tei:valItem>
+												<tei:valItem ident="role.33">
+													<tei:gloss>Presidente del Consiglio Nazionale della DC</tei:gloss>
+												</tei:valItem>
+											</tei:valList>
+										</tei:attDef>
+									</tei:attList>
+								</tei:classSpec>
+							</tei:tagUsage>
+						</tei:namespace>
+					</tei:tagsDecl>
+					<tei:classDecl>
+						<tei:taxonomy xml:id="doctype">
+							<tei:category xml:id="doctype.01">
+								<tei:catDesc>Articolo su periodico</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.02">
+								<tei:catDesc>Articolo su quotidiano</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.03">
+								<tei:catDesc>Comunicato stampa</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.04">
+								<tei:catDesc>Discorso in sede pubblica/Comizio</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.05">
+								<tei:catDesc>Documento interno</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.06">
+								<tei:catDesc>Intervento di partito</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.07">
+								<tei:catDesc>Intervento in sede parlamentare</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.08">
+								<tei:catDesc>Intervento istituzionale</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.09">
+								<tei:catDesc>Intervento radiofonico/televisivo</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.10">
+								<tei:catDesc>Intervista</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.11">
+								<tei:catDesc>Lezione universitaria</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.12">
+								<tei:catDesc>Libro/intervento in libro</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctype.13">
+								<tei:catDesc>Opuscolo</tei:catDesc>
+							</tei:category>               
+						</tei:taxonomy>
+						<tei:taxonomy xml:id="doctopic">
+							<tei:category xml:id="doctopic.01">
+								<tei:catDesc>Chiesa</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.02">
+								<tei:catDesc>Cultura/Istruzione</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.03">
+								<tei:catDesc>Diritto</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.04">
+								<tei:catDesc>Partito</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.05">
+								<tei:catDesc>Politica interna</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.06">
+								<tei:catDesc>Politica internazionale</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.07">
+								<tei:catDesc>Religione</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.08">
+								<tei:catDesc>Società</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.09">
+								<tei:catDesc>Stato</tei:catDesc>
+							</tei:category>
+							<tei:category xml:id="doctopic.10">
+								<tei:catDesc>Vita locale</tei:catDesc>
+							</tei:category>
+						</tei:taxonomy>
+					</tei:classDecl>
+				</tei:encodingDesc>
+				<tei:profileDesc>
+					<tei:abstract>
+						<!--ABSTRACT-->
+					</tei:abstract>
+					<tei:textClass>
+						<tei:catRef scheme="#doctype" target="" /> <!--TIPOLOGIA/E-->
+						<tei:keywords scheme="#doctopic">
+							<tei:term ref="">
+								<!--TEMATICA/HE-->
+							</tei:term>
+						</tei:keywords>
+					</tei:textClass>
+					<tei:creation>
+						<tei:placeName>
+							<!--LUOGO DELL'EVENTO-->
+						</tei:placeName>
+						<tei:date>
+							<!--DATA DELL'EVENTO-->
+						</tei:date>
+					</tei:creation>
+				</tei:profileDesc>
+				<tei:revisionDesc status=""> <!--STATO DOCUMENTO-->
+					<tei:change>
+						<xsl:value-of select="$publication" />
+					</tei:change>
+				</tei:revisionDesc>
 			</tei:teiHeader>
 			<tei:text>
 				<tei:body>

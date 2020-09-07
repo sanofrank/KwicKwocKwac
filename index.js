@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 //Import routes
 const listRoute = require('./routes/backend');
 const authRoute = require('./routes/authentication');
+const metadataRoute = require('./routes/metadata');
 
 app.use(cookieParser());
 app.use(cors({
@@ -53,5 +54,6 @@ app.use(express.urlencoded( {extended : false})); //allow us to send data from f
 //Route Middleware
 app.use('/api',listRoute);
 app.use('/api',authRoute);
+app.use('/api',metadataRoute);
 
 app.listen(PORT,() => console.log(`Server listening on port ${PORT}`));

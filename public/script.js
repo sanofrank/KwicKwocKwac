@@ -537,6 +537,92 @@ $(document).ready(main);
 			$('#styleButton').toggleClass('bg-primary')
 		}
 
+		// increment ID of element
+		function incrementID(x, y) {
+			var i=0;
+			$(x).each(function(){
+				i++;
+				var newID=y+i;
+				$(this).attr('id',newID);
+				$(this).val(i);
+			});
+		}
+
+		// add a role of the author in the "Add metadata" form
+		function addRole() {
+			$( ".role-group" ).append( '<div class="row added-role" id="added-role" style="margin-top:10px"><div class="col-md-10"><select name="role" class="form-control role" aria-describedby="author-role-metadata"><option selected>Scegli un ruolo...</option><option class="role-option" value="role.01">Delegato Aspirante della Gioventù Cattolica</option><option class="role-option" value="role.02">Studente</option><option class="role-option" value="role.03">Membro della FUCI</option><option class="role-option" value="role.04">Presidente del circolo di Bari della FUCI</option><option class="role-option" value="role.05">Assistente volontario alla cattedra di diritto e procedura penale</option><option class="role-option" value="role.06">Presidente nazionale della FUCI</option><option class="role-option" value="role.07">Professore di Filosofia del Diritto</option><option class="role-option" value="role.08">Membro del Movimento Laureati dell\'Azione Cattolica</option><option class="role-option" value="role.09">Membro dell\'Ufficio stampa del governo Badoglio</option><option class="role-option" value="role.10">Giornalista e commentatore politico</option><option class="role-option" value="role.11">Presidente del Comitato direttivo provvisorio per la FUCI meridionale</option><option class="role-option" value="role.12">Segretario Centrale del Movimento Laureati dell\'Azione Cattolica</option><option class="role-option" value="role.13">Direttore di "Studium"</option><option class="role-option" value="role.14">Membro dell\'Assemblea Costituente</option><option class="role-option" value="role.15">Vicepresidente del gruppo democristiano alla Costituente</option><option class="role-option" value="role.16">Membro della Camera dei Deputati</option><option class="role-option" value="role.17">Sottosegretario al ministero degli Affari Esteri con delega per l\'Emigrazione</option><option class="role-option" value="role.18">Membro dell\'Unione Giuristi Cattolici</option><option class="role-option" value="role.19">Membro di Iniziativa Democratica</option><option class="role-option" value="role.20">Professore di diritto penale</option><option class="role-option" value="role.21">Professore di diritto e procedura penale</option><option class="role-option" value="role.22">Membro della Comissione parlamentare di esame del disegno di legge relativo alla costituzione e al funzionamento della Corte Costituzionale</option><option class="role-option" value="role.23">Presidente del gruppo DC alla Camera</option><option class="role-option" value="role.24">Ministro di Grazia e Giustizia</option><option class="role-option" value="role.25">Consigliere nazionale della DC</option><option class="role-option" value="role.26">Ministro della Pubblica Istruzione</option><option class="role-option" value="role.27">Segretario politico della DC</option><option class="role-option" value="role.28">Presidente del Consiglio</option><option class="role-option" value="role.29">Titolare ad interim del ministero degli Esteri</option><option class="role-option" value="role.30">Ministero degli Esteri</option><option class="role-option" value="role.31">Presidente della Commissione Affari Esteri della Camera</option><option class="role-option" value="role.32">Presidente di turno della Comunità Europea</option><option class="role-option" value="role.33">Presidente del Consiglio Nazionale della DC</option></select></div><div class="col-md-2"><button style="float:right" type="button" class="btn btn-danger btn-sm" onclick="deleteAdded(this)"><i class="fa fa-minus" aria-hidden="true"></i></button></div></div>' );
+			incrementID(".added-role", "added-role");
+		}
+
+		// add a doctype section in the "Add metadata" form
+		function addDoctype() {
+			$( ".doctype-group" ).append( '<div class="row added-doctype" id="added-doctype" style="margin-top:10px"><div class="col-md-10"><select name="doctype" class="form-control doctype" aria-describedby="doctype-metadata"><option selected>Scegli una tipologia...</option><option class="doctype-option" value="doctype.01">Articolo su periodico</option><option class="doctype-option" value="doctype.02">Articolo su quotidiano</option><option class="doctype-option" value="doctype.03">Comunicato stampa</option><option class="doctype-option" value="doctype.04">Discorso in sede pubblica / Comizio</option><option class="doctype-option" value="doctype.05">Documento interno</option><option class="doctype-option" value="doctype.06">Intervento di partito</option><option class="doctype-option" value="doctype.07">Intervento in sede parlamentare</option><option class="doctype-option" value="doctype.08">Intervento istituzionale</option><option class="doctype-option" value="doctype.09">Intervento radiofonico/televisivo</option><option class="doctype-option" value="doctype.10">Intervista</option><option class="doctype-option" value="doctype.11">Lezione universitaria</option><option class="doctype-option" value="doctype.12">Libro/intervento in libro</option><option class="doctype-option" value="doctype.13">Opuscolo</option></select></div><div class="col-md-2"><button style="float:right" type="button" class="btn btn-danger btn-sm" onclick="deleteAdded(this)"><i class="fa fa-minus" aria-hidden="true"></i></button></div></div>' );
+			incrementID(".added-doctype", "added-doctype");
+		}
+
+		// add a doctype section in the "Add metadata" form
+		function addDoctopic() {
+			$( ".doctopic-group" ).append( '<div class="row added-doctopic" id="added-doctopic" style="margin-top:10px"><div class="col-md-10"><select name="doctopic" class="form-control doctopic" aria-describedby="doctopic-metadata"><option selected>Scegli una tematica...</option><option class="doctopic-option" value="doctopic.01">Chiesa</option><option class="doctopic-option" value="doctopic.02">Cultura/Istruzione</option><option class="doctopic-option" value="doctopic.03">Diritto</option><option class="doctopic-option" value="doctopic.04">Partito</option><option class="doctopic-option" value="doctopic.05">Politica interna</option><option class="doctopic-option" value="doctopic.06">Politica internazionale</option><option class="doctopic-option" value="doctopic.07">Religione</option><option class="doctopic-option" value="doctopic.08">Società</option><option class="doctopic-option" value="doctopic.09">Stato</option><option class="doctopic-option" value="doctopic.10">Vita locale</option></select></div><div class="col-md-2"><button style="float:right" type="button" class="btn btn-danger btn-sm" onclick="deleteAdded(this)"><i class="fa fa-minus" aria-hidden="true"></i></button></div></div>' );
+			incrementID(".added-doctopic", "added-doctopic");
+		}
+
+		// add a bibref source in the "Add metadata" form
+		function addBibsource() {
+			$( ".bibsource-group" ).append( '<div class="row added-bibsource" id="added-bibsource" style="margin-top:10px"><div class="col-md-10"><input name="bibsource" class="form-control bibsource provenance" aria-describedby="bibsource-metadata"></div><div class="col-md-2"><button style="float:right" type="button" class="btn btn-danger btn-sm" onclick="deleteAdded(this)"><i class="fa fa-minus" aria-hidden="true"></i></button></div></div>' );
+			incrementID(".added-bibsource", "added-bibsource");
+		}
+
+		// add a arch source in the "Add metadata" form
+		function addArchsource() {
+			$( ".archsource-group" ).append( '<div class="row added-archsource" id="added-archsource" style="margin-top:10px"><div class="col-md-10"><input name="archsource" class="form-control archsource provenance" aria-describedby="archsource-metadata"></div><div class="col-md-2"><button style="float:right" type="button" class="btn btn-danger btn-sm" onclick="deleteAdded(this)"><i class="fa fa-minus" aria-hidden="true"></i></button></div></div>' );
+			incrementID(".added-archsource", "added-archsource");
+		}
+
+		// delete a section in the "Add metadata" form
+		function deleteAdded(x) {
+			var added = x.parentElement.parentElement.id;
+			document.getElementById(added).remove();
+		}
+
+		// add an event place in the "Add metadata" form
+		function addEventPlace() {
+			$( ".event-place-group" ).append('<div class="row added-event-place" style="margin-top:10px"><div class="col-md-10"><input type="text" class="form-control" id="event-place" aria-describedby="event-place-metadata"></div><div class="col-md-2"><button style="float:right" type="button" class="btn btn-danger btn-sm" onclick="deleteEventPlace()"><i class="fa fa-minus" aria-hidden="true"></i></button></div></div>');
+			document.getElementById("ep-button").setAttribute("hidden", true);
+		}
+
+		// delete an event place in the "Add metadata" form
+		function deleteEventPlace() {
+			$( ".added-event-place" ).remove();
+			document.getElementById("ep-button").removeAttribute("hidden");
+		}
+
+		// add an event date in the "Add metadata" form
+		function addEventDate() {
+			$( ".event-date-group" ).append('<div class="row added-event-date" style="margin-top:10px"><div class="col-md-10"><input type="text" class="form-control" id="event-date" aria-describedby="event-date-metadata"></div><div class="col-md-2"><button style="float:right" type="button" class="btn btn-danger btn-sm" onclick="deleteEventDate()"><i class="fa fa-minus" aria-hidden="true"></i></button></div></div>');
+			document.getElementById("ed-button").setAttribute("hidden", true);
+		}
+
+		// delete an event date in the "Add metadata" form
+		function deleteEventDate() {
+			$( ".added-event-date" ).remove();
+			document.getElementById("ed-button").removeAttribute("hidden");
+		}
+
+		// swith the place and date metadata to published/unpublished mode
+		function hidePublished(x) {
+			if (x.checked) {
+			  document.getElementById("pubMetadata").setAttribute("hidden", true);
+			  document.getElementById("unpubMetadata").removeAttribute("hidden");
+			}
+		  }
+		 
+		  function hideUnpublished(x) {
+			if (x.checked) {
+			  document.getElementById("unpubMetadata").setAttribute("hidden", true);
+			  document.getElementById("pubMetadata").removeAttribute("hidden");
+			}
+		  }
+
 		// show references hide mentions
 		function showReferences() {
 			if($('#referencesButton').is(':hidden')){
@@ -1017,20 +1103,52 @@ $(document).ready(main);
 			element.click();
 			document.body.removeChild(element);
 		}
-	
 
+/* ------------------------------------------------------------------------------ */
+/*                                                                                */
+/*                                METADATA                                        */
+/*                                                                                */
+/* ------------------------------------------------------------------------------ */
 
+async function saveMetadata() {
+    let number = $('#ident').val(); // ricostruire id QUI
+	let author = $('#author').val();
+	let role = $('select.role').map((_,el) => el.value).get();
+	let curator = $('#curator').val();
+	let abstract = $('#abstract').val();
+	let doctype = $('select.doctype').map((_,el) => el.value).get();
+	let doctopic = $('select.doctopic').map((_,el) => el.value).get();
+	let docstatus = $('input[type=radio][name=docstatus]:checked').val(); 
+	let provenanceP = $('.bibsource').map((_,el) => el.value).get();
+	let provenanceU = $('.archsource').map((_,el) => el.value).get();
+	let eventPlace = $('#event-place').val();
+	let eventDate = $('#event-date').val();
+	let additionalNotes = $('#additional-notes').val();
 
+    let data = {number, author, role, curator, abstract, doctype, doctopic, docstatus, provenanceP, provenanceU, eventPlace, eventDate, additionalNotes};
 
+	console.log(data)
 
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    };
+    //showSpinner();
+    const response = await fetch("/api/metadata",requestOptions);
+    const text = await response.text();
 
+    if(!response.ok) {
+        $('#errors').text(text);
+    }else{
+        const origin = window.location.origin;
+        location.assign(`${origin}/index`);
+         
+        console.log("Franceschino patatino stupidino");
+        console.log(text);
+    }
 
-
-
-
-
-
-
-
-
+}
 
