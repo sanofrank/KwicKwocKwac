@@ -1133,8 +1133,15 @@ $(document).ready(main);
 				var fragment = xsltProcessor.transformToFragment(clonedNode, doc);
 				var xmls = new XMLSerializer()
 				var content = xmls.serializeToString(fragment.firstElementChild)
+				// <- QUI richiamo alla funzione JSON->TEI
 				download(filename+'.xml',content,'text/xml')
 			})
+		}
+
+		function insertMetadata() {
+			// prendimi i metadati del JSON con questo ID
+			// passo il JSON al client
+			// content.getElementBy e inserisco metadato per metadato
 		}
 
 		//  save a file in the local download folder
@@ -1158,7 +1165,8 @@ $(document).ready(main);
 /* ------------------------------------------------------------------------------ */
 
 async function saveMetadata() {
-    let number = $('#ident').val(); // ricostruire id QUI
+	let n = $('#ident').val();
+	let number = $('div#id').attr('data-path') + n
 	let author = $('#author').val();
 	let role = $('select.role').map((_,el) => el.value).get();
 	let curator = $('#curator').val();
@@ -1193,7 +1201,7 @@ async function saveMetadata() {
         const origin = window.location.origin;
         location.assign(`${origin}/index`);
          
-        console.log("Franceschino patatino stupidino");
+        console.log("Text");
         console.log(text);
     }
 

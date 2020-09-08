@@ -21,7 +21,6 @@ const metadataSchema = new mongoose.Schema({
                 type: String,
                 min: 6,
                 max: 255,
-                //enum: []
             }
         }
     },
@@ -39,7 +38,6 @@ const metadataSchema = new mongoose.Schema({
                 type: String,
                 min: 6,
                 max: 225
-                //enum: []
             }
         }
     },
@@ -51,7 +49,6 @@ const metadataSchema = new mongoose.Schema({
                 type: String,
                 min: 6,
                 max: 225
-                //enum: []
             }
         }
     },
