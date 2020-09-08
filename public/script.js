@@ -1174,7 +1174,7 @@ $(document).ready(main);
 
 async function saveMetadata() {
 	let n = $('#ident').val();
-	let number = $('div#id').attr('data-path') + n
+	let number = $('div#file').attr('data-path') + n
 	let author = $('#author').val();
 	let role = $('select.role').map((_,el) => el.value).get();
 	let curator = $('#curator').val();
