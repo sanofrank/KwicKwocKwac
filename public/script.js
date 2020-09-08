@@ -556,11 +556,18 @@ $(document).ready(main);
 
 				currentFilename = file;
 				split = file.split('_');
+				let sezione = split[1].replace(/[^0-9]+/g, "");
+                let volume = split[2].replace(/[^0-9]+/g, "");
+                let tomo = split[3].replace(/[^0-9]+/g, "");
 				status = split[5];
 
+				let path = (`${sezione}_${volume}_${tomo}_`);
+
+				// ADD data path here from file splitting
 				editMode = false; 
 				$('#file').html(content);
 				$('#file').attr("status",status);
+				$('#file').attr('data-path',path);
 				setStatus(status);
 				$('#file').animate({ scrollTop: 0 }, 400);			
 				$('#commandList').removeClass('d-none');
@@ -1133,6 +1140,7 @@ $(document).ready(main);
 				var fragment = xsltProcessor.transformToFragment(clonedNode, doc);
 				var xmls = new XMLSerializer()
 				var content = xmls.serializeToString(fragment.firstElementChild)
+				console.log(content);
 				download(filename+'.xml',content,'text/xml')
 			})
 		}

@@ -32,8 +32,8 @@ router.get('/list', async (req, res) => {
                     
                     let user = split[0];
                     let sezione = split[1]
-                    let volume = split[2];
-                    let tomo = split[3];
+                    let volume = split[2]
+                    let tomo = split[3]
                     let opera = split[4] //.replace(/([A-Z])/g, ' $1').trim()
                     let status = split[5];
 
