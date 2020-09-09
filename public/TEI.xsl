@@ -24,11 +24,8 @@
 							<xsl:value-of select="$title" />
 						</tei:title>
 						<tei:author role="">
-							<!--NOME AUTORE-->
-							<!--RUOLO AUTORE-->
 						</tei:author>
 						<tei:principal>
-							<!--NOME RICERCATORE-->
 						</tei:principal>
 					</tei:titleStmt>
 					<tei:publicationStmt>
@@ -36,7 +33,6 @@
 							<xsl:value-of select="$authority" />
 						</tei:authority>
 						<tei:idno>
-							<!--IDENTIFICATORE-->
 						</tei:idno>
 					</tei:publicationStmt>
 					<tei:sourceDesc>
@@ -285,15 +281,10 @@
 				</tei:encodingDesc>
 				<tei:profileDesc>
 					<tei:abstract>
-						<!--ABSTRACT-->
 					</tei:abstract>
 					<tei:textClass>
-						<tei:catRef scheme="#doctype" target="" /> <!--TIPOLOGIA/E-->
-						<tei:keywords scheme="#doctopic">
-							<tei:term ref="">
-								<!--TEMATICA/HE-->
-							</tei:term>
-						</tei:keywords>
+						<tei:catRef xml:id="documentType" scheme="#doctype" target="" />
+						<tei:catRef xml:id="documentTopic" scheme="#doctopic" target="" />
 					</tei:textClass>
 					<tei:creation>
 						<tei:placeName>

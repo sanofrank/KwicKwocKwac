@@ -1140,16 +1140,33 @@ $(document).ready(main);
 				var fragment = xsltProcessor.transformToFragment(clonedNode, doc);
 				var xmls = new XMLSerializer()
 				var content = xmls.serializeToString(fragment.firstElementChild)
-				// <- QUI richiamo alla funzione JSON->TEI
-				console.log(content);
-				download(filename+'.xml',content,'text/xml')
+				contentWithMeta = getMetadata(content)
+				download(filename+'.xml',contentWithMeta,'text/xml')
 			})
 		}
 
-		function insertMetadata() {
-			// prendimi i metadati del JSON con questo ID
-			// passo il JSON al client
-			// content.getElementBy e inserisco metadato per metadato
+		async function getMetadata(content) {
+
+			currentFilename = file;
+			console.log(currentFilename)
+			split = currentFilename.split('_');
+			let id = split[6];
+			console.log(id)
+
+			let response = await fetch("/api/getId?id=" + id);
+			const text = await response.text();
+			
+			content.getElementsByTagName('idno').val(text.number)
+			content.getElementsByTagName('author').val(text.author)
+			content.getElementsByTagName('author').setAttribute('role', text.roleList)
+			content.getElementsByTagName('principal').val(text.curator)
+			content.getElementsByTagName('abstract').val(text.abstract)
+			content.getElementById('documentType').setAttribute('target', text.doctypeList)
+			content.getElementById('documentTopic').setAttribute('target', text.doctopicList)
+			content.getElementsByTagName('revisionDesc').setAttribute('status', text.docstatus)
+			//content.getElement() X PROVENANCE: E UN PO PIU COMPLICATO... 
+			//content.getElement X LUOGO E DATA EVENTO: ANCHE QUI, CI DEVO PENSARE
+
 		}
 
 		//  save a file in the local download folder

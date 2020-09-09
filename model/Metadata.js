@@ -5,7 +5,7 @@ const metadataSchema = new mongoose.Schema({
         type: String,
         required: true,
         min: 3,
-        max: 3
+        max: 25
     },
     author: {
         type: String,
