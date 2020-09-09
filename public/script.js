@@ -146,6 +146,9 @@ $(document).ready(main);
 				$('.entityCard').on('hide.bs.collapse',     function () {
 					$('.popoverToggle').popover('hide') ;
 				})
+				$('.citationCard').on('hide.bs.collapse',     function () {
+					$('.popoverToggle').popover('hide') ;
+				})
 				$(document).on('click', '.popoverHide',   function () {
 					$('.popoverToggle').popover('hide') ;
 				})
@@ -273,7 +276,11 @@ $(document).ready(main);
 			//source and target:
 			//level: "object type", id="object-id"
 			console.log("source,target",source,target);
-			kwic.mergeData(source, target)
+			if(!referenceMode){
+				kwic.mergeData(source,target)
+			}else{
+				kwic.mergeDataRef(source,target)
+			}
 			setupKWIC(documentLocation, true)					
 			return true; 
 		}
@@ -321,7 +328,7 @@ $(document).ready(main);
 			if (saveView) var view = getCurrentView()
 			kwic.cleanAll();
 			if(referenceMode){
-				quotes = kwic.findQuotes('.quote',location);
+				quotes = kwic.findQuotes('.block',location);
 				console.log(quotes);
 				list = kwic.organizeQuotes(quotes);
 				console.log(list);
@@ -413,6 +420,9 @@ $(document).ready(main);
 				view.scroll = $('#categoryPane .active')[0].scrollTop
 				view.openEls = $('.entityContainer.open' ).map(function() { return this.id; }).get()
 				view.openCards = $('.entityContainer .card.collapse.show' ).map(function() { return this.id; }).get()
+				view.openEls = $('.citationContainer.open' ).map(function() { return this.id; }).get()
+				view.openCards = $('.citationContainer .card.collapse.show' ).map(function() { return this.id; }).get()
+			
 			}
 			return view
 		}
@@ -1173,6 +1183,7 @@ $(document).ready(main);
 /* ------------------------------------------------------------------------------ */
 
 async function saveMetadata() {
+	let file = currentFilename;
 	let n = $('#ident').val();
 	let number = $('div#file').attr('data-path') + n
 	let author = $('#author').val();
@@ -1188,7 +1199,7 @@ async function saveMetadata() {
 	let eventDate = $('#event-date').val();
 	let additionalNotes = $('#additional-notes').val();
 
-    let data = {number, author, role, curator, abstract, doctype, doctopic, docstatus, provenanceP, provenanceU, eventPlace, eventDate, additionalNotes};
+    let data = {file, number, author, role, curator, abstract, doctype, doctopic, docstatus, provenanceP, provenanceU, eventPlace, eventDate, additionalNotes};
 
 	console.log(data)
 
