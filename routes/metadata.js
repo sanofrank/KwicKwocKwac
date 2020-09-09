@@ -1,27 +1,13 @@
 const router = require('express').Router();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const verify = require('./verifyToken');
-//const { pool } = require('../dbConfig');
 const Metadata = require('../model/Metadata');
-// const { loginValidation, registerValidation } = require('../validation');
-
-router.get('/index', verify, (req,res) => {
-    res.render("index.html");
-})
+const fs = require('fs');
 
 router.post('/metadata', async (req,res) => { // async finchè aspettiamo il salvataggio 
-    //VALEDATE DATA
-    //const {error} = registerValidation(req.body);
-    //if(error) return res.status(400).send(error.details[0].message); //bad request to show just the message error
 
-    //CHECKING USER ALREADY IN DATABASE
-    //const emailExist = await User.findOne({email: req.body.email}); //check in the DB
-    //if(emailExist) return res.status(400).send('Email already exists');
-    
-    //HASH PASSWORDS
-    //const salt = await bcrypt.genSalt(10); //random generated data
-    //const hashPassword = await bcrypt.hash(req.body.password,salt); //combines salt to hashes password
+    const dir = 'public/files';
+
+    let file = req.body.file;
+    let currPath = `${dir}/${file}`
 
     console.log(req.body)
     //CREATE A NEW METADATA RECORD
@@ -41,18 +27,26 @@ router.post('/metadata', async (req,res) => { // async finchè aspettiamo il sal
         additionalNotes: req.body.additionalNotes
     });
 
-    console.log(metadata)
+    const savedMetadata = await metadata.save(function(err,data){
+        if(err){
+            console.log(err);
+            return res.status(400).send(err);}
 
-    try{
-    const savedUser = await metadata.save();
-    return res.send('Saved');
-    }catch(err){
-        res.status(400).send("catch error",err);
-    }
-});
+        let id = metadata._id;
 
-router.get('/verify', verify, (req,res) => {
-    res.json({editmode: true});
+        let split = file.split('_');
+        let newFilename = `${split[0]}_${split[1]}_${split[2]}_${split[3]}_${split[4]}_${split[5]}_${id}`
+        let newPath = `${dir}/${newFilename}`
+
+        fs.rename(currPath, newPath, function(err) {
+            if (err) {
+            console.log(err)
+            } else {
+            console.log("Successfully renamed the directory.")
+            }
+        })
+        return res.send('Saved metadata');
+    });
 });
 
 router.get('/getId', async (req, res) => {

@@ -749,7 +749,7 @@ var kwic = new (function () {
 			this.prop('sort','',true)
 			this.prop('label','Scrapped mentions',true)
 			this.prop('wikidataId','',true)
-			this.prop('rs','',force)
+			this.prop('rs','',true)
 		},
 		putToTrash: function() {
 			this.prop('entity','trash',true)
@@ -757,7 +757,7 @@ var kwic = new (function () {
 			this.prop('sort','',true)
 			this.prop('label','Trashed mentions',true)
 			this.prop('wikidataId','',true)
-			this.prop('rs','',force)
+			this.prop('rs','',true)
 		},
 		unwrap: function() {
 			unwrap(this.node)
@@ -869,7 +869,23 @@ var kwic = new (function () {
 			}
 		}			
 		if (!done) this.quotes[0].prop(field, value)
-	}	
+		},
+	// assign this citation to a different references. 
+	switchTo: function(reference,force) {
+		for (var i=0; i<this.quotes.length; i++) {
+			this.quotes[i].prop('reference', reference,force)
+		}
+		this.reference = reference	
+	
+		},
+		// assign this citation to scraps. 
+		putToScraps: function() {
+			this.switchTo('scraps',true)
+		},
+		// assign this citation to trash. 
+		putToTrash: function() {
+			this.switchTo('trash',true)
+		}
 	}
 
 	this.Quote = function(nodeOrRange, options) {
@@ -948,6 +964,18 @@ var kwic = new (function () {
 					break;
 			}
 		},
+		putToScraps: function() {
+			this.prop('citation','scraps',true)
+			this.prop('reference', 'scraps', true)
+			this.prop('sort','',true)
+			this.prop('label','Scrapped quote',true)
+		},
+		putToTrash: function() {
+			this.prop('citation','trash',true)
+			this.prop('reference', 'trash', true)
+			this.prop('sort','',true)
+			this.prop('label','Trashed quote',true)
+		}
 	}
 
 	// static methods
@@ -991,7 +1019,7 @@ var kwic = new (function () {
 		console.log(p)
 		for (i=0; i<p.length; i++){
 			var classes = Array.from(p[i].classList).filter( (j) => this.referenceList[j] !== undefined )
-			console.log(classes[classes.length-1]);
+			console.log("findQuotes",classes[classes.length-1]);
 			var q = new this.Quote(p[i], {
 				reference: classes.length>0 ? classes[classes.length-1] : '',
 				position: i
@@ -1156,6 +1184,46 @@ var kwic = new (function () {
 				source.putToScraps()
 			} else if (sourceData.level == 'mention' && targetData.level == 'trash') {
 				var source = this.allMentions[sourceData.id]
+				source.putToTrash()
+			}
+		}
+	}
+
+	this.mergeDataRef = function (sourceData, targetData) {
+		if (sourceData.id !== targetData.id) {
+			if (sourceData.level == 'citation' && targetData.level == 'citation') {
+				var source = this.allCitations[sourceData.id]
+				var target = this.allCitations[targetData.id]
+				source.mergeInto(target)
+			} else if (sourceData.level=='citation' && targetData.level == 'reference') {
+				var source = this.allCitations[sourceData.id]
+				var target = this.allReferences[targetData.id]
+				if (source.reference !== target.id) {
+					var ok = confirm('Do you want to change reference of citation "{$source}" to "{$target}"?'.tpl(
+						{
+							source: source.label,
+							target: target.label || targetData.id
+						}
+					))
+					if (ok) {
+						source.switchTo(target.id,true)
+					}
+				}
+			} else if (sourceData.level == 'citation' && targetData.level == 'scraps') {
+				var source = this.allCitations[sourceData.id]
+				source.putToScraps()
+			} else if (sourceData.level == 'citation' && targetData.level == 'trash') {
+				var source = this.allCitations[sourceData.id]
+				source.putToTrash(type)
+			} else if (sourceData.level=='quote' && targetData.level == 'citation') {
+				var source = this.allQuotes[sourceData.id]
+				var target = this.allCitations[targetData.id]
+				source.switchTo(target,true)
+			} else if (sourceData.level == 'quote' && targetData.level == 'scraps') {
+				var source = this.allQuotes[sourceData.id]
+				source.putToScraps()
+			} else if (sourceData.level == 'quote' && targetData.level == 'trash') {
+				var source = this.allQuotes[sourceData.id]
 				source.putToTrash()
 			}
 		}

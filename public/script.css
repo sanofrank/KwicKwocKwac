@@ -122,6 +122,13 @@ figcaption {
     padding: 0px;
     white-space: nowrap;
 }
+
+.citationContainer ul {
+	display: block;
+	overflow-x: auto;
+	padding: 0px;
+	white-space: nowrap;
+}
 /* https://stackoverflow.com/questions/10809995/css-disable-text-selection/15273197 */
 .disable-select {
   -webkit-user-select: none;  
