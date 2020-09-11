@@ -37,7 +37,6 @@
 					</tei:publicationStmt>
 					<tei:sourceDesc>
 						<tei:list>
-							<!--metadato RIFERIMENTO BIBLIOGRAFICO / SEGNATURA ARCHIVISTICA (PROVENANCE) da inserire-->
 						</tei:list>
 						<tei:listPerson>
 							<xsl:for-each
@@ -287,12 +286,6 @@
 						<tei:catRef xml:id="documentTopic" scheme="#doctopic" target="" />
 					</tei:textClass>
 					<tei:creation>
-						<tei:placeName>
-							<!--LUOGO DELL'EVENTO-->
-						</tei:placeName>
-						<tei:date>
-							<!--DATA DELL'EVENTO-->
-						</tei:date>
 					</tei:creation>
 				</tei:profileDesc>
 				<tei:revisionDesc status=""> <!--STATO DOCUMENTO-->

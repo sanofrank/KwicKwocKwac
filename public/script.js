@@ -1168,21 +1168,19 @@ $(document).ready(main);
 
 			let response = await fetch("/api/getId?id=" + id, getIdOptions);
 			const json = await response.json();
-
-			console.log(bla)
 			
 			bla.querySelector('idno').textContent = json.number
-			// bla.getElementsByTagName('author')[0].textContent = json.author
-			// bla.getElementsByTagName('author')[0].setAttribute('role', json.roleList) //da convertire la virgola in spazio
-			// bla.getElementsByTagName('principal')[0].textContent = json.curator
-			// bla.getElementsByTagName('abstract')[0].textContent = json.abstract
-			// bla.getElementsByTagName('catRef')[0].setAttribute('target', json.doctypeList) //da convertire la virgola in spazio
-			// bla.getElementsByTagName('catRef')[1].setAttribute('target', json.doctopicList) //da convertire la virgola in spazio
-			// bla.getElementsByTagName('revisionDesc')[0].setAttribute('status', json.docstatus)
+			bla.querySelector('author').textContent = json.author
+			bla.querySelector('author').setAttribute('role', (json.roleList).toString().replace(/,/g, ' '))
+			bla.querySelector('principal').textContent = json.curator
+			bla.querySelector('abstract').textContent = json.abstract
+			bla.querySelectorAll('catRef')[0].setAttribute('target', (json.doctypeList).toString().replace(/,/g, ' '))
+			bla.querySelectorAll('catRef')[1].setAttribute('target', (json.doctopicList).toString().replace(/,/g, ' '))
+			bla.querySelector('revisionDesc').setAttribute('status', json.docstatus)
 		
 			json.provenanceP.forEach((prov) => {
 				
-				let p = doc.createElement('p');
+				let p = doc.createElementNS("http://www.tei-c.org/ns/1.0", "p");
 				let textNode = doc.createTextNode(prov)
 				p.appendChild(textNode);
 
@@ -1190,7 +1188,30 @@ $(document).ready(main);
 				list.appendChild(p)
 
 			})
-			//	content.getElement X LUOGO E DATA EVENTO: ANCHE QUI, CI DEVO PENSARE
+			
+			console.log(json.eventDate)
+			// se eventDate e eventPlace ci sono nei metadati:
+			if (json.eventDate != undefined && json.eventPlace != undefined) {
+				let evDate = doc.createElementNS("http://www.tei-c.org/ns/1.0", "date");
+				let evPlace = doc.createElementNS("http://www.tei-c.org/ns/1.0", "placeName")
+				let textNoteDate = doc.createTextNode(json.eventDate)
+				let textNotePlace = doc.createTextNode(json.eventPlace)
+				evDate.appendChild(textNoteDate)
+				evPlace.appendChild(textNotePlace)
+				bla.querySelector('creation').appendChild(evPlace)
+				bla.querySelector('creation').appendChild(evDate)
+			} else if (json.eventDate != undefined) {
+				let evDate = doc.createElementNS("http://www.tei-c.org/ns/1.0", "date");
+				let textNoteDate = doc.createTextNode(json.eventDate)
+				evDate.appendChild(textNoteDate)
+				bla.querySelector('creation').appendChild(evDate)
+			} else if (json.eventPlace != undefined) {
+				let evPlace = doc.createElementNS("http://www.tei-c.org/ns/1.0", "placeName")
+				let textNotePlace = doc.createTextNode(json.eventPlace)
+				evPlace.appendChild(textNotePlace)
+				bla.querySelector('creation').appendChild(evPlace)
+			}
+
 			return bla
 		}
 
