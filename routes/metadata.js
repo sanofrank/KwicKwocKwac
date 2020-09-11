@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Metadata = require('../model/Metadata');
 const fs = require('fs');
 
-router.post('/metadata', async (req,res) => { // async finchè aspettiamo il salvataggio 
+router.post('/metadata', async (req,res) => { // xasync finchè aspettiamo il salvataggio 
 
     const dir = 'public/files';
 

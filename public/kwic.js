@@ -291,10 +291,10 @@ var kwic = new (function () {
 			
 			}
 
-			//if(!footnoteNode){
+			if(!footnoteNode){
 				endNode = sel.focusNode, endOffset = sel.focusOffset;
 				range.setEnd(sel.focusNode,sel.focusOffset);
-			//}
+			}
 
 			var backwards = range.collapsed;
 			range.detach();
@@ -362,7 +362,7 @@ var kwic = new (function () {
 
 		let footnoteNode = $(href);
 		let footnoteNum = container.textContent.replace( /\D+/g, '');
-		let footnoteText = footnoteNode[0].firstChild.textContent;
+		let footnoteText = footnoteNode[0].firstChild.textContent.replace(/↑+/g,"");
 
 		return footnote = {
 			footnoteNode,
@@ -821,24 +821,31 @@ var kwic = new (function () {
 		var reference = ""
 		var label = ""
 		var sort = ""
+		var footnoteText = ""
+		var footnoteNum = ""
 		this.id = quotes[0].citation
 		this.position = Number.MAX_VALUE
 		var inners = []
 
 		for (var i=0; i<quotes.length; i++) {
+			console.log(quotes[i]);
 			quotes[i].citation = this.id
 			reference = quotes[i].reference || reference
 			label = quotes[i].label || label
 			sort = quotes[i].sort || sort
+			footnoteText = quotes[i].footnoteText || footnoteText
+			footnoteNum = quotes[i].footnoteNum || footnoteNum
 			inners.push(quotes[i].inner)
 			this.position = Math.min(this.position, quotes[i].position)
 			this.quotes.push(quotes[i])
 			}
-			
+
 		this.reference = options.reference || reference || "scraps"
 		this.label = options.label || label || quotes[0].id
 		this.sort = options.sort || sort
-		
+		this.footnoteText = options.footnoteText || footnoteText
+		this.footnoteNum = options.footnoteNum || footnoteNum
+
 		if (!this.label) {
 			var inn = {}
 			var max = 0
@@ -889,7 +896,6 @@ var kwic = new (function () {
 	}
 
 	this.Quote = function(nodeOrRange, options) {
-		console.log(options);
 		if (!options) options = {}         // fallback object for inizialization
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "quote-" ;
@@ -909,20 +915,22 @@ var kwic = new (function () {
 		this.id = this.node.id || getNewQuoteId(prefix) 
 		this.prop('id', this.id, false) ;
 		this.prop('reference', options.reference || "scraps", true)
-		this.prop('citation', options.citation || options.id || `${prefix}[${lastQuoteId}]`, false)
+		this.prop('citation', options.citation || options.id || `${prefix}${lastQuoteId}`, false)
 		this.prop('footnoteRef', options.footnoteNum);
 		this.prop('footnoteText', options.footnoteText)
 		this.prop('sort', options.sort, options.force) ;
 
 		this.reference = dataset.reference || options.reference 	// person, place, thing, etc. 
-		this.footnoteNode = options.footnoteNode || null;
+		this.footnoteNode = options.footnote || null;
 		this.footnoteNum = options.footnoteNum || null;
 		this.footnoteText = options.footnoteText || null;
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
 		this.citation = this.node.attributes.about.value
-		
+	
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
+		if (dataset.footnoteRef) this.footnoteRef = dataset.footnoteRef
+		if (dataset.footnoteText) this.footnoteText = dataset.footnoteText
 	}
 	this.Quote.prototype = {
 		prop: function(name,value, force=false) {
@@ -975,6 +983,9 @@ var kwic = new (function () {
 			this.prop('reference', 'trash', true)
 			this.prop('sort','',true)
 			this.prop('label','Trashed quote',true)
+		},
+		unwrap: function() {
+			unwrap(this.node)
 		}
 	}
 
@@ -1016,10 +1027,8 @@ var kwic = new (function () {
 	this.findQuotes = function(selector, location){
 		var p = $(selector,location)
 		lastQuoteId = getLargestId(p.get()) +1
-		console.log(p)
 		for (i=0; i<p.length; i++){
 			var classes = Array.from(p[i].classList).filter( (j) => this.referenceList[j] !== undefined )
-			console.log("findQuotes",classes[classes.length-1]);
 			var q = new this.Quote(p[i], {
 				reference: classes.length>0 ? classes[classes.length-1] : '',
 				position: i
@@ -1214,7 +1223,7 @@ var kwic = new (function () {
 				source.putToScraps()
 			} else if (sourceData.level == 'citation' && targetData.level == 'trash') {
 				var source = this.allCitations[sourceData.id]
-				source.putToTrash(type)
+				source.putToTrash()
 			} else if (sourceData.level=='quote' && targetData.level == 'citation') {
 				var source = this.allQuotes[sourceData.id]
 				var target = this.allCitations[targetData.id]
@@ -1308,15 +1317,20 @@ var kwic = new (function () {
 			if (this.referenceList[i].letter == key){
 				let ref = this.referenceList[i]
 				let selection = snapSelectionRef(ref.type, this.prefs.extend, alt)
-				if(sel){
+				if(selection){
 					console.log("SELECTION",selection);
-					var range = selection.range;
-					//console.log(ciao);
+					var range;
+					if(selection.footnoteNode){
+						range = selection.range
+					} else {
+						range = selection.sel.getRangeAt(0);
+					}
 					if(ref.action == 'wrap') {
 						var footnote,q;
 
 						if(selection.footnoteNode){
 							footnote = getFootnote(selection.footnoteNode);
+
 							q = new this.Quote(range, {
 								reference: ref.entity,
 								footnote: footnote.footnoteNode,
