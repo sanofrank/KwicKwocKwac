@@ -369,7 +369,6 @@ $(document).ready(main);
 				if (saveView) setCurrentView(view)
 				
 			}else{
-				kwic.cleanAll() 
 				mentions = kwic.findMentions('.mention',location); 
 				//blocks = kwic.findBlocks('.block',location); //FIND ALL BLOCKS
 				list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
@@ -921,7 +920,12 @@ $(document).ready(main);
 
 		// user is changing label, sort or wikidata Id
 		function changeValue(field,id,value) {
-			var pp = kwic.allEntities[id]
+			var pp;
+			if(!referenceMode){
+				pp = kwic.allEntities[id]
+			}else{
+				pp = kwic.allCitations[id]
+			}
 			pp.change(field,value);
 			setupKWIC(documentLocation, true)			
 		}
@@ -1059,17 +1063,14 @@ $(document).ready(main);
 		// empty trash, i.e., look for all mentions of category "trash" and remove the span around them
 		function emptyTrash() {
 			if (confirm("You are about to empty the trash. Continue?")) {
-				console.log(kwic.allMentions);
 				for (i in kwic.allMentions) { 
-					console.log(i);
 					if (kwic.allMentions[i].category == 'trash') 
 						kwic.allMentions[i].unwrap()
 				}
-				// for (i in kwic.allBlock) { 
-				// 	console.log(i);
-				// 	if (kwic.allBlock[i].category == 'trash') 
-				// 		kwic.allBlock[i].unwrap()
-				// }
+				for (i in kwic.allQuotes) { 
+					if (kwic.allQuotes[i].reference == 'trash') 
+						kwic.allQuotes[i].unwrap()
+				}
 				setupKWIC(documentLocation, true)			
 			}
 		}
@@ -1147,11 +1148,11 @@ $(document).ready(main);
 				for (var i in options) {
 					xsltProcessor.setParameter("", i, options[i])
 				}
-				var fragment = xsltProcessor.transformToFragment(clonedNode, doc);
+				var fragment = xsltProcessor.transformToDocument(clonedNode, doc);
+				console.log(fragment.querySelectorAll('sourceDesc'))
 				var xmls = new XMLSerializer()
 				var content = xmls.serializeToString(fragment.firstElementChild)
 				// <- QUI richiamo alla funzione JSON->TEI
-				console.log(content);
 				download(filename+'.xml',content,'text/xml')
 			})
 		}
