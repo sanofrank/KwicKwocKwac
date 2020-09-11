@@ -1149,14 +1149,14 @@ $(document).ready(main);
 					xsltProcessor.setParameter("", i, options[i])
 				}
 				var fragment = xsltProcessor.transformToFragment(clonedNode, doc);
-				var fragmentWithMeta = await getMetadata(fragment.firstElementChild)
+				var fragmentWithMeta = await getMetadata(fragment, doc)
 				var xmls = new XMLSerializer()
 				var content = xmls.serializeToString(fragmentWithMeta.firstElementChild)
 				download(filename+'.xml',content,'text/xml')
 			})
 		}
 
-		async function getMetadata(bla) {
+		async function getMetadata(bla, doc) {
 
 			let file = currentFilename;
 			split = file.split('_');
@@ -1167,31 +1167,30 @@ $(document).ready(main);
 			}
 
 			let response = await fetch("/api/getId?id=" + id, getIdOptions);
-			const text = await response.json();
+			const json = await response.json();
 
 			console.log(bla)
 			
-			bla.getElementsByTagName('idno')[0].textContent = text.number
-			bla.getElementsByTagName('author')[0].textContent = text.author
-			bla.getElementsByTagName('author')[0].setAttribute('role', text.roleList) //da convertire la virgola in spazio
-			bla.getElementsByTagName('principal')[0].textContent = text.curator
-			bla.getElementsByTagName('abstract')[0].textContent = text.abstract
-			bla.getElementsByTagName('catRef')[0].setAttribute('target', text.doctypeList) //da convertire la virgola in spazio
-			bla.getElementsByTagName('catRef')[1].setAttribute('target', text.doctopicList) //da convertire la virgola in spazio
-			bla.getElementsByTagName('revisionDesc')[0].setAttribute('status', text.docstatus)
-
-			text.provenanceP.forEach((prov) => {
-				let provenance = "<p>" + prov + "</p>"
-				let blallalla = bla.getElementsByTagName('sourceDesc')[0]
-				blallalla.getElementsByTagName('list')[0].textContent += provenance
+			bla.querySelector('idno').textContent = json.number
+			// bla.getElementsByTagName('author')[0].textContent = json.author
+			// bla.getElementsByTagName('author')[0].setAttribute('role', json.roleList) //da convertire la virgola in spazio
+			// bla.getElementsByTagName('principal')[0].textContent = json.curator
+			// bla.getElementsByTagName('abstract')[0].textContent = json.abstract
+			// bla.getElementsByTagName('catRef')[0].setAttribute('target', json.doctypeList) //da convertire la virgola in spazio
+			// bla.getElementsByTagName('catRef')[1].setAttribute('target', json.doctopicList) //da convertire la virgola in spazio
+			// bla.getElementsByTagName('revisionDesc')[0].setAttribute('status', json.docstatus)
+		
+			json.provenanceP.forEach((prov) => {
 				
-				// NON LEGGE "<" E ">" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				let p = doc.createElement('p');
+				let textNode = doc.createTextNode(prov)
+				p.appendChild(textNode);
+
+				let list = bla.querySelector('list')
+				list.appendChild(p)
+
 			})
-			
-			
-			
-			
-				//content.getElement X LUOGO E DATA EVENTO: ANCHE QUI, CI DEVO PENSARE
+			//	content.getElement X LUOGO E DATA EVENTO: ANCHE QUI, CI DEVO PENSARE
 			return bla
 		}
 
@@ -1215,7 +1214,8 @@ $(document).ready(main);
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
 
-async function saveMetadata() {
+async function saveMetadata(event) {
+
 	let file = currentFilename;
 	let n = $('#ident').val();
 	let number = $('div#file').attr('data-path') + n
