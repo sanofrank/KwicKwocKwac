@@ -36,9 +36,9 @@
 						</tei:idno>
 					</tei:publicationStmt>
 					<tei:sourceDesc>
-						<tei:p>
+						<tei:list>
 							<!--metadato RIFERIMENTO BIBLIOGRAFICO / SEGNATURA ARCHIVISTICA (PROVENANCE) da inserire-->
-						</tei:p>
+						</tei:list>
 						<tei:listPerson>
 							<xsl:for-each
 								select="//html:span[contains(@class, 'person')]/@about[generate-id() = generate-id(key('persons', .)[1])]">

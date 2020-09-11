@@ -1148,35 +1148,50 @@ $(document).ready(main);
 					xsltProcessor.setParameter("", i, options[i])
 				}
 				var fragment = xsltProcessor.transformToFragment(clonedNode, doc);
+				var fragmentWithMeta = await getMetadata(fragment.firstElementChild)
 				var xmls = new XMLSerializer()
-				var content = xmls.serializeToString(fragment.firstElementChild)
-				contentWithMeta = getMetadata(content)
-				download(filename+'.xml',contentWithMeta,'text/xml')
+				var content = xmls.serializeToString(fragmentWithMeta.firstElementChild)
+				download(filename+'.xml',content,'text/xml')
 			})
 		}
 
-		async function getMetadata(content) {
+		async function getMetadata(bla) {
 
-			currentFilename = file;
-			console.log(currentFilename)
-			split = currentFilename.split('_');
+			let file = currentFilename;
+			split = file.split('_');
 			let id = split[6];
-			console.log(id)
 
-			let response = await fetch("/api/getId?id=" + id);
-			const text = await response.text();
+			const getIdOptions = {
+				headers: {'Content-type': 'application/json'}
+			}
+
+			let response = await fetch("/api/getId?id=" + id, getIdOptions);
+			const text = await response.json();
+
+			console.log(bla)
 			
-			content.getElementsByTagName('idno').val(text.number)
-			content.getElementsByTagName('author').val(text.author)
-			content.getElementsByTagName('author').setAttribute('role', text.roleList)
-			content.getElementsByTagName('principal').val(text.curator)
-			content.getElementsByTagName('abstract').val(text.abstract)
-			content.getElementById('documentType').setAttribute('target', text.doctypeList)
-			content.getElementById('documentTopic').setAttribute('target', text.doctopicList)
-			content.getElementsByTagName('revisionDesc').setAttribute('status', text.docstatus)
-			//content.getElement() X PROVENANCE: E UN PO PIU COMPLICATO... 
-			//content.getElement X LUOGO E DATA EVENTO: ANCHE QUI, CI DEVO PENSARE
+			bla.getElementsByTagName('idno')[0].textContent = text.number
+			bla.getElementsByTagName('author')[0].textContent = text.author
+			bla.getElementsByTagName('author')[0].setAttribute('role', text.roleList) //da convertire la virgola in spazio
+			bla.getElementsByTagName('principal')[0].textContent = text.curator
+			bla.getElementsByTagName('abstract')[0].textContent = text.abstract
+			bla.getElementsByTagName('catRef')[0].setAttribute('target', text.doctypeList) //da convertire la virgola in spazio
+			bla.getElementsByTagName('catRef')[1].setAttribute('target', text.doctopicList) //da convertire la virgola in spazio
+			bla.getElementsByTagName('revisionDesc')[0].setAttribute('status', text.docstatus)
 
+			text.provenanceP.forEach((prov) => {
+				let provenance = "<p>" + prov + "</p>"
+				let blallalla = bla.getElementsByTagName('sourceDesc')[0]
+				blallalla.getElementsByTagName('list')[0].textContent += provenance
+				
+				// NON LEGGE "<" E ">" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			})
+			
+			
+			
+			
+				//content.getElement X LUOGO E DATA EVENTO: ANCHE QUI, CI DEVO PENSARE
+			return bla
 		}
 
 		//  save a file in the local download folder
