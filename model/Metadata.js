@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const metadataSchema = new mongoose.Schema({
-    number: {
+    ident: {
         type: String,
         required: true,
         min: 3,
