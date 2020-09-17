@@ -328,10 +328,10 @@ $(document).ready(main);
 			if (saveView) var view = getCurrentView()
 			kwic.cleanAll();
 			if(referenceMode){
-				quotes = kwic.findQuotes('.block',location);
-				console.log(quotes);
-				list = kwic.organizeQuotes(quotes);
-				console.log(list);
+				quotes = kwic.findQuotes('.quote',location);
+				bibref = kwic.findBibRef('.bibref',location);
+				list = kwic.organizeQuotes();
+				console.log("LISt",list);
 				var r0 = kwic.toHTMLref (
 					kwic.allReferences,
 					{
@@ -341,6 +341,7 @@ $(document).ready(main);
 				var r1 = kwic.toHTMLref(
 					kwic.allReferences,
 					{
+						bibrefs: $('#bibrefTpl').html(),
 						quotes: $('#quoteTpl').html(),
 						citations: $('#citationTpl').html(),
 						references: $('#referenceTpl1').html()
@@ -500,13 +501,13 @@ $(document).ready(main);
 				</button> `
 			
 			let referenceCssTpl = `
-				.showStyles .block.{$entity}, .selectButton.{$entity} {
+				.showStyles .{$entity}:not(.scraps):not(.trash), .selectButton.{$entity} {
 					{$style}
 				} `
 
 			var css = "";
 			for (var i in list) {
-				if(list[i].action == "wrap") {
+				if(list[i].action == "wrap-bib" || list[i].action == "wrap-quote") {
 					$('#referencesButton').append(referenceItemTpl.tpl(list[i]));
 					css += referenceCssTpl.tpl(list[i]);
 				}
@@ -921,12 +922,14 @@ $(document).ready(main);
 		// user is changing label, sort or wikidata Id
 		function changeValue(field,id,value) {
 			var pp;
+	
 			if(!referenceMode){
 				pp = kwic.allEntities[id]
 			}else{
 				pp = kwic.allCitations[id]
+				var ref = pp.reference;
 			}
-			pp.change(field,value);
+			pp.change(field,value,ref);
 			setupKWIC(documentLocation, true)			
 		}
 		
@@ -1070,6 +1073,10 @@ $(document).ready(main);
 				for (i in kwic.allQuotes) { 
 					if (kwic.allQuotes[i].reference == 'trash') 
 						kwic.allQuotes[i].unwrap()
+				}
+				for (i in kwic.allBibRef) { 
+					if (kwic.allBibRef[i].reference == 'trash') 
+						kwic.allBibRef[i].unwrap()
 				}
 				setupKWIC(documentLocation, true)			
 			}

@@ -13,20 +13,20 @@
 		"markAll": false,
 		"class": null
 	},
-	"bib": {
+	"bibref": {
 		"letter": "B",
-		"action": "wrap",
+		"action": "wrap-bib",
 		"mention": false,
 		"type":   "word",
 		"label":  "BibRef",
 		"sort": 1,
-		"entity": "bib",
+		"entity": "bibref",
 		"markAll": true,
 		"style": "background-image: radial-gradient(#e7fdfb 30%, #b2ffed 100%); border-radius: 4px;"
 	},
 	"quote": {
 		"letter": "Q",
-		"action": "wrap",
+		"action": "wrap-quote",
 		"mention": false,
 		"type":   "word",
 		"label":  "Quotes",

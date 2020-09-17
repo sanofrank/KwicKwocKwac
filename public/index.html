@@ -513,7 +513,7 @@
 			</div>
 		</template>
 		<template id="citationTpl">
-			<li class="citationContainer draggable dropPoint" id="{$id}" data-level="citation" data-id="{$id}" >
+			<li class="citationContainer draggable dropPoint" id="citation-{$id}" data-level="citation" data-id="{$id}" >
 				<a href="#" class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded bg-light w-100 treeExpand">
 					<span class="citationLabel">{$label}</span> 
 					<span class="d-inline-flex flex-nowrap mr-0">
@@ -548,7 +548,7 @@
 					</div>
 					<div class="row">
 						<label for="sortData-{$id}" class="col-4 small p-1">Footnote: </label>
-						<input type="text" name="footnoteText" class="form-control form-control-sm col-8" id="footnoteText-{$footnoteNum}" value="{$footnoteText}" disabled>
+						<input type="text" name="footnoteText" class="form-control form-control-sm col-8" id="footnoteText-{$id}" value="{$footnoteText}" disabled>
 					</div>
 					</form>										
 				  </div>
@@ -561,6 +561,53 @@
 		<template id="quoteTpl">	
 				<div class="{$style} draggable popoverToggle-mentions {$class}" id="list-{$id}" data-level="quote" data-id="{$id}" onclick="goto('#{$id}')">
 					{$content}
+			</div>
+		</template>
+		<template id="citationTplbibref">
+			<li class="citationContainer draggable dropPoint" id="{$id}" data-level="citation" data-id="{$id}" >
+				<a href="#" class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded bg-light w-100 treeExpand">
+					<span class="citationLabel">{$label}</span> 
+					<span class="d-inline-flex flex-nowrap mr-0">
+						<span class="badge badge-primary em3">{$countBibrefs}</span>
+						<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
+							<span class="oi oi-plus"></span>
+						</span>
+					</span>
+				</a>
+				<div class="collapse card citationCard" id="{$id}-menu">
+				  <h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
+				  	Details about {$label}
+				  </h6>
+				  <div class="card-body">
+					<form>
+					  <div class="row">
+						<label for="labelData-{$id}" class="col-4 small p-1">Label: </label>
+						<input type="text" name="labelData" class="form-control form-control-sm col-8" id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)" value="{$label}">
+					  </div>
+					  <div class="row">
+						<label for="sortData-{$id}" class="col-4 small p-1">Sort value: </label>
+						<div class="col-8 p-0">
+						  <div class="input-group mb-2">
+							<input type="text" name="sortData-{$id}" class="form-control form-control-sm flex-grow-1" id="sortData-{$id}" onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
+							<div class="input-group-append small">
+							  <div class="input-group-text">
+								<span class="oi oi-loop-circular" onclick="invertValue('{$id}','{$type}','#sortData-{$id}')"></span>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					</div>
+					</form>										
+				  </div>
+				</div>
+				<ul>
+					{$content}
+				</ul>
+			</li>
+		</template>
+		<template id="bibrefTpl">
+			<div class="{$style} draggable popoverToggle-mentions {$class}" id="list-{$id}" data-level="bibref" data-id="{$id}" onclick="goto('#{$id}')">
+				{$content}
 			</div>
 		</template>
 
