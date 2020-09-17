@@ -288,7 +288,7 @@
 					<tei:creation>
 					</tei:creation>
 				</tei:profileDesc>
-				<tei:revisionDesc status=""> <!--STATO DOCUMENTO-->
+				<tei:revisionDesc status="">
 					<tei:change>
 						<xsl:value-of select="$publication" />
 					</tei:change>

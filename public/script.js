@@ -678,7 +678,7 @@ $(document).ready(main);
 			}
 		  }
 		 
-		  function hideUnpublished(x) {
+		function hideUnpublished(x) {
 			if (x.checked) {
 			  document.getElementById("unpubMetadata").setAttribute("hidden", true);
 			  document.getElementById("pubMetadata").removeAttribute("hidden");
@@ -1163,41 +1163,68 @@ $(document).ready(main);
 			})
 		}
 
-		async function getMetadata(bla, doc) {
-
+		async function getMetadata(fragment, doc) {
 			let file = currentFilename;
 			split = file.split('_');
 			let id = split[6];
-
 			const getIdOptions = {
 				headers: {'Content-type': 'application/json'}
 			}
-
 			let response = await fetch("/api/getId?id=" + id, getIdOptions);
 			const json = await response.json();
 			
-			bla.querySelector('idno').textContent = json.number
-			bla.querySelector('author').textContent = json.author
-			bla.querySelector('author').setAttribute('role', (json.roleList).toString().replace(/,/g, ' '))
-			bla.querySelector('principal').textContent = json.curator
-			bla.querySelector('abstract').textContent = json.abstract
-			bla.querySelectorAll('catRef')[0].setAttribute('target', (json.doctypeList).toString().replace(/,/g, ' '))
-			bla.querySelectorAll('catRef')[1].setAttribute('target', (json.doctopicList).toString().replace(/,/g, ' '))
-			bla.querySelector('revisionDesc').setAttribute('status', json.docstatus)
-		
-			json.provenanceP.forEach((prov) => {
-				
-				let p = doc.createElementNS("http://www.tei-c.org/ns/1.0", "p");
-				let textNode = doc.createTextNode(prov)
-				p.appendChild(textNode);
+			fragment.querySelector('idno').textContent = json.ident
+			fragment.querySelector('author').textContent = json.author
+			fragment.querySelector('author').setAttribute('role', (json.roleList).toString().replace(/,/g, ' '))
+			fragment.querySelector('principal').textContent = json.curator
+			fragment.querySelector('abstract').textContent = json.abstract
 
-				let list = bla.querySelector('list')
-				list.appendChild(p)
-
+			fragment.querySelectorAll('catRef')[0].setAttribute('target', (json.doctypeList).toString().replace(/,/g, ' '))
+			doctypes = fragment.querySelectorAll('catRef')[0].getAttribute('target')
+			referred_doctypes = []
+			split_doctypes = doctypes.split(' ')
+			split_doctypes.forEach((doctype) => {
+				doctype = "#" + doctype
+				referred_doctypes.push(doctype)
 			})
+			fragment.querySelectorAll('catRef')[0].setAttribute('target', referred_doctypes.join(" "))
+
+			fragment.querySelectorAll('catRef')[1].setAttribute('target', (json.doctopicList).toString().replace(/,/g, ' '))
+			doctopics = fragment.querySelectorAll('catRef')[1].getAttribute('target')
+			referred_doctopics = []
+			split_doctopics = doctopics.split(' ')
+			split_doctopics.forEach((doctopic) => {
+				doctopic = "#" + doctopic
+				referred_doctopics.push(doctopic)
+			})
+			fragment.querySelectorAll('catRef')[1].setAttribute('target', referred_doctopics.join(" "))
+
+			fragment.querySelector('revisionDesc').setAttribute('status', json.docstatus)
 			
-			console.log(json.eventDate)
-			// se eventDate e eventPlace ci sono nei metadati:
+			if (json.provenanceP[0] == "") {
+				json.provenanceP.pop()
+			} else if (json.provenanceU[0] == "") {
+				json.provenanceU.pop()
+			}
+
+			if (json.provenanceP.length != 0 && json.provenanceU.length == 0) {
+				json.provenanceP.forEach((prov) => {
+					let p = doc.createElementNS("http://www.tei-c.org/ns/1.0", "p");
+					let textNode = doc.createTextNode(prov)
+					p.appendChild(textNode);
+					let list = fragment.querySelector('list')
+					list.appendChild(p)
+				})
+			} else if (json.provenanceP.length == 0 && json.provenanceU.length != 0) {
+				json.provenanceU.forEach((prov) => {
+					let p = doc.createElementNS("http://www.tei-c.org/ns/1.0", "p");
+					let textNode = doc.createTextNode(prov)
+					p.appendChild(textNode);
+					let list = fragment.querySelector('list')
+					list.appendChild(p)
+				})
+			}
+
 			if (json.eventDate != undefined && json.eventPlace != undefined) {
 				let evDate = doc.createElementNS("http://www.tei-c.org/ns/1.0", "date");
 				let evPlace = doc.createElementNS("http://www.tei-c.org/ns/1.0", "placeName")
@@ -1205,21 +1232,21 @@ $(document).ready(main);
 				let textNotePlace = doc.createTextNode(json.eventPlace)
 				evDate.appendChild(textNoteDate)
 				evPlace.appendChild(textNotePlace)
-				bla.querySelector('creation').appendChild(evPlace)
-				bla.querySelector('creation').appendChild(evDate)
+				fragment.querySelector('creation').appendChild(evPlace)
+				fragment.querySelector('creation').appendChild(evDate)
 			} else if (json.eventDate != undefined) {
 				let evDate = doc.createElementNS("http://www.tei-c.org/ns/1.0", "date");
 				let textNoteDate = doc.createTextNode(json.eventDate)
 				evDate.appendChild(textNoteDate)
-				bla.querySelector('creation').appendChild(evDate)
+				fragment.querySelector('creation').appendChild(evDate)
 			} else if (json.eventPlace != undefined) {
 				let evPlace = doc.createElementNS("http://www.tei-c.org/ns/1.0", "placeName")
 				let textNotePlace = doc.createTextNode(json.eventPlace)
 				evPlace.appendChild(textNotePlace)
-				bla.querySelector('creation').appendChild(evPlace)
+				fragment.querySelector('creation').appendChild(evPlace)
 			}
 
-			return bla
+			return fragment
 		}
 
 		//  save a file in the local download folder
@@ -1246,7 +1273,7 @@ async function saveMetadata(event) {
 
 	let file = currentFilename;
 	let n = $('#ident').val();
-	let number = $('div#file').attr('data-path') + n
+	let ident = $('div#file').attr('data-path') + n
 	let author = $('#author').val();
 	let role = $('select.role').map((_,el) => el.value).get();
 	let curator = $('#curator').val();
@@ -1260,9 +1287,7 @@ async function saveMetadata(event) {
 	let eventDate = $('#event-date').val();
 	let additionalNotes = $('#additional-notes').val();
 
-    let data = {file, number, author, role, curator, abstract, doctype, doctopic, docstatus, provenanceP, provenanceU, eventPlace, eventDate, additionalNotes};
-
-	console.log(data)
+    let data = {file, ident, author, role, curator, abstract, doctype, doctopic, docstatus, provenanceP, provenanceU, eventPlace, eventDate, additionalNotes};
 
     const requestOptions = {
         method: 'POST',

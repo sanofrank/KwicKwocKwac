@@ -9,10 +9,8 @@ router.post('/metadata', async (req,res) => { // xasync finchè aspettiamo il sa
     let file = req.body.file;
     let currPath = `${dir}/${file}`
 
-    console.log(req.body)
-    //CREATE A NEW METADATA RECORD
-    const metadata = new Metadata ({
-        number: req.body.number,
+    const metadata = new Metadata ({                    // crea un nuovo record di metadati
+        ident: req.body.ident,
         author: req.body.author,
         roleList: req.body.role,
         curator: req.body.curator,
@@ -55,11 +53,6 @@ router.get('/getId', async (req, res) => {
     let true_metadata = JSON.stringify(metadata)
     return res.send(true_metadata)
 })
-    // se esiste, lo inserisce nel get fetch e fa la richiesta al server
-    // QUI si fa una fetch scrivendo let response bla
-    // dammi i metadati che appartengono a questa opera con questo id qua -> vedi funzione load in script
-    // il server prende questo come body, lo legge e scarica i metadati salvati riferiti a quell'oggetto e li manda al client tramite una res.send
-
 
 module.exports = router;
 
