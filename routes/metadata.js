@@ -1,8 +1,12 @@
 const router = require('express').Router();
 const Metadata = require('../model/Metadata');
 const fs = require('fs');
+const { metadataValidation } = require('../validation')
 
 router.post('/metadata', async (req,res) => { // xasync finchè aspettiamo il salvataggio 
+
+    const {error} = metadataValidation(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
 
     const dir = 'public/files';
 

@@ -352,6 +352,7 @@
 
 				<div class="modal-body">
 					<form>
+						<p style="color:red" id="errors">
 							<div class="form-group">
 									<label for="ident">Numero del documento</label><br>
 									<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi: <samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
@@ -366,7 +367,7 @@
 									<label>Ruolo dell'autore</label><button style="float:right" type="button" class="btn btn-primary btn-sm" onclick="addRole()"><i class="fa fa-plus" aria-hidden="true"></i></button>
 									<small style="margin-bottom: 10px;" class="form-text text-muted">Il ruolo o incarico istituzionale ricoperto in quel momento dall'autore del documento. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori ruoli.</small>
 									<select id="author-role" name="role" class="form-control role" aria-describedby="author-role-metadata">
-										<option selected>Scegli un ruolo...</option>	
+										<option hidden disabled selected value>Seleziona il ruolo...</option>	
 										<option class="role-option" value="role.01">Delegato Aspirante della Gioventù Cattolica</option>
 										<option class="role-option" value="role.02">Studente</option>
 										<option class="role-option" value="role.03">Membro della FUCI</option>
@@ -416,7 +417,7 @@
 									<label>Tipologia del documento</label><button style="float:right" type="button" class="btn btn-primary btn-sm" onclick="addDoctype()"><i class="fa fa-plus" aria-hidden="true"></i></button>
 									<small style="margin-bottom: 10px;" class="form-text text-muted">La tipologia testuale che caratterizza il documento. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori tipologie.</small>
 									<select name="doctype" class="form-control doctype" aria-describedby="doctype-metadata">
-										<option selected>Scegli una tipologia...</option>	
+										<option hidden disabled selected value>Scegli una tipologia...</option>	
 										<option class="doctype-option" value="doctype.01">Articolo su periodico</option>
 										<option class="doctype-option" value="doctype.02">Articolo su quotidiano</option>
 										<option class="doctype-option" value="doctype.03">Comunicato stampa</option>
@@ -436,7 +437,7 @@
 									<label>Tematica del documento</label><button style="float:right" type="button" class="btn btn-primary btn-sm" onclick="addDoctopic()"><i class="fa fa-plus" aria-hidden="true"></i></button>
 									<small style="margin-bottom: 10px;" class="form-text text-muted">La tematica generale presente nel testo del documento. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori tematiche.</small>
 									<select name="doctopic" class="form-control doctopic" aria-describedby="doctopic-metadata">
-										<option selected>Scegli una tematica...</option>
+										<option hidden disabled selected value>Scegli una tematica...</option>
 										<option class="doctopic-option" value="doctopic.01">Chiesa</option>
 										<option class="doctopic-option" value="doctopic.02">Cultura/Istruzione</option>
 										<option class="doctopic-option" value="doctopic.03">Diritto</option>
@@ -491,8 +492,8 @@
 								<textarea type="text" class="form-control" id="additional-notes" aria-describedby="additionalnotes-metadata" rows="3"></textarea>
 							</div>
 
-							<button type="button" class="btn btn-primary" onclick="saveMetadata()">Salva</button>
 					</form>
+					<button type="button" class="btn btn-primary" onclick="saveMetadata()">Salva</button>
 				</div>
 			</div>
 		  </div>

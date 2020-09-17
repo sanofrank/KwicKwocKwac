@@ -4,13 +4,12 @@ const metadataSchema = new mongoose.Schema({
     ident: {
         type: String,
         required: true,
-        min: 3,
-        max: 25
+        min: 9,
+        max: 9
     },
     author: {
         type: String,
         required: true,
-        max: 255,
         min: 6
     },
     roleList: {
@@ -77,14 +76,12 @@ const metadataSchema = new mongoose.Schema({
     abstract: {
         type: String,
         required: true,
-        min: 6,
+        min: 10,
         max: 1024
     },
     eventPlace: {
         type: String,
         required: false,
-        min: 6,
-        max: 225
     },
     eventDate: {
         type: Number,
@@ -93,7 +90,6 @@ const metadataSchema = new mongoose.Schema({
     additionalNotes: {
         type:String,
         required: false,
-        min: 6,
         max: 1024
     }
 }, {collection: 'metadata'});
