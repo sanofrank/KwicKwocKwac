@@ -717,12 +717,20 @@ $(document).ready(main);
 			},5000);
 		}
 
+		//Extract work title from the current file name
+		function getTitle(fileName){
+			
+			let split = fileName.split('_');
+			let title = split[4];
+
+			return title;
+		}
 
 		// download the currently loaded document to the local disk
 		function downloadDoc(type) {
 			var publicationTpl = `Converted into {$type} by "{$software}" on {$date} from the original source at "{$src}". ` ;
 			var options = {
-				title: $('#file h1').text(),
+				title: getTitle(currentFilename),
 				publication: publicationTpl.tpl({
 					type: type.toUpperCase(), 
 					software: softwareName,
@@ -1301,12 +1309,12 @@ async function saveMetadata(event) {
     const text = await response.text();
 
     if(!response.ok) {
-        $('#errors').text(text);
+		let err = $('#errors');
+		err.text(text);
+		$('#add-metadata').animate({ scrollTop: err },400);
     }else{
 		$('#add-metadata').modal('toggle')
-         
-        console.log("Text");
-        console.log(text);
+		currentFilename = text;
     }
 
 }

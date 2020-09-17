@@ -361,12 +361,12 @@
 	<xsl:template match="html:span[contains(@class, 'person')]">
 		<xsl:choose>
 			<xsl:when test="@data-rs">
-				<tei:rs ref="#{@data-ref}" type="person">
+				<tei:rs ref="#{@data-rs}" type="person">
 					<xsl:apply-templates />
 				</tei:rs>
 			</xsl:when>
 			<xsl:otherwise>
-				<tei:persName ref="#{@data-ref}">
+				<tei:persName ref="#{@about}">
 					<xsl:apply-templates />
 				</tei:persName>
 			</xsl:otherwise>
@@ -376,12 +376,12 @@
 	<xsl:template match="html:span[contains(@class, 'organization')]">
 		<xsl:choose>
 			<xsl:when test="@data-rs">
-				<tei:rs ref="#{@data-ref}" type="organization">
+				<tei:rs ref="#{@data-rs}" type="organization">
 					<xsl:apply-templates />
 				</tei:rs>
 			</xsl:when>
 			<xsl:otherwise>
-				<tei:orgName ref="#{@data-ref}">
+				<tei:orgName ref="#{@about}">
 					<xsl:apply-templates />
 				</tei:orgName>
 			</xsl:otherwise>
@@ -391,12 +391,12 @@
 	<xsl:template match="html:span[contains(@class, 'place')]">
 		<xsl:choose>
 			<xsl:when test="@data-rs">
-				<tei:rs ref="#{@data-ref}" type="place">
+				<tei:rs ref="#{@data-rs}" type="place">
 					<xsl:apply-templates />
 				</tei:rs>
 			</xsl:when>
 			<xsl:otherwise>
-				<tei:placeName ref="#{@data-ref}">
+				<tei:placeName ref="#{@about}">
 					<xsl:apply-templates />
 				</tei:placeName>
 			</xsl:otherwise>

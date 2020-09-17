@@ -64,7 +64,7 @@
 	-webkit-box-decoration-break: clone;
 }
 
-.mention[data-rs] {
+.showStyles .mention[data-rs] {
     border: 1px solid black;
 }
 

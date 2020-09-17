@@ -47,7 +47,7 @@ router.post('/metadata', async (req,res) => { // xasync finchè aspettiamo il sa
             console.log("Successfully renamed the directory.")
             }
         })
-        return res.send('Saved metadata');
+        return res.send(newFilename);
     });
 });
 
