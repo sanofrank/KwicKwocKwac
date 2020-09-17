@@ -25,6 +25,7 @@
 var kwic = new (function () {
 	var lastId = -1;                  // last specified id for new mentions
 	var lastQuoteId = -1;
+	var lastBibId = -1;
 	
 	// generates the id for a mention
 	function getNewId(prefix) {
@@ -34,6 +35,11 @@ var kwic = new (function () {
 	//Quote Id
 	function getNewQuoteId(prefix) {
 		return prefix + (lastQuoteId++)
+	}
+
+	//BibRef Id
+	function getNewBibId(prefix){
+		return prefix + (lastBibId++)
 	}
 	
 	// if mentions are already present in this file, find the largest one and set lastId to that+1
@@ -46,15 +52,15 @@ var kwic = new (function () {
 
 	// If start and end anchors of a range are compatible the mention can be created. 
 	// If one or both of them belong to an existing mention, no worries since the existing mention will be removed anyway. 
-	function compatibleExtremes(range, quote) {
+	function compatibleExtremes(range, mention) {
 		if (range.startContainer.parentElement == range.endContainer.parentElement) return true //Meaning that if the selection is plain, untouched and it's in the same node.
-
+		
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
 		
-		if (start.classList.contains('mention') || start.classList.contains('block'))
+		if (mention && (start.classList.contains('mention') || start.classList.contains('block')))
 			start = start.parentElement // will remove it anyway
-		if (end.classList.contains('mention') || end.classList.contains('block'))
+		if (mention && (end.classList.contains('mention') || end.classList.contains('block')))
 			end = end.parentElement // will remove it anyway
 
 		return  start == end
@@ -170,29 +176,23 @@ var kwic = new (function () {
 			range.setEnd(r.ec,r.eo);
 		}
 
-		console.log(range);
-
 		range.setStart(r.sc, r.so)
 		//range.setEnd(r.ec, r.eo)
 
 		documentFragment = range.extractContents();
 			
 		node.appendChild(documentFragment);
-		//console.log(span);
 
 		range.insertNode(node);
 		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
 		if (node.parentElement.classList.contains('quote')) unwrap(node)
-		console.log("Parent",node.parentNode);
 		//if (node.parentNode.nextSiblings.classList.contains('quote')) unwrap(node);
-
 		var inner = node.querySelectorAll('.quote')
 		for (var i=0; i<inner.length; i++) {
 			unwrap(inner[i]) 
 		}
 
 		return node
-		
 	}
 
 	// if the selection is not composed of whole words, and the action requires whole words,
@@ -596,7 +596,7 @@ var kwic = new (function () {
 			this.switchTo('scraps',true)
 		},
 		// assign this entity to trash. 
-		putToTrash: function(type) {
+		putToTrash: function() {
 			this.switchTo('trash',true,type)
 		}
 	}
@@ -812,36 +812,61 @@ var kwic = new (function () {
 		}
 	}
 
-	this.Citation = function(quotes, options, type) {
+	this.Citation = function(quotesOrbib, options, type) {
 		if (!options) options = {}         // fallback object for inizialization
-		var quotes = quotes || []   // fallback object for inizialization
+		var bibrefs = bibrefs || []
 		var prefix = "citation-" ;
 	
 		this.quotes = []
+		this.bibrefs = []
 		var reference = ""
 		var label = ""
 		var sort = ""
 		var footnoteText = ""
 		var footnoteNum = ""
-		this.id = quotes[0].citation
 		this.position = Number.MAX_VALUE
 		var inners = []
 
-		for (var i=0; i<quotes.length; i++) {
-			console.log(quotes[i]);
-			quotes[i].citation = this.id
-			reference = quotes[i].reference || reference
-			label = quotes[i].label || label
-			sort = quotes[i].sort || sort
-			footnoteText = quotes[i].footnoteText || footnoteText
-			footnoteNum = quotes[i].footnoteNum || footnoteNum
-			inners.push(quotes[i].inner)
-			this.position = Math.min(this.position, quotes[i].position)
-			this.quotes.push(quotes[i])
-			}
+		switch (type) {
+			case 'quote' :
+				var quotes = quotesOrbib || []   // fallback object for inizialization
+				this.id = quotes[0].citation;
+			
+				for (var i=0; i<quotes.length; i++) {
+					console.log("QUOTE",quotes[i]);
+					quotes[i].citation = this.id
+					reference = quotes[i].reference || reference
+					label = quotes[i].label || label
+					sort = quotes[i].sort || sort
+					footnoteText = quotes[i].footnoteText || footnoteText
+					footnoteNum = quotes[i].footnoteNum || footnoteNum
+					inners.push(quotes[i].inner)
+					this.position = Math.min(this.position, quotes[i].position)
+					this.quotes.push(quotes[i])
+					}
+				
+					this.label = options.label || label || quotes[0].id
+					break;
+			case 'bibref' :
+				var bibrefs = quotesOrbib || []   // fallback object for inizialization
+				this.id = bibrefs[0].citation;
+
+				for (var i=0; i<bibrefs.length; i++) {
+					console.log("BIB",bibrefs[i]);
+					bibrefs[i].citation = this.id
+					reference = bibrefs[i].reference || reference
+					label = bibrefs[i].label || label
+					sort = bibrefs[i].sort || sort
+					inners.push(bibrefs[i].inner)
+					this.position = Math.min(this.position, bibrefs[i].position)
+					this.bibrefs.push(bibrefs[i])
+					}
+				
+				this.label = options.label || label || bibrefs[0].id
+				break;
+		}
 
 		this.reference = options.reference || reference || "scraps"
-		this.label = options.label || label || quotes[0].id
 		this.sort = options.sort || sort
 		this.footnoteText = options.footnoteText || footnoteText
 		this.footnoteNum = options.footnoteNum || footnoteNum
@@ -866,24 +891,70 @@ var kwic = new (function () {
 	}
 
 	this.Citation.prototype = {
-	// change a property of this entity by changing the corresponding property of the first mention 
-	change: function(field,value, type) {
-	var done = false
-		for (var i=0; i<this.quotes.length; i++) {
-			if (this.quotes[i][field]) {
-				this.quotes[i].prop(field, value,true)
-				done = true
+	// adds a quote or bibref to this entity. If override, replace the info of the citation with the ones of the quote or bibref
+	append: function(quoteOrbib, type, override=false) {
+		if (override) {
+			quoteOrbib.citation = this.id
+			this.label = quoteOrbib.label || this.label
+			this.sort = quoteOrbib.sort || this.sort
+		}
+		switch(type) {
+			case 'quote' :
+				this.quotes.push(quoteOrbib)
+				break;
+			case 'bibref' :
+				this.bibrefs.push(quoteOrbib)
+		}
+	},
+	// place all quotes oor bibref of a different citation into this one.
+	mergeInto: function(target) {
+		if(this.bibrefs.length > 0){
+			for (var i=0; i<this.bibrefs.length; i++) {
+				this.bibrefs[i].prop('citation',target.id, true)
+				this.bibrefs[i].prop('sort','', true)
+				this.bibrefs[i].prop('label','', true)
+				target.bibrefs.push(this.bibrefs[i])
 			}
-		}			
-		if (!done) this.quotes[0].prop(field, value)
+			kwic.allCitations[this.id] = null
+		}
+	},
+	// change a property of this citation by changing the corresponding property of the first quote or bibref 
+	change: function(field,value, type) {
+		var done = false
+		switch(type) {
+			case 'quote' :
+				for (var i=0; i<this.quotes.length; i++) {
+					if (this.quotes[i][field]) {
+						this.quotes[i].prop(field, value,true)
+						done = true
+					}
+				}			
+				if (!done) this.quotes[0].prop(field, value)
+				break;
+			
+			case 'bibref' :
+				for (var i=0; i<this.bibrefs.length; i++) {
+					if (this.bibrefs[i][field]) {
+						this.bibrefs[i].prop(field, value,true)
+						done = true
+					}
+				}			
+				if (!done) this.bibrefs[0].prop(field, value)
+				break;
+		}
 		},
 	// assign this citation to a different references. 
 	switchTo: function(reference,force) {
-		for (var i=0; i<this.quotes.length; i++) {
-			this.quotes[i].prop('reference', reference,force)
+		if(this.quotes.length > 0){
+			for (var i=0; i<this.quotes.length; i++) {
+				this.quotes[i].prop('reference', reference,force)
+			}
+		}else{
+			for (var i=0; i<this.bibrefs.length; i++) {
+				this.bibrefs[i].prop('reference', reference,force)
+			}
 		}
-		this.reference = reference	
-	
+		this.reference = reference;
 		},
 		// assign this citation to scraps. 
 		putToScraps: function() {
@@ -904,7 +975,6 @@ var kwic = new (function () {
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
-			//DA AGGIUNGERE CONTROLLO ESTREMI
 			//if (!compatibleExtremes(nodeOrRange,mention)) return {}
 			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
 			this.node = wrapQuote(nodeOrRange,document.createElement('span'));			
@@ -945,7 +1015,7 @@ var kwic = new (function () {
 					if (force) {
 						if (value) {
 							this.node.classList = []
-							this.node.classList.add('block')
+							this.node.classList.add('quote')
 							this.node.classList.add(value)
 						} else {
 							this.node.classList.remove(value)					
@@ -989,6 +1059,93 @@ var kwic = new (function () {
 		}
 	}
 
+	this.BibRef = function(nodeOrRange,options) {
+		if (!options) options = {}         // fallback object for inizialization
+		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
+		var prefix = "bibref-" ;
+		var mention = false;
+
+		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
+			this.node = nodeOrRange	
+		} else {
+			if (!compatibleExtremes(nodeOrRange,mention)) return {}
+			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
+			this.node = wrap(nodeOrRange,document.createElement('span'),mention);			
+		}
+
+		this.inner = this.node.innerHTML;
+
+		this.id = this.node.id || getNewBibId(prefix) 
+		this.prop('id', this.id, false) ;
+		this.prop('reference', options.reference || "scraps", true)
+		this.prop('citation', options.citation || options.id || this.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "citation$1"), false)
+		this.prop('sort', options.sort, options.force) ;
+
+		this.reference = dataset.reference || options.reference 	// bibRef, quote
+		this.position = dataset.position || options.position || -1	// order in document, etc. 
+		this.citation = this.node.attributes.about.value
+
+		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
+		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
+	}
+
+	this.BibRef.prototype = {
+		prop: function(name,value,force=false){
+			switch (name) {
+				case 'id':
+					if (force || this.node.id== "") {
+						if (value!=='')
+							this.node.id = value
+					}
+					break; 
+				case 'reference':
+					if (force) {
+						if (value) {
+							this.node.classList = []
+							this.node.classList.add('bibref')
+							this.node.classList.add(value)
+						} else {
+							this.node.classList.remove(value)					
+						}
+					}
+					break; 
+				case 'citation':
+					if (force || this.node.attributes.about == undefined) {
+						if (value) {
+							this.node.setAttribute('about',value)
+						} else {
+							this.node.removeAttribute('about')
+						}
+					}
+					break;
+				default:
+					if (force || this.node.dataset[name]== undefined) {
+						if (value) {
+							this.node.dataset[name] = value
+						} else {
+							delete this.node.dataset[name]
+						}
+					}
+					break;
+			}
+		},
+		putToScraps: function() {
+			this.prop('citation','scraps',true)
+			this.prop('reference', 'scraps', true)
+			this.prop('sort','',true)
+			this.prop('label','Scrapped bibref',true)
+		},
+		putToTrash: function() {
+			this.prop('citation','trash',true)
+			this.prop('reference', 'trash', true)
+			this.prop('sort','',true)
+			this.prop('label','Trashed bibref',true)
+		},
+		unwrap: function() {
+			unwrap(this.node)
+		}
+	}
+
 	// static methods
 	
 	// non complete versioning mechanism for editing mentions
@@ -1026,7 +1183,7 @@ var kwic = new (function () {
 
 	this.findQuotes = function(selector, location){
 		var p = $(selector,location)
-		lastQuoteId = getLargestId(p.get()) +1
+		lastQuoteId = getLargestId(p.get()) +1 
 		for (i=0; i<p.length; i++){
 			var classes = Array.from(p[i].classList).filter( (j) => this.referenceList[j] !== undefined )
 			var q = new this.Quote(p[i], {
@@ -1038,6 +1195,25 @@ var kwic = new (function () {
 		}
 
 		return this.allQuotes;
+	}
+
+	this.findBibRef = function(selector, location){
+		var p = $(selector,location)
+		lastBibId = getLargestId(p.get()) +1 
+		console.log(p);
+		for (i=0; i<p.length; i++){
+			console.log(p[i].classList);
+			var classes = Array.from(p[i].classList).filter( (j) => this.referenceList[j] !== undefined )
+			console.log(classes);
+			var b = new this.BibRef(p[i], {
+				reference: classes.length>0 ? classes[classes.length-1] : '',
+				position: i
+			})
+			this.allBibRef[b.id] = b
+		
+		}
+
+		return this.allBibRef;
 	}
 	
 	// organizes all mentions in a hierarchical array of arrays: categories containing entities containing mentions
@@ -1069,15 +1245,28 @@ var kwic = new (function () {
 	// organizes all quotes in a hierarchical array of arrays
 	this.organizeQuotes = function() {
 		var quotes = this.allQuotes;
+		var bibrefs = this.allBibRef;
 		var citations = this.allCitations;
 		var references = this.allReferences;
 
 		for (var i in quotes) {
 			var quote = quotes[i];
+			console.log(quote);
 			if(!citations[quote.citation]) {
 				citations[quote.citation] = new this.Citation([quote], {}, "quote")
 			} else {
-				citations[quote.citation].append(quote, true)
+				citations[quote.citation].append(quote, quote.reference , true)
+			}
+		}
+
+		for (var i in bibrefs) {
+			var bibref = bibrefs[i]
+			console.log(bibref);
+			if(!citations[bibref.citation]){
+				citations[bibref.citation] = new this.Citation([bibref], {}, "bibref")
+			} else {
+				console.log(citations[bibref.citation]);
+				citations[bibref.citation].append(bibref, bibref.reference , true)
 			}
 		}
 
@@ -1138,13 +1327,20 @@ var kwic = new (function () {
 			for (var j = 0; j<ref.citations.length; j++) {
 				var cit = {...ref.citations[j]}
 				cit.content = ""
-				cit.count = cit.quotes.length
+				cit.count = cit.quotes.length || cit.bibrefs.length
 				//WIKIDATA ID
 				if (tpl.quotes){
 					for (var k=0; k<cit.quotes.length; k++){
 						var quote = {...cit.quotes[k]};
 						quote.content = kwic.templates['none'].tpl(quote)
 						cit.content += tpl.quotes.tpl(quote)
+					}
+				}
+				if (tpl.bibrefs){
+					for (var k=0; k<cit.bibrefs.length; k++){
+						var bibref = {...cit.bibrefs[k]};
+						bibref.content = kwic.templates['none'].tpl(bibref)
+						cit.content += tpl.bibrefs.tpl(bibref)
 					}
 				}
 				ref.content += tpl.citations.tpl(cit)
@@ -1182,8 +1378,7 @@ var kwic = new (function () {
 				source.putToScraps()
 			} else if (sourceData.level == 'entity' && targetData.level == 'trash') {
 				var source = this.allEntities[sourceData.id]
-				var type = source.mentions ? "mention" : "block";
-				source.putToTrash(type)
+				source.putToTrash()
 			} else if (sourceData.level=='mention' && targetData.level == 'entity') {
 				var source = this.allMentions[sourceData.id]
 				var target = this.allEntities[targetData.id]
@@ -1220,11 +1415,12 @@ var kwic = new (function () {
 				}
 			} else if (sourceData.level == 'citation' && targetData.level == 'scraps') {
 				var source = this.allCitations[sourceData.id]
+				console.log(source);
 				source.putToScraps()
 			} else if (sourceData.level == 'citation' && targetData.level == 'trash') {
 				var source = this.allCitations[sourceData.id]
 				source.putToTrash()
-			} else if (sourceData.level=='quote' && targetData.level == 'citation') {
+			} else if (sourceData.level == 'quote' && targetData.level == 'citation') {
 				var source = this.allQuotes[sourceData.id]
 				var target = this.allCitations[targetData.id]
 				source.switchTo(target,true)
@@ -1233,6 +1429,16 @@ var kwic = new (function () {
 				source.putToScraps()
 			} else if (sourceData.level == 'quote' && targetData.level == 'trash') {
 				var source = this.allQuotes[sourceData.id]
+				source.putToTrash()
+			} else if (sourceData.level == 'bibref' && targetData.level == 'citation') {
+				var source = this.allBibRef[sourceData.id]
+				var target = this.allCitations[targetData.id]
+				source.switchTo(target,true)
+			}  else if (sourceData.level == 'bibref' && targetData.level == 'scraps') {
+				var source = this.allBibRef[sourceData.id]
+				source.putToScraps()
+			} else if (sourceData.level == 'bibref' && targetData.level == 'trash') {
+				var source = this.allBibRef[sourceData.id]
 				source.putToTrash()
 			}
 		}
@@ -1325,7 +1531,7 @@ var kwic = new (function () {
 					} else {
 						range = selection.sel.getRangeAt(0);
 					}
-					if(ref.action == 'wrap') {
+					if(ref.action == 'wrap-quote') {
 						var footnote,q;
 
 						if(selection.footnoteNode){
@@ -1347,13 +1553,21 @@ var kwic = new (function () {
 							this.allQuotes[q.id] = q;
 							console.log(this.allQuotes);
 						}
-						ret = true;
 					}
+					if(ref.action == 'wrap-bib'){
+						var b;
+
+						b = new this.BibRef(range,{
+							reference: ref.entity,
+						})
+						console.log(b);
 					}
+					ret = true;
 				}
 			}
-			return ret;
 		}
+		return ret;
+	}
 		
 	// creates a list of all entities ready to be exported as a JSON or CSV file
 	this.compactEntities = function(type) {
@@ -1431,6 +1645,7 @@ var kwic = new (function () {
 		this.allReferences = {}
 		this.allCitations = {}
 		this.allQuotes = {}
+		this.allBibRef = {}
 	}
 
 
