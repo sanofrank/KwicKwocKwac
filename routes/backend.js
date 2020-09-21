@@ -140,7 +140,6 @@ router.post('/save' , async (req,res) => {
     
     try{
         let filename = req.body.filename;
-        console.log(req.body);
         let path = `${dir}/${filename}`;
         let htmlPath = `${path}/index.html`;
         let content;
@@ -159,7 +158,6 @@ router.post('/save' , async (req,res) => {
         content = out.replace(regex,"");
         content.replace(regex,"");
 
-        console.log("content",content);
         if(content!== "" && !content.includes("Key Words In Context")){
             fs.writeFile(htmlPath,content, (err) => {
                 if(err) return res.status(400).send(`File non salvato corretamente`);

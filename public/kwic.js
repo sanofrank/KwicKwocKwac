@@ -132,8 +132,10 @@ var kwic = new (function () {
 		return node
 	}
 
-	function wrapQuote(range,node){
+	function wrapQuote(range,node,aNode){
 		let documentFragment;
+		let quote = document.createRange();
+		console.log("wrapQuote",quote,aNode);
 		
 		var r = {
 			sc: range.startContainer, 
@@ -141,6 +143,7 @@ var kwic = new (function () {
 			ec: range.endContainer, 
 			eo: range.endOffset
 		}
+		console.log("tagName range",range.endContainer.tagName);
 
 		if (range.startContainer.parentElement.classList.contains('quote')) 
 			unwrap(range.startContainer.parentElement)
@@ -182,8 +185,17 @@ var kwic = new (function () {
 		documentFragment = range.extractContents();
 			
 		node.appendChild(documentFragment);
-
 		range.insertNode(node);
+		
+		console.log("node.firstChild,r.ec",node.firstChild,r.ec,r.ec.parentNode.parentNode)
+
+		quoteText = document.createElement('span');
+		quote.setStartBefore(node.firstChild);
+		quote.setEndBefore(aNode.parentNode)
+		console.log("NEW QUOTE",quote);
+		quote.surroundContents(quoteText);
+		quoteText.classList.add('quote-text');
+
 		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
 		if (node.parentElement.classList.contains('quote')) unwrap(node)
 		//if (node.parentNode.nextSiblings.classList.contains('quote')) unwrap(node);
@@ -833,7 +845,6 @@ var kwic = new (function () {
 				this.id = quotes[0].citation;
 			
 				for (var i=0; i<quotes.length; i++) {
-					console.log("QUOTE",quotes[i]);
 					quotes[i].citation = this.id
 					reference = quotes[i].reference || reference
 					label = quotes[i].label || label
@@ -852,7 +863,6 @@ var kwic = new (function () {
 				this.id = bibrefs[0].citation;
 
 				for (var i=0; i<bibrefs.length; i++) {
-					console.log("BIB",bibrefs[i]);
 					bibrefs[i].citation = this.id
 					reference = bibrefs[i].reference || reference
 					label = bibrefs[i].label || label
@@ -977,10 +987,13 @@ var kwic = new (function () {
 		} else {
 			//if (!compatibleExtremes(nodeOrRange,mention)) return {}
 			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
-			this.node = wrapQuote(nodeOrRange,document.createElement('span'));			
+			this.node = wrapQuote(nodeOrRange,document.createElement('span'), options.supNode);			
 		}
-
-		this.inner = this.node.innerHTML;
+		
+		if(this.node.getElementsByClassName('quote-text')[0])
+			this.inner = this.node.getElementsByClassName('quote-text')[0].innerHTML;
+		else 
+			this.inner = this.node.innerHTML;
 
 		this.id = this.node.id || getNewQuoteId(prefix) 
 		this.prop('id', this.id, false) ;
@@ -1129,6 +1142,12 @@ var kwic = new (function () {
 					break;
 			}
 		},
+		switchTo: function(citation,force) {
+			this.prop('citation',citation.id,force)
+			this.prop('reference', citation.reference, force)
+			this.prop('sort','',force)
+			this.prop('label','',force)
+		},
 		putToScraps: function() {
 			this.prop('citation','scraps',true)
 			this.prop('reference', 'scraps', true)
@@ -1147,7 +1166,7 @@ var kwic = new (function () {
 	}
 
 	// static methods
-	
+
 	// non complete versioning mechanism for editing mentions
 	this.addToEditList = function(before,after) {
 		this.editList.push({
@@ -1162,6 +1181,48 @@ var kwic = new (function () {
 	this.setPrefs = function(type,value) {
 		this.prefs[type] = value
 	}
+
+	//Mark all footnote with curator or author
+	this.markFootnote = function(location,options) {
+		let footnotes = [];
+		var counter = 0;
+
+		if(options){
+			var node = options.node;
+			var markChar = options.markChar;
+			var attribute = options.attribute;
+			var selector = options.selector;
+			var author = options.author;
+			var exception;
+			if(exception === '') exception = options.exception;
+		}
+
+		let container = document.querySelector(`${location}`);
+		exception ? footnotes = container.querySelectorAll(`${node}[${attribute}^='${selector}']:not([${node}$='${exception}'])`) : footnotes = container.querySelectorAll(`${node}[${attribute}^='${selector}']`);
+		
+		if(footnotes){
+			let re = new RegExp(`^\\${markChar}`,'g');
+			footnotes.forEach(footnote => {
+				let text = footnote.innerText; //gets just human readable text without styles
+	
+				text.trim();
+				
+				
+				if(text.match(re)){
+					footnote.setAttribute('data-owner',`${author.replace(/\s/g,'')}`)
+					footnote.setAttribute('data-toggle','tooltip');
+					footnote.setAttribute('data-html',true);
+					footnote.setAttribute('title',`Nota di <em>${author}</em>`);
+					counter++;
+				}else{
+					footnote.setAttribute('data-owner','curator')
+				}
+			});
+		}
+		$('[data-toggle="tooltip"]').tooltip();
+
+		return counter;
+	}
 		
 	// search for all elements of the 'mention' class (as specified by the selector parameter) 
 	// and puts them in the allMention array
@@ -1170,7 +1231,6 @@ var kwic = new (function () {
 		lastId = getLargestId(p.get()) +1
 		for (i=0; i< p.length; i++) {
 			var classes = Array.from(p[i].classList).filter( (j) => this.categoryList[j] !== undefined )
-			console.log("findMentions", classes[classes.length-1]);
 			var m = new this.Mention(p[i], {
 				category: classes.length>0 ? classes[classes.length-1] : '',
 				position: i
@@ -1200,11 +1260,8 @@ var kwic = new (function () {
 	this.findBibRef = function(selector, location){
 		var p = $(selector,location)
 		lastBibId = getLargestId(p.get()) +1 
-		console.log(p);
 		for (i=0; i<p.length; i++){
-			console.log(p[i].classList);
 			var classes = Array.from(p[i].classList).filter( (j) => this.referenceList[j] !== undefined )
-			console.log(classes);
 			var b = new this.BibRef(p[i], {
 				reference: classes.length>0 ? classes[classes.length-1] : '',
 				position: i
@@ -1251,7 +1308,6 @@ var kwic = new (function () {
 
 		for (var i in quotes) {
 			var quote = quotes[i];
-			console.log(quote);
 			if(!citations[quote.citation]) {
 				citations[quote.citation] = new this.Citation([quote], {}, "quote")
 			} else {
@@ -1261,11 +1317,9 @@ var kwic = new (function () {
 
 		for (var i in bibrefs) {
 			var bibref = bibrefs[i]
-			console.log(bibref);
 			if(!citations[bibref.citation]){
 				citations[bibref.citation] = new this.Citation([bibref], {}, "bibref")
 			} else {
-				console.log(citations[bibref.citation]);
 				citations[bibref.citation].append(bibref, bibref.reference , true)
 			}
 		}
@@ -1415,7 +1469,6 @@ var kwic = new (function () {
 				}
 			} else if (sourceData.level == 'citation' && targetData.level == 'scraps') {
 				var source = this.allCitations[sourceData.id]
-				console.log(source);
 				source.putToScraps()
 			} else if (sourceData.level == 'citation' && targetData.level == 'trash') {
 				var source = this.allCitations[sourceData.id]
@@ -1527,7 +1580,7 @@ var kwic = new (function () {
 					console.log("SELECTION",selection);
 					var range;
 					if(selection.footnoteNode){
-						range = selection.range
+						range = selection.range;
 					} else {
 						range = selection.sel.getRangeAt(0);
 					}
@@ -1539,6 +1592,7 @@ var kwic = new (function () {
 
 							q = new this.Quote(range, {
 								reference: ref.entity,
+								supNode: selection.footnoteNode,
 								footnote: footnote.footnoteNode,
 								footnoteNum: footnote.footnoteNum,
 								footnoteText: footnote.footnoteText
