@@ -68,4 +68,17 @@ function logout() {
 }
 
 
+$('#form_log').on('keypress',function(e) {
+    if(e.which == 13) {
+        login();
+    }
+});
+
+$('#form_reg').on('keypress',function(e) {
+    if(e.which == 13) {
+        register();
+    }
+});
+
+
 
