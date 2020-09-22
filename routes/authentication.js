@@ -21,11 +21,11 @@ router.post('/login', async (req,res) => {
 
     //Checking if username exist
     const user = await User.findOne({name: req.body.username}); //check in the DB
-    if(!user) return res.status(400).send('Invalid password or username');
+    if(!user) return res.status(400).send('Il nome utente o la password non sono validi.');
 
     //Password is correct
     const validPass = await bcrypt.compare(req.body.password,user.password); //combine the password gave vs the one we stored
-    if(!validPass) return res.status(400).send('Invalid password or username');
+    if(!validPass) return res.status(400).send('Il nome utente o la password non sono validi.');
 
     //Create and assign token
     const token = jwt.sign({id: user._id, username: user.name},process.env.TOKEN_SECRET); //pass some data to the token
