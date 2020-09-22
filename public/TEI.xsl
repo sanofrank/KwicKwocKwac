@@ -36,6 +36,7 @@
 						</tei:idno>
 					</tei:publicationStmt>
 					<tei:sourceDesc>
+						<tei:p>Testo digitale ottenuto tramite codifica del testo originale "<xsl:value-of select="$title" />"</tei:p>
 						<tei:list>
 						</tei:list>
 						<tei:listPerson>
@@ -314,6 +315,28 @@
 		</xsl:copy>
 	</xsl:template>
 
+	<xsl:template match="html:sup">
+		<xsl:apply-templates />
+	</xsl:template>
+
+	<xsl:template match="html:a">
+    	<tei:ref>
+        	<xsl:apply-templates select="node()|@*"/>
+    	</tei:ref>
+	</xsl:template>
+
+	<xsl:template match="@href">
+		<xsl:attribute name="target">
+			<xsl:value-of select="." />
+		</xsl:attribute>
+	</xsl:template>
+
+	<xsl:template match="html:li">
+		<tei:note place="bottom" type="footnote"> 		<!--MANCA SUBTYPE (1. da mettere nell'html; 2. da convertire qui)-->
+			<xsl:apply-templates select="node()|@*"/>
+		</tei:note>
+	</xsl:template>
+
 	<xsl:template match="@id">
 		<xsl:attribute name="xml:id">
 			<xsl:value-of select="." />
@@ -352,8 +375,14 @@
 		</tei:byline>
 	</xsl:template>
 
-	<xsl:template match="html:i">
+	<xsl:template match="html:i | html:em">
 		<tei:span rend="italic">
+			<xsl:apply-templates />
+		</tei:span>
+	</xsl:template>
+
+	<xsl:template match="html:b | html:strong">
+		<tei:span rend="bold">
 			<xsl:apply-templates />
 		</tei:span>
 	</xsl:template>
@@ -404,15 +433,27 @@
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'bib')]">
-		<tei:bibl ref="#{@data-ref}">
+		<tei:bibl ref="#{@about}">
 			<xsl:apply-templates />
 		</tei:bibl>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'quote')]">
-		<tei:quote ref="#{@data-ref}">
+		<tei:cit xml:id="{@about}">
+			<xsl:apply-templates />
+		</tei:cit>
+	</xsl:template>
+
+	<xsl:template match="html:span[contains(@class, 'quote-text')]">
+		<tei:quote>
 			<xsl:apply-templates />
 		</tei:quote>
+	</xsl:template>
+
+	<xsl:template match="html:span[contains(@class, 'quote')]/text()">
+		<xsl:element name="quote">
+			<xsl:apply-templates />
+		</xsl:element>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'person')]" mode="inner">

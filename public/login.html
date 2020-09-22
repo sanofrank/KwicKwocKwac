@@ -8,7 +8,7 @@
     <link href="./auth.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <title>Login</title>
+    <title>Accedi all'account</title>
 </head>
 <body>
     <div id="container" class="d-inline-flex justify-content-center align-items-center">
@@ -18,7 +18,7 @@
         </div>
         <div id = "form_container">
             <form id="myForm">
-                <h3>Login</h3>
+                <h3>Accedi</h3>
                 <p id ="errors"></p>
                     <!--
                     <div class="form-group">
@@ -28,7 +28,7 @@
                     </div>
                    --> 
                 <div class="form-group">
-                    <label data-error="wrong" data-success="right" for="usernameForm">Name</label>
+                    <label data-error="wrong" data-success="right" for="usernameForm">Nome utente</label>
           			<input type="text" id="usernameForm" class="form-control validate" placeholder="Enter username">
                 </div>
                 <div class="form-group">
@@ -36,10 +36,10 @@
                   <input type="password" class="form-control" id="password" placeholder="Password">
                 </div>
                 <div>
-                    <p>Not signed up? <a href="/register">Register here</a></p>                
+                    <p>Non hai ancora effettuato la registrazione? <a href="/register">Crea un nuovo account</a></p>                
                 </div>
               </form>
-              <button id="login" type="submit" class="btn btn-primary" onclick="login()">Login</button>
+              <button id="login" type="submit" class="btn btn-primary" onclick="login()">Accedi</button>
         </div>
         </div>
     
