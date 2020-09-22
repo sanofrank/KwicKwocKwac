@@ -23,44 +23,44 @@
 					<div class="collapse navbar-collapse" id="navbarCollapse">
 						<ul class="navbar-nav mr-auto">
 							<li class="nav-item dropdown active">
-								<a class="nav-link dropdown-toggle" href="#" id="fileList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Files</a>
+								<a class="nav-link dropdown-toggle" href="#" id="fileList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">File</a>
 								<div id="fileMenu" class="dropdown-menu" aria-labelledby="fileList">
 								</div>
 							</li>
 							<li class="nav-item dropdown active d-none" id="commandList">
-								<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Operations</a>
+								<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Funzioni</a>
 								<div id="commandMenu" class="dropdown-menu" aria-labelledby="dropdown01">
-									<a class="dropdown-item" href="#" onclick='toggleStyles()'>Show annotations</a>
-									<a class="dropdown-item" href="#" onclick='' data-toggle="modal" data-target="#add-metadata">Add Metadata</a>
+									<a class="dropdown-item" href="#" onclick='toggleStyles()'>Mostra annotazioni</a>
+									<a class="dropdown-item" href="#" onclick='' data-toggle="modal" data-target="#add-metadata">Aggiungi metadati</a>
 									<div class="dropdown-divider"></div>
-									<a class="dropdown-item" href="#" onclick="downloadDoc('html')">Download HTML</a>
-									<a class="dropdown-item" href="#" onclick="downloadDoc('tei')">Download TEI</a>
+									<a class="dropdown-item" href="#" onclick="downloadDoc('html')">Scarica HTML</a>
+									<a class="dropdown-item" href="#" onclick="downloadDoc('tei')">Scarica TEI</a>
 									<div class="dropdown-divider"></div>
-									<a class="dropdown-item" href="#" onclick="exportEntities('JSON')">Export entities as JSON</a>
-									<a class="dropdown-item" href="#" onclick="exportEntities('CSV')">Export entities as CSV</a>
-									<a class="dropdown-item editOnly" href="#" role="button" data-toggle="modal" data-target="#EntityUpload">Import entities</a>
+									<a class="dropdown-item" href="#" onclick="exportEntities('JSON')">Esporta entità in JSON</a>
+									<a class="dropdown-item" href="#" onclick="exportEntities('CSV')">Esporta entità in CSV</a>
+									<a class="dropdown-item editOnly" href="#" role="button" data-toggle="modal" data-target="#EntityUpload">Importa entità</a>
 									<div class="dropdown-divider"></div>
-									<a class="dropdown-item editOnly" href="#" onclick="emptyTrash()">Empty trash</a>
+									<a class="dropdown-item editOnly" href="#" onclick="emptyTrash()">Svuota cestino</a>
 								</div>
 							</li>
 						</ul>
 						<ul class="navbar-nav mr-auto">
 							<li class="nav-item active editOnly" id="saveButton">
-								<a class="nav-link" href="#" role="button" onClick="saveDoc()"><span class="oi oi-folder" title="Save document" aria-hidden="true"></span> <span>Save</span></a>
+								<a class="nav-link" href="#" role="button" onClick="saveDoc()"><span class="oi oi-folder" title="Save document" aria-hidden="true"></span> <span>Salva</span></a>
 							</li>
 						</ul>
 						<ul class="navbar-nav my-2 my-lg-0">
 							<li class="nav-item active" id="uploadButton">	
-								<a class="nav-link editOnly" href="#" role="button" data-toggle="modal" data-target="#FileUpload"><span class="oi oi-cloud-upload" title="Upload local HTML document" aria-hidden="true"></span> <span class="sr-only">Upload document</span></a>
+								<a class="nav-link editOnly" href="#" role="button" data-toggle="modal" data-target="#FileUpload"><span class="oi oi-cloud-upload" title="Upload local HTML document" aria-hidden="true"></span> <span class="sr-only">Carica documento</span></a>
 							</li>
 							<li class="nav-item active" id="editButton">
-								<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()" ><span class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span class="sr-only">Edit doc</span></a> 
+								<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()" ><span class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span class="sr-only">Modifica documento</span></a> 
 							</li>
 							<li class="nav-item active">	
 								<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#logout"><span class="oi oi-account-logout" title="Logout from platform" aria-hidden="true"></span> <span class="sr-only">Logout</span></a>
 							</li>
 							<li class="nav-item active">
-								<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span class="oi oi-question-mark border-light rounded-circle" title="Info about KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">About (current)</span></a>
+								<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span class="oi oi-question-mark border-light rounded-circle" title="Info about KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">Il progetto</span></a>
 							</li>
 						</ul>
 					</div>
@@ -82,15 +82,15 @@
 								<div class="col-12 h-100 pr-0 mb-0">
 									<ul class="nav nav-tabs" id="otherTab" role="tablist">
 										<li class="nav-item dropPoint" data-level="scraps" data-id="scraps">
-											<a class="nav-link active" id="scraps-realtab" data-toggle="tab" href="#scraps-realpane" role="tab" aria-controls="scrapsPane" aria-selected="true">Scraps</a>
+											<a class="nav-link active" id="scraps-realtab" data-toggle="tab" href="#scraps-realpane" role="tab" aria-controls="scrapsPane" aria-selected="true">Scarti</a>
 										</li>
 										<li class="nav-item">
-											<a class="nav-link" id="info-tab" data-toggle="tab" href="#infoPane" role="tab" aria-controls="infoPane" aria-selected="false">Info</a>
+											<a class="nav-link" id="info-tab" data-toggle="tab" href="#infoPane" role="tab" aria-controls="infoPane" aria-selected="false">Informazioni</a>
 										</li>
 										<li class="nav-item ml-auto pointer dropPoint" data-level="trash" data-id="trash">
 											<a class="nav-link" id="trash-realtab" data-toggle="tab" data-target="#trash-realpane">
 												<span class="oi oi-trash" title="Trash pane" aria-hidden="true"></span> 
-												<span class="sr-only">Trash</span>
+												<span class="sr-only">Cestino</span>
 											</a>
 										</li>
 									</ul>
@@ -99,7 +99,7 @@
 											<ul></ul>
 										</div>
 										<div class="tab-pane ug-border ug-border-notop scroll-col h-100" id="infoPane" role="tabpanel" aria-labelledby="info-tab">
-											<h1>Some info</h1>
+											<h1>Informazioni</h1>
 										</div>
 										<div class="tab-pane ug-border ug-border-notop dropPoint h-100" id="trash-realpane" role="tabpanel" aria-labelledby="trash-tab"  data-level="trash" data-id="trash">
 											<ul></ul>
@@ -113,10 +113,10 @@
 								<nav id="tools" class="navbar  navbar-expand-md border ml-2 my-0 editOnly bg-light">
 									<div class="btn-group-vertical btn-group-toggle mr-2" data-toggle="buttons">
 										<label class="btn btn-secondary active btn-sm">
-										  <input type="radio" name="options" id="option1" autocomplete="off" onclick="showMentions()" checked> Mentions
+										  <input type="radio" name="options" id="option1" autocomplete="off" onclick="showMentions()" checked> Menzioni
 										</label>
 										<label class="btn btn-secondary btn-sm">
-										  <input type="radio" name="options" id="option2" autocomplete="off" onclick="showReferences()"> References
+										  <input type="radio" name="options" id="option2" autocomplete="off" onclick="showReferences()"> Riferimenti
 										</label>
 									</div>
 									<div id="categoriesButton" class="btn-group mr-auto" role="group" aria-label="Basic example">
@@ -125,21 +125,21 @@
 									</div>
 									<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
 										<label class="small" title="Pressing ALT inverts behaviour">
-											Extend selection to word (ALT or ⌥)
+											Estendi selezione (ALT or ⌥)
 											<span class="switch">
 												<input type="checkbox" checked onchange="prefs('extend', this.checked)">
 												<span class="slider round"></span>
 											</span>
 										</label>
 										<label class="small" title="Pressing SHIFT inverts behaviour">
-											Mark all instances (⇧)
+											Marca tutte le istanze (⇧)
 											<span class="switch">
 												<input type="checkbox" checked onchange="prefs('markAll', this.checked)">
 												<span class="slider round"></span>
 											</span>
 										</label>
 										<label class="small" title="Chenge the document status to working, done, default">
-											Change the document status
+											Cambia stato di lavoro
 											<button id="status" type="button" class="btn btn-primary btn-sm" onclick="changeStatus()"></button>
 										</label>
 									</div>
@@ -165,9 +165,9 @@
 				  </button>
 				</div>
 				<div class="modal-body">
-				  <p>Are you sure you want to logout?</p>
+				  <p>Vuoi eseguire il logout e uscire dal programma?</p>
 				  <div class="float-right">
-					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="logout()">Yes</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="logout()">Si</button>
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>				
 				  </div>
 				  </div>
@@ -178,13 +178,13 @@
 		  <div class="modal-dialog" role="document">
 			<div class="modal-content">
 			  <div class="modal-header">
-				<h5 class="modal-title" id="aboutLabel">About KWIC KWOC KWAC</h5>
+				<h5 class="modal-title" id="aboutLabel">Riguardo KWIC KWOC KWAC</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				  <span aria-hidden="true">&times;</span>
 				</button>
 			  </div>
 			  <div class="modal-body">
-				<p>A test for KWIC KWOC KWAC visualization and editing</p>
+				<p>Un'applicazione web per la marcatura e visualizzazione di documenti digitali.</p>
 				<p class="text-center"><img src="/kwickwockwac.jpg" alt="an image of kwic, kwoc and kwac" title="The three nephews of Paperinik"></p>
 				<p>© 2020 Fabio Vitali. All rights reserved.</p>
 			  </div>
@@ -198,7 +198,7 @@
 		  <div class="modal-dialog" role="document">
 			<div class="modal-content">
 			  <div class="modal-header">
-				<h5 class="modal-title" id="prefsLabel">Preferences</h5>
+				<h5 class="modal-title" id="prefsLabel">Preferenze</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				  <span aria-hidden="true">&times;</span>
 				</button>
@@ -206,33 +206,33 @@
 			  <div class="modal-body">
 				<form>
 				  <div class="form-group row">
-					<label for="widthControlRange" class="col-6">Left column's size:</label>
-					<span class="rangeExtreme col-1 p-0 pr-1">small</span>
+					<label for="widthControlRange" class="col-6">Dimensioni colonna sinistra:</label>
+					<span class="rangeExtreme col-1 p-0 pr-1">piccola</span>
 					<input type="range" class="form-control-range col-3" id="widthControlRange" min="2" max="10" value="4" step="1" onchange="prefs('width',this.value)">
-					<span class="rangeExtreme col-1 p-0 pl-1">large</span>
+					<span class="rangeExtreme col-1 p-0 pl-1">grande</span>
 				  </div>
 				  <div class="form-group row">
-					<label for="heightControlRange" class="col-6">Entity pane's size:</label>
-					<span class="rangeExtreme col-1 p-0 pr-1">short</span>
+					<label for="heightControlRange" class="col-6">Dimensioni pannello entità:</label>
+					<span class="rangeExtreme col-1 p-0 pr-1">piccolo</span>
 					<input type="range" class="form-control-range col-3" id="heightControlRange" min="20" max="100" value="50" step="10" onchange="prefs('height',this.value)">
-					<span class="rangeExtreme col-1 p-0 pl-1">tall</span>
+					<span class="rangeExtreme col-1 p-0 pl-1">grande</span>
 				  </div>
 				  <div class="form-group row">
-					<div class="col-6">Sort entities:</div>
+					<div class="col-6">Ordina:</div>
 					<div id="formStyleGroup" class="btn-group col-5 btn-group-toggle" data-toggle="buttons" role="group" aria-label="Choose Sort">
 						  <label class="btn btn-primary" id="pref-alpha">
-							<input type="radio" name="sort" autocomplete="off" value="alpha" onclick="prefs('sort',this.value)">Alpha
+							<input type="radio" name="sort" autocomplete="off" value="alpha" onclick="prefs('sort',this.value)">Alfa.
 						  </label>
 						  <label class="btn btn-primary" id="pref-count">
-							<input type="radio" name="sort" autocomplete="off" value="count" onclick="prefs('sort',this.value)">Count
+							<input type="radio" name="sort" autocomplete="off" value="count" onclick="prefs('sort',this.value)">Conto
 						  </label>
 						  <label class="btn btn-primary" id="pref-position">
-							<input type="radio" name="sort" autocomplete="off" value="position" onclick="prefs('sort',this.value)">Position
+							<input type="radio" name="sort" autocomplete="off" value="position" onclick="prefs('sort',this.value)">Pos.
 						  </label>
 					</div>
 				  </div>
 				  <div class="form-group row">
-					<div class="col-6">Keyword style:</div>
+					<div class="col-6">Formato di indicizzazione:</div>
 					<div id="formStyleGroup" class="btn-group col-5 btn-group-toggle" data-toggle="buttons" role="group" aria-label="Choose Style">
 						  <label class="btn btn-primary" id="pref-KWIC">
 							<input type="radio" name="style" autocomplete="off" value="KWIC" onclick="prefs('style',this.value)">KWIC
@@ -246,7 +246,7 @@
 					</div>
 				  </div>
 				  <div class="form-group row">
-					<label for="formControlRange" class="col-6">Words around keywords:</label>
+					<label for="formControlRange" class="col-6">Numero di parole contestuali:</label>
 					<input type="number" class="form-control col-5" id="WordsAroundControl" min="0" value="5" onchange="prefs('wordsaround',this.value)">
 				  </div>
 				</form>
@@ -261,19 +261,19 @@
 		  <div class="modal-dialog" role="document">
 			<div class="modal-content">
 			  <div class="modal-header">
-				<h5 class="modal-title" id="EntityUploadLabel">Upload entities</h5>
+				<h5 class="modal-title" id="EntityUploadLabel">Carica entità</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				  <span aria-hidden="true">&times;</span>
 				</button>
 			  </div>
 			  <div class="modal-body">
-			  	<p>Select a local file containing a JSON or a CSV list of entities</p>
+			  	<p>Seleziona un file locale contenente una lista di entità in JSON o in CSV</p>
 				<input type="file" id="entityFiles" name="entityFiles" />
 				<p id="entityList"></p>
 			  </div>
 			  <div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-				<button type="button" id="importEntities" class="btn btn-primary" data-dismiss="modal" onclick="addEntities()" disabled>Import entities</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Annulla</button>
+				<button type="button" id="importEntities" class="btn btn-primary" data-dismiss="modal" onclick="addEntities()" disabled>Importa entità</button>
 			  </div>
 			</div>
 		  </div>
@@ -282,19 +282,19 @@
 		  <div class="modal-dialog" role="document">
 			<div class="modal-content">
 			  <div class="modal-header">
-				<h5 class="modal-title" id="FileUploadLabel">Upload Document</h5>
+				<h5 class="modal-title" id="FileUploadLabel">Carica documento</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				  <span aria-hidden="true">&times;</span>
 				</button>
 			  </div>
 			  <div class="modal-body">
-				<p><label for="docFile">Select a local file containing a document in DOCX or HTML format.</label></p>
+				<p><label for="docFile">Seleziona un file locale contenente un documento in formato .docx o .html.</label></p>
 				<div id="fileParams">
-					<label for="sezNumber">Section</label>
+					<label for="sezNumber">Sezione</label>
 					<input type="number" id = "sezNumber" name ="sezNumber" min="1" max="2" required/>
 					<label for="volNumber">Volume</label>
 					<input type="number" id = "volNumber" name ="volNumber" min="1" max="4" required/>
-					<label for="tomNumber">Tome</label>
+					<label for="tomNumber">Tomo</label>
 					<input type="number" id = "tomNumber" name ="tomNumber" min="1" max="2" required/>
 					<br>
 					<label for="operaName">Opera</label>
@@ -304,8 +304,8 @@
 				  <input type="file" accept=".html, .docx" id="docFile" name="docFile" disabled/>
 				</div>		
 			  <div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-				<button type="button" id="uploadFile" class="btn btn-primary" data-dismiss="modal" onclick="uploadDoc(uploadData)" disabled>Upload file</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Cancella</button>
+				<button type="button" id="uploadFile" class="btn btn-primary" data-dismiss="modal" onclick="uploadDoc(uploadData)" disabled>Carica file</button>
 			  </div>
 			</div>
 		  </div>
@@ -315,13 +315,13 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header text-center">
-						<h5 class="modal-title" id="LoginLabel">Sign in</h5>
+						<h5 class="modal-title" id="LoginLabel">Registrati</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
 					<div class = "modal-body">
-						<p>Insert username and password to edit content.</p>
+						<p>Inserisci un nome utente e una password.</p>
 						<p style="color:red" id="error">
 						</p>
 						<div class = "md-form mb-5">
@@ -344,7 +344,7 @@
 			<div class="modal-dialog" role="document">
 			  <div class="modal-content">
 				<div class="modal-header">
-				  <h5 class="modal-title" id="addMetadata">Add metadata</h5>
+				  <h5 class="modal-title" id="addMetadata">Aggiungi metadati</h5>
 				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				  </button>
@@ -355,12 +355,12 @@
 						<p style="color:red" id="errors">
 							<div class="form-group">
 									<label for="ident">Numero del documento</label><br>
-									<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi: <samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
+									<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre compreso tra 001 e 999, assegnato ai documenti <strong>in ordine crescente</strong>. Esempi: <samp>001</samp>, <samp>002</samp>, <samp>003</samp>, ..., <samp>010</samp>, <samp>011</samp>, <samp>012</samp>, ...</small>
 									<input type="text" class="form-control" id="ident" aria-describedby="id-metadata">
 							</div>
 						  <div class="form-group">
 									<label for="author">Autore del documento</label>
-									<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome Cognome) dell'autore del documento. Esempio: <samp>Aldo Moro</samp>.</small>
+									<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (<strong>Nome Cognome</strong>, senza abbreviazioni) dell'autore del documento. Esempio: <samp>Aldo Moro</samp>.</small>
 									<input type="text" class="form-control" id="author" aria-describedby="author-metadata">
 							</div>
 							<div class="form-group role-group">
@@ -405,12 +405,12 @@
 							</div>
 							<div class="form-group">
 									<label for="curator">Ricercatore curatore</label>
-									<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome Cognome) del ricercatore che ha curato la trascrizione e marcatura del documento. Esempio: <samp>Mario Rossi</samp>.</small>
+									<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (<strong>Nome Cognome</strong>, senza abbreviazioni) del ricercatore che ha curato la trascrizione e marcatura del documento. Esempio: <samp>Mario Rossi</samp>.</small>
 									<input type="text" class="form-control" id="curator" aria-describedby="curator-metadata">
 							</div>
 							<div class="form-group">
 									<label for="abstract">Abstract</label>
-									<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale del documento che ne riassume i contenuti e che lo contestualizza all'interno dell'universo biografico di Aldo Moro. Esempio: abstract introduttivo dell'opera X nel Volume 1.</small>
+									<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale del documento che ne riassume i contenuti e che lo contestualizza all'interno dell'universo biografico di Aldo Moro. Per un esempio di abstract, vedi <a href="">qui</a>.</small>
 									<textarea type="text" class="form-control" id="abstract" aria-describedby="abstract-metadata" rows="3"></textarea>
 							</div>
 							<div class="form-group doctype-group">
@@ -452,7 +452,7 @@
 							</div>
 							<div class="form-group">
 								<label for="docstatus">Stato del documento</label>
-								<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata (<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni metadatali differenti.</small>
+								<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata (<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni differenti legati alla provenienza del documento.</small>
 								<div id="docstatus">
 									<div class="form-check form-check-inline">
 											<input class="form-check-input docstatus" type="radio" name="docstatus" id="inlineRadio1" value="published" onchange="hideUnpublished(this)">
@@ -474,17 +474,17 @@
 							<div id="unpubMetadata" hidden=false>
 								<div class="form-group archsource-group">
 									<label>Segnatura archivistica</label><button style="float:right" type="button" class="btn btn-primary btn-sm" onclick="addArchsource()"><i class="fa fa-plus" aria-hidden="true"></i></button>
-									<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica di una fonte primaria. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe. Esempio: <samp>Archivio Flamigni, Fondo Aldo	Moro</samp>.</small>
+									<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica di una fonte primaria. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe. Esempio: <samp>Archivio Flamigni, Fondo Aldo Moro</samp>.</small>
 									<input type="text" class="form-control archsource provenance" aria-describedby="archsource-metadata">
 								</div>
 							</div>
 							<div class="form-group event-place-group">
 								<label for="event-place">Luogo dell'evento</label><button id="ep-button" style="float:right" type="button" class="btn btn-primary btn-sm" onclick="addEventPlace()"><i class="fa fa-plus" aria-hidden="true"></i></button>
-								<small style="margin-bottom: 10px;" class="form-text text-muted">Il luogo in cui è avvenuto l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile inserire il metadato. Esempio: il luogo originario in cui Moro ha tenuto il discorso successivamente riportato nel documento.</small>
+								<small style="margin-bottom: 10px;" class="form-text text-muted">Il luogo in cui è avvenuto l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile inserire il metadato. Esempio: il luogo originario in cui Moro ha tenuto il discorso riportato nel documento.</small>
 							</div>
 							<div class="form-group event-date-group">
 								<label for="event-date">Data dell'evento</label><button id="ed-button" style="float:right" type="button" class="btn btn-primary btn-sm" onclick="addEventDate()"><i class="fa fa-plus" aria-hidden="true"></i></button>
-								<small style="margin-bottom: 10px;" class="form-text text-muted">L'anno in cui è avvenuto l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile inserire il metadato. Esempio: l'anno originario in cui Moro ha tenuto il discorso successivamente riportato nel documento.</small>
+								<small style="margin-bottom: 10px;" class="form-text text-muted">L'anno in cui è avvenuto l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile inserire il metadato. Esempio: l'anno originario in cui Moro ha tenuto il discorso riportato nel documento.</small>
 							</div>
 							<div class="form-group">
 								<label for="additional-notes">Note aggiuntive</label>
@@ -525,16 +525,16 @@
 				</a>
 				<div class="collapse card citationCard" id="{$id}-menu">
 				  <h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
-				  	Details about {$label}
+				  	Dettagli su {$label}
 				  </h6>
 				  <div class="card-body">
 					<form>
 					  <div class="row">
-						<label for="labelData-{$id}" class="col-4 small p-1">Label: </label>
+						<label for="labelData-{$id}" class="col-4 small p-1">Etichetta: </label>
 						<input type="text" name="labelData" class="form-control form-control-sm col-8" id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)" value="{$label}">
 					  </div>
 					  <div class="row">
-						<label for="sortData-{$id}" class="col-4 small p-1">Sort value: </label>
+						<label for="sortData-{$id}" class="col-4 small p-1">Ordina valore: </label>
 						<div class="col-8 p-0">
 						  <div class="input-group mb-2">
 							<input type="text" name="sortData-{$id}" class="form-control form-control-sm flex-grow-1" id="sortData-{$id}" onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
@@ -547,7 +547,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<label for="sortData-{$id}" class="col-4 small p-1">Footnote: </label>
+						<label for="sortData-{$id}" class="col-4 small p-1">Nota: </label>
 						<input type="text" name="footnoteText" class="form-control form-control-sm col-8" id="footnoteText-{$id}" value="{$footnoteText}" disabled>
 					</div>
 					</form>										
@@ -576,16 +576,16 @@
 				</a>
 				<div class="collapse card citationCard" id="{$id}-menu">
 				  <h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
-				  	Details about {$label}
+				  	Dettagli su {$label}
 				  </h6>
 				  <div class="card-body">
 					<form>
 					  <div class="row">
-						<label for="labelData-{$id}" class="col-4 small p-1">Label: </label>
+						<label for="labelData-{$id}" class="col-4 small p-1">Etichetta: </label>
 						<input type="text" name="labelData" class="form-control form-control-sm col-8" id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)" value="{$label}">
 					  </div>
 					  <div class="row">
-						<label for="sortData-{$id}" class="col-4 small p-1">Sort value: </label>
+						<label for="sortData-{$id}" class="col-4 small p-1">Ordina valore: </label>
 						<div class="col-8 p-0">
 						  <div class="input-group mb-2">
 							<input type="text" name="sortData-{$id}" class="form-control form-control-sm flex-grow-1" id="sortData-{$id}" onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
@@ -639,16 +639,16 @@
 				</a>
 				<div class="collapse card entityCard" id="{$id}-menu">
 				  <h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button" aria-expanded="false" aria-controls="{$id}-menu">
-				  	Details about {$label}
+				  	Dettagli su {$label}
 				  </h6>
 				  <div class="card-body">
 					<form>
 					  <div class="row">
-						<label for="labelData-{$id}" class="col-4 small p-1">Label: </label>
+						<label for="labelData-{$id}" class="col-4 small p-1">Etichetta: </label>
 						<input type="text" name="labelData" class="form-control form-control-sm col-8" id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)" value="{$label}">
 					  </div>
 					  <div class="row">
-						<label for="sortData-{$id}" class="col-4 small p-1">Sort value: </label>
+						<label for="sortData-{$id}" class="col-4 small p-1">Ordina valore: </label>
 						<div class="col-8 p-0">
 						  <div class="input-group mb-2">
 							<input type="text" name="sortData-{$id}" class="form-control form-control-sm flex-grow-1" id="sortData-{$id}" onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
@@ -661,7 +661,7 @@
 						</div>
 					  </div>
 					  <div class="row">
-						<label for="wikiData-{$id}" class="col-4 small p-1">Wikidata ID: </label>
+						<label for="wikiData-{$id}" class="col-4 small p-1">ID Wikidata: </label>
 						<div class="col-8 p-0">
 						  <div class="input-group mb-2">
 							<input type="text" name="wikiData-{$id}" class="form-control form-control-sm flex-grow-1" id="wikiData-{$id}" onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}">
