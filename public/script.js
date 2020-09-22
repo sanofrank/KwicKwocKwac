@@ -1167,12 +1167,13 @@ function markFootnote(location, mark){
 	let authorNotes = kwic.markFootnote(location, markOptions);
 	if (authorNotes > 0) {
 	
-		let alert_footnote = `Sono state marcate automaticamente ${authorNotes} note di ${markOptions.author}`
+		let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${authorNotes} note di ${markOptions.author}</p>`
 		$('#footnote-alert').prepend(alert_footnote);
 		$("#footnote-alert").fadeTo(3500, 500).slideUp(500, function () {
-			$("#footnote-alert").slideUp(500);
+			$("#footnote-alert").slideUp(500, function(){
+				$("#alert-count").remove();
+			});
 		});
-	
 	}	
 
 }

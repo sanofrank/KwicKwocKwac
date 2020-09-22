@@ -1203,12 +1203,13 @@ var kwic = new (function () {
 		if(footnotes){
 			let re = new RegExp(`^\\${markChar}`,'g');
 			footnotes.forEach(footnote => {
+				
+				if(footnote.hasAttribute('data-owner')) return counter;
+
 				let text = footnote.innerText; //gets just human readable text without styles
-	
 				text.trim();
 				
-				
-				if(text.match(re)){
+				if(text.match(re) && !footnote.hasAttribute('data-owner')){
 					footnote.setAttribute('data-owner',`${author.replace(/\s/g,'')}`)
 					footnote.setAttribute('data-toggle','tooltip');
 					footnote.setAttribute('data-html',true);
@@ -1219,6 +1220,7 @@ var kwic = new (function () {
 				}
 			});
 		}
+
 		$('[data-toggle="tooltip"]').tooltip();
 
 		return counter;
