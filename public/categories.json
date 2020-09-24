@@ -27,7 +27,7 @@
 		"type":   "word",
 		"sort": 1,
 		"entity": "person",
-		"label": "People",
+		"label": "Persone",
 		"markAll": true,
 		"style": "background-image: radial-gradient(#ffffdd 30%, #ffff5a 100%); border-radius: 4px;"
 	},
@@ -36,7 +36,7 @@
 		"action": "wrap",
 		"mention": true,
 		"type":   "word",
-		"label": "Places",
+		"label": "Luoghi",
 		"sort": 2,
 		"entity": "place",
 		"markAll": true,
@@ -47,7 +47,7 @@
 		"action": "wrap",
 		"mention": true,
 		"type":   "word",
-		"label": "Orgs",
+		"label": "Organizzazioni",
 		"sort": 3,
 		"entity": "organization",
 		"markAll": true,
@@ -55,12 +55,12 @@
 	},
 	"scraps": {
 		"entity": "scraps",
-		"label": "Scraps",
+		"label": "Scarti",
 		"markAll": false
 	},
 	"trash": {
 		"entity": "trash",
-		"label": "Trash",
+		"label": "Cestino",
 		"markAll": false
 	}
 }

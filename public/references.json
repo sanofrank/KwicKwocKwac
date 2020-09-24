@@ -18,7 +18,7 @@
 		"action": "wrap-bib",
 		"mention": false,
 		"type":   "word",
-		"label":  "BibRef",
+		"label":  "Rif. bibliografici",
 		"sort": 1,
 		"entity": "bibref",
 		"markAll": true,
@@ -29,7 +29,7 @@
 		"action": "wrap-quote",
 		"mention": false,
 		"type":   "word",
-		"label":  "Quotes",
+		"label":  "Citazioni",
 		"sort": 2,
 		"entity": "quote",
 		"markAll": true,
@@ -37,12 +37,12 @@
     },
 	"scraps": {
 		"entity": "scraps",
-		"label": "Scraps",
+		"label": "Scarti",
 		"markAll": false
 	},
 	"trash": {
 		"entity": "trash",
-		"label": "Trash",
+		"label": "Cestino",
 		"markAll": false
 	}
 }

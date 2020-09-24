@@ -1346,7 +1346,7 @@ async function checkMetadata(){
 			 	if(currentMetadata.roleList[0] === role.getAttribute('value')) role.setAttribute('selected','select');
 			})
 		}
-
+		
 		$('#save-metadata').text('Aggiorna');
 		$('#save-metadata').attr('onclick','saveMetadata(true)')
 	}

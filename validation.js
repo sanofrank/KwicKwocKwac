@@ -5,9 +5,15 @@ const Joi = require('@hapi/joi');
 const loginValidation = (data) => {
     const schema = Joi.object({
         username: Joi.string()
-            .required(),
+            .required()
+            .messages({
+                'string.empty': `Inserisci il nome utente.`
+            }),
         password: Joi.string()
-            .required(),
+            .required()
+            .messages({
+                'string.empty': `Inserisci la password.`
+            }),
     });
     return schema.validate(data);
 };
@@ -17,17 +23,34 @@ const registerValidation = (data) => {
     const schema = Joi.object({
         name: Joi.string()
             .min(6)
-            .required(), //add validation parameter
+            .required()
+            .messages({
+                'string.empty': `Il nome utente è obbligatorio.`,
+                'string.min': `Il nome utente deve contenere almeno 6 caratteri.`
+            }),
         email: Joi.string()
             .min(6)
             .required()
-            .email(),
+            .email()
+            .messages({
+                'string.empty': `L'indirizzo email è obbligatorio.`,
+                'string.min': `L'indirizzo email deve contenere almeno 6 caratteri.`,
+                'string.email': `L'indirizzo email deve essere valido.`
+            }),
         password: Joi.string()
             .min(6)
-            .required(),
+            .required()
+            .messages({
+                'string.empty': `La password è obbligatoria.`,
+                'string.min': `La password deve contenere almeno 6 caratteri.`
+            }),
         confirmPassword: Joi.string()
             .required()
             .valid(Joi.ref('password'))
+            .messages({
+                'string.empty': `La riconferma della password è obbligatoria.`,
+                'any.only': `La riconferma della password deve essere uguale alla password.`
+            })
             });
     return schema.validate(data);
 };
