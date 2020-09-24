@@ -4,6 +4,7 @@ const fgc = require('file-get-contents');
 const mkDir = require('make-dir');
 const mammoth = require('mammoth');
 const jwt = require('jsonwebtoken');
+const Metadata = require('../model/Metadata');
 
 const dir = 'public/files';
 const src = /src=(["|\'])(?!http)(?!#footnote)/g;
@@ -64,15 +65,33 @@ router.get('/list', async (req, res) => {
 
 router.get('/load', async (req, res) => {
     try {
+        var json = {
+            "metadata" : {},
+            "html" : ""
+        };
+
         let files = 'files/';
         let fileName = req.query.file;
         let content = await fgc(`${dir}/${fileName}/index.html`);
         
         content = content.replace(src,`src=$1${files}${fileName}/`);
         content = content.replace(href,`href=$1${files}${fileName}/`);
-        
-        res.set('Content-Type: text/html');
-        res.send(content);
+
+        json.html = content;
+
+        //res.set('Content-Type: text/html');
+        //Check metadata
+        let split = fileName.split('_')
+        const objId = split[6];
+
+        if(!objId) return res.send(json);
+
+        await Metadata.findOne({_id: objId}, function(err, data){
+            if(err) return res.status(404).send("ID dell'opera non valido")
+            
+            json.metadata = data;
+            return res.send(json);
+        })
     } catch (err) {
         res.status(400).send(err);
     }
@@ -119,8 +138,6 @@ router.post('/upload', async (req,res) => {
             content = out.replace(regex,"");
             content.replace(regex,"");
         }
-
-        
 
         if(content!== "" && !content.includes("Key Words In Context")){
             fs.writeFile(htmlPath,content, (err) => {

@@ -3,7 +3,49 @@ const Metadata = require('../model/Metadata');
 const fs = require('fs');
 const { metadataValidation } = require('../validation')
 
-router.post('/metadata', async (req,res) => { // xasync finchè aspettiamo il salvataggio 
+router.get('/check_metadata', async (req,res) => {
+    const objId = req.query.objId;
+
+    if(!objId) return res.status(400).send("ID dell'opera non presente");
+
+    await Metadata.findOne({_id: objId}, function(err, metadata){
+        if(err) return res.status(404).send("ID dell'opera non valido")
+        
+        return res.send(metadata);
+    })
+});
+
+router.post('/update_metadata', async (req,res) => {
+    
+    const {error} = metadataValidation(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    const objId = req.body.objId;
+    let meta = {
+        ident: req.body.ident,
+        author: req.body.author,
+        roleList: req.body.role,
+        curator: req.body.curator,
+        abstract: req.body.abstract,
+        doctypeList: req.body.doctype,
+        doctopicList: req.body.doctopic,
+        docstatus: req.body.docstatus,
+        provenanceP: req.body.provenanceP,
+        provenanceU: req.body.provenanceU,
+        eventPlace: req.body.eventPlace,
+        eventDate: req.body.eventDate,
+        additionalNotes: req.body.additionalNotes
+    }
+
+    const newMeta = await Metadata.findByIdAndUpdate({_id: objId}, meta, function(err,result){
+        if(err) return res.status(400).send("Non sono riuscito ad aggiornare i metadati")
+        })
+
+    return res.send("Metadati aggiornati");
+
+});
+
+router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo il salvataggio 
 
     const {error} = metadataValidation(req.body);
     if(error) return res.status(400).send(error.details[0].message);

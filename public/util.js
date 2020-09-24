@@ -178,3 +178,47 @@
 		$.fn.isBefore = function(element) {
 			return ['before', 'contains'].indexOf( this.docPosition(element)) !== -1
 		};
+
+		//Get file ID
+		function splitFilename(currentFilename, value = ""){
+			if(currentFilename === "") return currentFilename;
+
+			let split = [];
+			
+			let file = currentFilename;
+			split = file.split('_');
+			
+			let user = split[0];
+			let section = split[1].replace(/[^0-9]+/g, "");
+			let volume = split[2].replace(/[^0-9]+/g, "");
+			let tome = split[3].replace(/[^0-9]+/g, "");
+			let work = split[4];
+			let status = split[5];
+			let objId = split[6];
+
+			switch(value) {
+				case "user":
+					return user;
+				case "section":
+					return section;
+				case "volume":
+					return volume;
+				case "tome":
+					return tome;
+				case "work":
+					return work;
+				case "status":
+					return status;
+				case "objId":
+					return objId;
+				default:
+					return split;
+			}
+
+		}
+
+		function isEmptyObject(obj){
+			return JSON.stringify(obj) === '{}';
+		}
+		
+

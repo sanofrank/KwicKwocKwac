@@ -39,7 +39,7 @@
 							aria-haspopup="true" aria-expanded="false">Operations</a>
 						<div id="commandMenu" class="dropdown-menu" aria-labelledby="dropdown01">
 							<a class="dropdown-item" href="#" onclick='toggleStyles()'>Show annotations</a>
-							<a class="dropdown-item" href="#" onclick='' data-toggle="modal"
+							<a id="metadata-toggle"class="dropdown-item" href="#" data-toggle="modal"
 								data-target="#add-metadata">Add Metadata</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="#" onclick="downloadDoc('html')">Download HTML</a>
@@ -405,238 +405,242 @@
 
 	<div class="modal fade" id="add-metadata" tabindex="-1" role="dialog" aria-labelledby="addMetadata"
 		aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="addMetadata">Add metadata</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
+	</div>
 
-				<div class="modal-body">
-					<form>
-						<p style="color:red" id="errors">
-						<div class="form-group">
-							<label for="ident">Numero del documento</label><br>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre
-								compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi:
-								<samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
-							<input type="text" class="form-control" id="ident" aria-describedby="id-metadata">
-						</div>
-						<div class="form-group">
-							<label for="author">Autore del documento</label>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
-								Cognome) dell'autore del documento. Esempio: <samp>Aldo Moro</samp>.</small>
-							<input type="text" class="form-control" id="author" aria-describedby="author-metadata">
-						</div>
-						<div class="form-group role-group">
-							<label>Ruolo dell'autore</label><button style="float:right" type="button"
-								class="btn btn-primary btn-sm" onclick="addRole()"><i class="fa fa-plus"
-									aria-hidden="true"></i></button>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Il ruolo o incarico
-								istituzionale ricoperto in quel momento dall'autore del documento. Cliccando sull'icona
-								<i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori
-								ruoli.</small>
-							<select id="author-role" name="role" class="form-control role"
-								aria-describedby="author-role-metadata">
-								<option hidden disabled selected value>Seleziona il ruolo...</option>
-								<option class="role-option" value="role.01">Delegato Aspirante della Gioventù Cattolica
-								</option>
-								<option class="role-option" value="role.02">Studente</option>
-								<option class="role-option" value="role.03">Membro della FUCI</option>
-								<option class="role-option" value="role.04">Presidente del circolo di Bari della FUCI
-								</option>
-								<option class="role-option" value="role.05">Assistente volontario alla cattedra di
-									diritto e procedura penale</option>
-								<option class="role-option" value="role.06">Presidente nazionale della FUCI</option>
-								<option class="role-option" value="role.07">Professore di Filosofia del Diritto</option>
-								<option class="role-option" value="role.08">Membro del Movimento Laureati dell'Azione
-									Cattolica</option>
-								<option class="role-option" value="role.09">Membro dell'Ufficio stampa del governo
-									Badoglio</option>
-								<option class="role-option" value="role.10">Giornalista e commentatore politico</option>
-								<option class="role-option" value="role.11">Presidente del Comitato direttivo
-									provvisorio per la FUCI meridionale</option>
-								<option class="role-option" value="role.12">Segretario Centrale del Movimento Laureati
-									dell'Azione Cattolica</option>
-								<option class="role-option" value="role.13">Direttore di "Studium"</option>
-								<option class="role-option" value="role.14">Membro dell'Assemblea Costituente</option>
-								<option class="role-option" value="role.15">Vicepresidente del gruppo democristiano alla
-									Costituente</option>
-								<option class="role-option" value="role.16">Membro della Camera dei Deputati</option>
-								<option class="role-option" value="role.17">Sottosegretario al ministero degli Affari
-									Esteri con delega per l'Emigrazione</option>
-								<option class="role-option" value="role.18">Membro dell'Unione Giuristi Cattolici
-								</option>
-								<option class="role-option" value="role.19">Membro di Iniziativa Democratica</option>
-								<option class="role-option" value="role.20">Professore di diritto penale</option>
-								<option class="role-option" value="role.21">Professore di diritto e procedura penale
-								</option>
-								<option class="role-option" value="role.22">Membro della Comissione parlamentare di
-									esame del disegno di legge relativo alla costituzione e al funzionamento della Corte
-									Costituzionale</option>
-								<option class="role-option" value="role.23">Presidente del gruppo DC alla Camera
-								</option>
-								<option class="role-option" value="role.24">Ministro di Grazia e Giustizia</option>
-								<option class="role-option" value="role.25">Consigliere nazionale della DC</option>
-								<option class="role-option" value="role.26">Ministro della Pubblica Istruzione</option>
-								<option class="role-option" value="role.27">Segretario politico della DC</option>
-								<option class="role-option" value="role.28">Presidente del Consiglio</option>
-								<option class="role-option" value="role.29">Titolare ad interim del ministero degli
-									Esteri</option>
-								<option class="role-option" value="role.30">Ministero degli Esteri</option>
-								<option class="role-option" value="role.31">Presidente della Commissione Affari Esteri
-									della Camera</option>
-								<option class="role-option" value="role.32">Presidente di turno della Comunità Europea
-								</option>
-								<option class="role-option" value="role.33">Presidente del Consiglio Nazionale della DC
-								</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="curator">Ricercatore curatore</label>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
-								Cognome) del ricercatore che ha curato la trascrizione e marcatura del documento.
-								Esempio: <samp>Mario Rossi</samp>.</small>
-							<input type="text" class="form-control" id="curator" aria-describedby="curator-metadata">
-						</div>
-						<div class="form-group">
-							<label for="abstract">Abstract</label>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale
-								del documento che ne riassume i contenuti e che lo contestualizza all'interno
-								dell'universo biografico di Aldo Moro. Esempio: abstract introduttivo dell'opera X nel
-								Volume 1.</small>
-							<textarea type="text" class="form-control" id="abstract"
-								aria-describedby="abstract-metadata" rows="3"></textarea>
-						</div>
-						<div class="form-group doctype-group">
-							<label>Tipologia del documento</label><button style="float:right" type="button"
-								class="btn btn-primary btn-sm" onclick="addDoctype()"><i class="fa fa-plus"
-									aria-hidden="true"></i></button>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">La tipologia testuale che
-								caratterizza il documento. Cliccando sull'icona <i class="fa fa-plus"
-									aria-hidden="true"></i> è possibile aggiungere ulteriori tipologie.</small>
-							<select name="doctype" class="form-control doctype" aria-describedby="doctype-metadata">
-								<option hidden disabled selected value>Scegli una tipologia...</option>
-								<option class="doctype-option" value="doctype.01">Articolo su periodico</option>
-								<option class="doctype-option" value="doctype.02">Articolo su quotidiano</option>
-								<option class="doctype-option" value="doctype.03">Comunicato stampa</option>
-								<option class="doctype-option" value="doctype.04">Discorso in sede pubblica / Comizio
-								</option>
-								<option class="doctype-option" value="doctype.05">Documento interno</option>
-								<option class="doctype-option" value="doctype.06">Intervento di partito</option>
-								<option class="doctype-option" value="doctype.07">Intervento in sede parlamentare
-								</option>
-								<option class="doctype-option" value="doctype.08">Intervento istituzionale</option>
-								<option class="doctype-option" value="doctype.09">Intervento radiofonico/televisivo
-								</option>
-								<option class="doctype-option" value="doctype.10">Intervista</option>
-								<option class="doctype-option" value="doctype.11">Lezione universitaria</option>
-								<option class="doctype-option" value="doctype.12">Libro/intervento in libro</option>
-								<option class="doctype-option" value="doctype.13">Opuscolo</option>
-							</select>
-						</div>
-						<div class="form-group doctopic-group">
-							<label>Tematica del documento</label><button style="float:right" type="button"
-								class="btn btn-primary btn-sm" onclick="addDoctopic()"><i class="fa fa-plus"
-									aria-hidden="true"></i></button>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">La tematica generale
-								presente nel testo del documento. Cliccando sull'icona <i class="fa fa-plus"
-									aria-hidden="true"></i> è possibile aggiungere ulteriori tematiche.</small>
-							<select name="doctopic" class="form-control doctopic" aria-describedby="doctopic-metadata">
-								<option hidden disabled selected value>Scegli una tematica...</option>
-								<option class="doctopic-option" value="doctopic.01">Chiesa</option>
-								<option class="doctopic-option" value="doctopic.02">Cultura/Istruzione</option>
-								<option class="doctopic-option" value="doctopic.03">Diritto</option>
-								<option class="doctopic-option" value="doctopic.04">Partito</option>
-								<option class="doctopic-option" value="doctopic.05">Politica interna</option>
-								<option class="doctopic-option" value="doctopic.06">Politica internazionale</option>
-								<option class="doctopic-option" value="doctopic.07">Religione</option>
-								<option class="doctopic-option" value="doctopic.08">Società</option>
-								<option class="doctopic-option" value="doctopic.09">Stato</option>
-								<option class="doctopic-option" value="doctopic.10">Vita locale</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="docstatus">Stato del documento</label>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il
-								documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata
-								(<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni
-								metadatali differenti.</small>
-							<div id="docstatus">
-								<div class="form-check form-check-inline">
-									<input class="form-check-input docstatus" type="radio" name="docstatus"
-										id="inlineRadio1" value="published" onchange="hideUnpublished(this)">
-									<label class="form-check-label" for="inlineRadio1">Edito</label>
-								</div>
-								<div class="form-check form-check-inline">
-									<input class="form-check-input docstatus" type="radio" name="docstatus"
-										id="inlineRadio2" value="unpublished" onchange="hidePublished(this)">
-									<label class="form-check-label" for="inlineRadio2">Inedito</label>
-								</div>
+	<!-- TEMPLATES -->
+<template id="metadataTpl">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addMetadata">Add metadata</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form>
+					<div id="msg" class="alert" role="alert" style="display:none"></div>
+					<div class="form-group">
+						<label for="ident">Numero del documento</label><br>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre
+							compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi:
+							<samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
+						<input type="text" class="form-control" id="ident" aria-describedby="id-metadata" value="{$ident}">
+					</div>
+					<div class="form-group">
+						<label for="author">Autore del documento</label>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
+							Cognome) dell'autore del documento. Esempio: <samp>Aldo Moro</samp>.</small>
+						<input type="text" class="form-control" id="author" aria-describedby="author-metadata" value="{$author}">
+					</div>
+					<div class="form-group role-group">
+						<label>Ruolo dell'autore</label>
+						<button style="float:right" type="button"
+							class="btn btn-primary btn-sm" onclick="addRole()"><i class="fa fa-plus"
+								aria-hidden="true"></i>
+							</button>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Il ruolo o incarico
+							istituzionale ricoperto in quel momento dall'autore del documento. Cliccando sull'icona
+							<i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori
+							ruoli.</small>
+						<select id="author-role" name="role" class="form-control role"
+							aria-describedby="author-role-metadata">
+							<option hidden disabled selected value>Seleziona il ruolo...</option>
+							<option class="role-option" value="role.01">Delegato Aspirante della Gioventù Cattolica
+							</option>
+							<option class="role-option" value="role.02">Studente</option>
+							<option class="role-option" value="role.03">Membro della FUCI</option>
+							<option class="role-option" value="role.04">Presidente del circolo di Bari della FUCI
+							</option>
+							<option class="role-option" value="role.05">Assistente volontario alla cattedra di
+								diritto e procedura penale</option>
+							<option class="role-option" value="role.06">Presidente nazionale della FUCI</option>
+							<option class="role-option" value="role.07">Professore di Filosofia del Diritto</option>
+							<option class="role-option" value="role.08">Membro del Movimento Laureati dell'Azione
+								Cattolica</option>
+							<option class="role-option" value="role.09">Membro dell'Ufficio stampa del governo
+								Badoglio</option>
+							<option class="role-option" value="role.10">Giornalista e commentatore politico</option>
+							<option class="role-option" value="role.11">Presidente del Comitato direttivo
+								provvisorio per la FUCI meridionale</option>
+							<option class="role-option" value="role.12">Segretario Centrale del Movimento Laureati
+								dell'Azione Cattolica</option>
+							<option class="role-option" value="role.13">Direttore di "Studium"</option>
+							<option class="role-option" value="role.14">Membro dell'Assemblea Costituente</option>
+							<option class="role-option" value="role.15">Vicepresidente del gruppo democristiano alla
+								Costituente</option>
+							<option class="role-option" value="role.16">Membro della Camera dei Deputati</option>
+							<option class="role-option" value="role.17">Sottosegretario al ministero degli Affari
+								Esteri con delega per l'Emigrazione</option>
+							<option class="role-option" value="role.18">Membro dell'Unione Giuristi Cattolici
+							</option>
+							<option class="role-option" value="role.19">Membro di Iniziativa Democratica</option>
+							<option class="role-option" value="role.20">Professore di diritto penale</option>
+							<option class="role-option" value="role.21">Professore di diritto e procedura penale
+							</option>
+							<option class="role-option" value="role.22">Membro della Comissione parlamentare di
+								esame del disegno di legge relativo alla costituzione e al funzionamento della Corte
+								Costituzionale</option>
+							<option class="role-option" value="role.23">Presidente del gruppo DC alla Camera
+							</option>
+							<option class="role-option" value="role.24">Ministro di Grazia e Giustizia</option>
+							<option class="role-option" value="role.25">Consigliere nazionale della DC</option>
+							<option class="role-option" value="role.26">Ministro della Pubblica Istruzione</option>
+							<option class="role-option" value="role.27">Segretario politico della DC</option>
+							<option class="role-option" value="role.28">Presidente del Consiglio</option>
+							<option class="role-option" value="role.29">Titolare ad interim del ministero degli
+								Esteri</option>
+							<option class="role-option" value="role.30">Ministero degli Esteri</option>
+							<option class="role-option" value="role.31">Presidente della Commissione Affari Esteri
+								della Camera</option>
+							<option class="role-option" value="role.32">Presidente di turno della Comunità Europea
+							</option>
+							<option class="role-option" value="role.33">Presidente del Consiglio Nazionale della DC
+							</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="curator">Ricercatore curatore</label>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
+							Cognome) del ricercatore che ha curato la trascrizione e marcatura del documento.
+							Esempio: <samp>Mario Rossi</samp>.</small>
+						<input type="text" class="form-control" id="curator" aria-describedby="curator-metadata" value="{$curator}">
+					</div>
+					<div class="form-group">
+						<label for="abstract">Abstract</label>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale
+							del documento che ne riassume i contenuti e che lo contestualizza all'interno
+							dell'universo biografico di Aldo Moro. Esempio: abstract introduttivo dell'opera X nel
+							Volume 1.</small>
+						<textarea type="text" class="form-control" id="abstract"
+							aria-describedby="abstract-metadata" rows="3">{$abstract}</textarea>
+					</div>
+					<div class="form-group doctype-group">
+						<label>Tipologia del documento</label><button style="float:right" type="button"
+							class="btn btn-primary btn-sm" onclick="addDoctype()"><i class="fa fa-plus"
+								aria-hidden="true"></i></button>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">La tipologia testuale che
+							caratterizza il documento. Cliccando sull'icona <i class="fa fa-plus"
+								aria-hidden="true"></i> è possibile aggiungere ulteriori tipologie.</small>
+						<select name="doctype" class="form-control doctype" aria-describedby="doctype-metadata">
+							<option hidden disabled selected value>Scegli una tipologia...</option>
+							<option class="doctype-option" value="doctype.01">Articolo su periodico</option>
+							<option class="doctype-option" value="doctype.02">Articolo su quotidiano</option>
+							<option class="doctype-option" value="doctype.03">Comunicato stampa</option>
+							<option class="doctype-option" value="doctype.04">Discorso in sede pubblica / Comizio
+							</option>
+							<option class="doctype-option" value="doctype.05">Documento interno</option>
+							<option class="doctype-option" value="doctype.06">Intervento di partito</option>
+							<option class="doctype-option" value="doctype.07">Intervento in sede parlamentare
+							</option>
+							<option class="doctype-option" value="doctype.08">Intervento istituzionale</option>
+							<option class="doctype-option" value="doctype.09">Intervento radiofonico/televisivo
+							</option>
+							<option class="doctype-option" value="doctype.10">Intervista</option>
+							<option class="doctype-option" value="doctype.11">Lezione universitaria</option>
+							<option class="doctype-option" value="doctype.12">Libro/intervento in libro</option>
+							<option class="doctype-option" value="doctype.13">Opuscolo</option>
+						</select>
+					</div>
+					<div class="form-group doctopic-group">
+						<label>Tematica del documento</label><button style="float:right" type="button"
+							class="btn btn-primary btn-sm" onclick="addDoctopic()"><i class="fa fa-plus"
+								aria-hidden="true"></i></button>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">La tematica generale
+							presente nel testo del documento. Cliccando sull'icona <i class="fa fa-plus"
+								aria-hidden="true"></i> è possibile aggiungere ulteriori tematiche.</small>
+						<select name="doctopic" class="form-control doctopic" aria-describedby="doctopic-metadata">
+							<option hidden disabled selected value>Scegli una tematica...</option>
+							<option class="doctopic-option" value="doctopic.01">Chiesa</option>
+							<option class="doctopic-option" value="doctopic.02">Cultura/Istruzione</option>
+							<option class="doctopic-option" value="doctopic.03">Diritto</option>
+							<option class="doctopic-option" value="doctopic.04">Partito</option>
+							<option class="doctopic-option" value="doctopic.05">Politica interna</option>
+							<option class="doctopic-option" value="doctopic.06">Politica internazionale</option>
+							<option class="doctopic-option" value="doctopic.07">Religione</option>
+							<option class="doctopic-option" value="doctopic.08">Società</option>
+							<option class="doctopic-option" value="doctopic.09">Stato</option>
+							<option class="doctopic-option" value="doctopic.10">Vita locale</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="docstatus">Stato del documento</label>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il
+							documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata
+							(<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni
+							metadatali differenti.</small>
+						<div id="docstatus">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input docstatus" type="radio" name="docstatus"
+									id="inlineRadio1" value="published" onchange="hideUnpublished(this)">
+								<label class="form-check-label" for="inlineRadio1">Edito</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input docstatus" type="radio" name="docstatus"
+									id="inlineRadio2" value="unpublished" onchange="hidePublished(this)">
+								<label class="form-check-label" for="inlineRadio2">Inedito</label>
 							</div>
 						</div>
-						<div id="pubMetadata" hidden=true>
-							<div class="form-group bibsource-group">
-								<label>Riferimento bibliografico</label><button style="float:right" type="button"
-									class="btn btn-primary btn-sm" onclick="addBibsource()"><i class="fa fa-plus"
-										aria-hidden="true"></i></button>
-								<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
-									di una fonte secondaria. Cliccando sull'icona <i class="fa fa-plus"
-										aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe. Esempio:
-									<samp>«La Rassegna», II, 1944, n. 1, 4 gennaio, p. 1</samp>.</small>
-								<input type="text" class="form-control bibsource provenance"
-									aria-describedby="bibsource-metadata">
-							</div>
+					</div>
+					<div id="pubMetadata" hidden=true>
+						<div class="form-group bibsource-group">
+							<label>Riferimento bibliografico</label><button style="float:right" type="button"
+								class="btn btn-primary btn-sm" onclick="addBibsource()"><i class="fa fa-plus"
+									aria-hidden="true"></i></button>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
+								di una fonte secondaria. Cliccando sull'icona <i class="fa fa-plus"
+									aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe. Esempio:
+								<samp>«La Rassegna», II, 1944, n. 1, 4 gennaio, p. 1</samp>.</small>
+							<input type="text" class="form-control bibsource provenance"
+								aria-describedby="bibsource-metadata">
 						</div>
-						<div id="unpubMetadata" hidden=false>
-							<div class="form-group archsource-group">
-								<label>Segnatura archivistica</label><button style="float:right" type="button"
-									class="btn btn-primary btn-sm" onclick="addArchsource()"><i class="fa fa-plus"
-										aria-hidden="true"></i></button>
-								<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
-									di una fonte primaria. Cliccando sull'icona <i class="fa fa-plus"
-										aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe. Esempio:
-									<samp>Archivio Flamigni, Fondo Aldo Moro</samp>.</small>
-								<input type="text" class="form-control archsource provenance"
-									aria-describedby="archsource-metadata">
-							</div>
+					</div>
+					<div id="unpubMetadata" hidden=false>
+						<div class="form-group archsource-group">
+							<label>Segnatura archivistica</label><button style="float:right" type="button"
+								class="btn btn-primary btn-sm" onclick="addArchsource()"><i class="fa fa-plus"
+									aria-hidden="true"></i></button>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
+								di una fonte primaria. Cliccando sull'icona <i class="fa fa-plus"
+									aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe. Esempio:
+								<samp>Archivio Flamigni, Fondo Aldo Moro</samp>.</small>
+							<input type="text" class="form-control archsource provenance"
+								aria-describedby="archsource-metadata">
 						</div>
-						<div class="form-group event-place-group">
-							<label for="event-place">Luogo dell'evento</label><button id="ep-button" style="float:right"
-								type="button" class="btn btn-primary btn-sm" onclick="addEventPlace()"><i
-									class="fa fa-plus" aria-hidden="true"></i></button>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Il luogo in cui è avvenuto
-								l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus"
-									aria-hidden="true"></i> è possibile inserire il metadato. Esempio: il luogo
-								originario in cui Moro ha tenuto il discorso successivamente riportato nel
-								documento.</small>
-						</div>
-						<div class="form-group event-date-group">
-							<label for="event-date">Data dell'evento</label><button id="ed-button" style="float:right"
-								type="button" class="btn btn-primary btn-sm" onclick="addEventDate()"><i
-									class="fa fa-plus" aria-hidden="true"></i></button>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">L'anno in cui è avvenuto
-								l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus"
-									aria-hidden="true"></i> è possibile inserire il metadato. Esempio: l'anno originario
-								in cui Moro ha tenuto il discorso successivamente riportato nel documento.</small>
-						</div>
-						<div class="form-group">
-							<label for="additional-notes">Note aggiuntive</label>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Ulteriori osservazioni su
-								aspetti del documento che non sono stati trattati nelle voci precedenti e che reputi
-								importante segnalare.</small>
-							<textarea type="text" class="form-control" id="additional-notes"
-								aria-describedby="additionalnotes-metadata" rows="3"></textarea>
-						</div>
-
-					</form>
-					<button type="button" class="btn btn-primary" onclick="saveMetadata()">Salva</button>
-				</div>
+					</div>
+					<div class="form-group event-place-group">
+						<label for="event-place">Luogo dell'evento</label><button id="ep-button" style="float:right"
+							type="button" class="btn btn-primary btn-sm" onclick="addEventPlace()"><i
+								class="fa fa-plus" aria-hidden="true"></i></button>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Il luogo in cui è avvenuto
+							l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus"
+								aria-hidden="true"></i> è possibile inserire il metadato. Esempio: il luogo
+							originario in cui Moro ha tenuto il discorso successivamente riportato nel
+							documento.</small>
+					</div>
+					<div class="form-group event-date-group">
+						<label for="event-date">Data dell'evento</label><button id="ed-button" style="float:right"
+							type="button" class="btn btn-primary btn-sm" onclick="addEventDate()"><i
+								class="fa fa-plus" aria-hidden="true"></i></button>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">L'anno in cui è avvenuto
+							l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus"
+								aria-hidden="true"></i> è possibile inserire il metadato. Esempio: l'anno originario
+							in cui Moro ha tenuto il discorso successivamente riportato nel documento.</small>
+					</div>
+					<div class="form-group">
+						<label for="additional-notes">Note aggiuntive</label>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Ulteriori osservazioni su
+							aspetti del documento che non sono stati trattati nelle voci precedenti e che reputi
+							importante segnalare.</small>
+						<textarea type="text" class="form-control" id="additional-notes"
+							aria-describedby="additionalnotes-metadata" rows="3">{$additionalNotes}</textarea>
+					</div>
+				</form>
+				<button type="button" id="save-metadata" class="btn btn-primary" onclick="saveMetadata()">Salva</button>
 			</div>
 		</div>
 	</div>
+</template>
 	<template id="referenceTpl0">
 		<li class="nav-item dropPoint" sid="{$id}-tab" data-level="reference" data-id="{$id}">
 			<a class="nav-link" id="{$id}-tab" data-toggle="tab" href="#{$id}-pane" role="tab" aria-controls="{$id}">

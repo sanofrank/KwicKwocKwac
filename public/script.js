@@ -1,20 +1,20 @@
 ﻿/*!
- * Kwic Kwoc Kwac - interface script.js 
+ * Kwic Kwoc Kwac - interface script.js
  * Version 1.0 - 01/05/2020
  * Ideation and first prototype: Fabio Vitali, ©2020
  * Author: Fabio Vitali, May 2020
- * All rights reserved. This software is NOT open source at the moment. Permission to use and modify this 
+ * All rights reserved. This software is NOT open source at the moment. Permission to use and modify this
    file is granted to individuals requesting it explicitly to the author. This may change in the future.
-   
-   Rules to edit this file: 
-   * Change and modify and reshuffle and refactor and throw away as you see fit. 
+
+   Rules to edit this file:
+   * Change and modify and reshuffle and refactor and throw away as you see fit.
    * Never remove this comment
    * Never change the line "Ideation and first prototype"
-   * If you fixed some bugs or did some minor refactoring, ADD a new line "Contributor" with your name and date. 
-   * If you did some major reshuffling or refactoring, ADD your name to the authors' list. 
+   * If you fixed some bugs or did some minor refactoring, ADD a new line "Contributor" with your name and date.
+   * If you did some major reshuffling or refactoring, ADD your name to the authors' list.
    * Switching to ES2015 is NOT major refactoring.
-   * If my code has basically disappeared, remove my name from the authors' list. 
-   * Do NOT inform me of this. 
+   * If my code has basically disappeared, remove my name from the authors' list.
+   * Do NOT inform me of this.
  */
 
 // Globals
@@ -29,11 +29,12 @@ var documentLocation = '#file'           // the name of the div containing the l
 var nullSelection = null                 // the element being selected after an action has been dealt with (i.e. a null selection)
 var currentFilename = ""                 // the name of the file loaded at the moment from the "file" directory of the server
 var entityList                           // the list of entities loaded from the local file through the "import entities" command
-var uploadData;	                         // the information about a file ready to be uploaded throught the upload Document command	
+var uploadData;	                         // the information about a file ready to be uploaded throught the upload Document command
 var scrapShown;		                     // whether the Scraps pane is currently shown in the bottom left pane
 var trashShown;		                     // whether the trash pane is currently shown in the bottom left pane
 var editMode;                           // whether the user can add or modify mentions in the document shown
 var referenceMode;             			 // whether the reference panel is shown
+var currentMetadata = {};					// the metadata of the current loaded file
 const spinner = document.getElementById("spinner");
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
@@ -115,6 +116,7 @@ function editCallbacks(editMode) {
 		$(document).on('dragleave', droppableSelector, dragleave)     // drag event
 		$(document).on('drop', droppableSelector, drop)          // drag event
 		$(document).on('dblclick', referencingString, dblclick)  // doubleclick event
+		//$(document).on("click", "#metadata-toggle", uploadMetadata);
 	} else {
 		$(document).off('keydown', documentLocation, onkeydown)    // keyboard event
 		$(document).off('keyup', documentLocation, onkeyup)      // keyboard event
@@ -302,7 +304,7 @@ function dblclick(e) {
 
 // callback for entity tree in left pane
 function treeClick(e, callback) {
-	// https://stackoverflow.com/questions/5636375/how-to-create-a-collapsing-tree-table-in-html-css-js	
+	// https://stackoverflow.com/questions/5636375/how-to-create-a-collapsing-tree-table-in-html-css-js
 	var parent = $(e.originalEvent.target).closest('.treeExpand')[0].parentElement;
 	var classList = parent.classList;
 	if (classList.contains("open")) {
@@ -354,7 +356,7 @@ function setupKWIC(location, saveView) {
 		$('#categoryTab').append(`
 					<li class="nav-item ml-auto pointer">
 						<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
-							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span> 
+							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span>
 							<span class="sr-only">Preferences</span>
 						</a>
 					</li>`)
@@ -395,7 +397,7 @@ function setupKWIC(location, saveView) {
 		$('#categoryTab').append(`
 					<li class="nav-item ml-auto pointer">
 						<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
-							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span> 
+							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span>
 							<span class="sr-only">Preferences</span>
 						</a>
 					</li>`)
@@ -452,7 +454,7 @@ function docList(elements) {
 				{$label} <span class=" border border-primary rounded text-primary">{$user}</span>
 				<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 					<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-				</svg>				
+				</svg>
 			</a>`
 
 	if (elements.su) {
@@ -561,10 +563,13 @@ async function load(file) {
 	let response = await fetch('/api/load?file=' + file);
 	if (!response.ok) alert('Non ho potuto caricare il file ' + file);
 	else {
-		let content = await response.text();
-
+		let json = await response.json();
 
 		currentFilename = file;
+		currentMetadata = json.metadata;
+
+		checkMetadata();
+
 		split = file.split('_');
 		let sezione = split[1].replace(/[^0-9]+/g, "");
 		let volume = split[2].replace(/[^0-9]+/g, "");
@@ -575,7 +580,7 @@ async function load(file) {
 
 		// ADD data path here from file splitting
 		editMode = true;
-		$('#file').html(content);
+		$('#file').html(json.html);
 		$('#file').attr("status", status);
 		$('#file').attr('data-path', path);
 		setStatus(status);
@@ -594,7 +599,7 @@ function toggleEdit() {
 	editSetup(editMode)
 }
 
-// switch or hide the colored display of mentions 
+// switch or hide the colored display of mentions
 function toggleStyles() {
 	$('#file').toggleClass('showStyles')
 	$('#styleButton').toggleClass('bg-primary')
@@ -953,12 +958,12 @@ function invertValue(id, type, place) {
 	setupKWIC(documentLocation, true)
 }
 
-// show the popover where the searched items from wikidata are shown		
+// show the popover where the searched items from wikidata are shown
 function popoverWiki() {
 	// http://jsfiddle.net/wormmd/sb7bx5e4/
 	var popoverTpl = `
 				<li class="wikidataItem mb-1 bg-light">
-					<span class="wikidataDesc" onclick="wikidataChoose('{$entity}','{$id}')"<b>{$label}</b>: 
+					<span class="wikidataDesc" onclick="wikidataChoose('{$entity}','{$id}')"<b>{$label}</b>:
 					{$description} <br>
 					<a class="wikidataLink" href="{$concepturi}" target="_blank">{$concepturi}</a>
 				</li>
@@ -1024,7 +1029,7 @@ function wikidataChoose(entity, uri) {
 	changeValue('wikidataId', entity, uri)
 }
 
-// Load a file containing entities and show the five most important ones. Allow importing of said entities. 
+// Load a file containing entities and show the five most important ones. Allow importing of said entities.
 function uploadEntityFile(evt) {
 	var entityListTpl = `Found {$count} entities such as {$example}`
 	var f = evt.target.files[0];
@@ -1102,7 +1107,7 @@ function fileParams() {
 	}
 }
 
-// Load a file containing HTML to become a new document on the server. 
+// Load a file containing HTML to become a new document on the server.
 function uploadFileSetup(evt) {
 	var f = evt.target.files[0];
 
@@ -1141,7 +1146,7 @@ function uploadFileSetup(evt) {
 };
 
 function validate(t) {
-	// Qui ci si può mettere un po' di roba per verificare che il documento sia completo, corretto, ecc. 
+	// Qui ci si può mettere un po' di roba per verificare che il documento sia completo, corretto, ecc.
 	// Io controllo solo che sia non vuoto
 	var check = t !== ""
 	return check
@@ -1154,7 +1159,7 @@ function validate(t) {
 
 // Mark curator note and author note
 function markFootnote(location, mark){
-	
+
 	let markOptions = {
 		author: 'Aldo Moro',
 		markChar: '[',
@@ -1163,10 +1168,10 @@ function markFootnote(location, mark){
 		selector: 'footnote-',
 		exception: ''
 	};
-	
+
 	let authorNotes = kwic.markFootnote(location, markOptions);
 	if (authorNotes > 0) {
-	
+
 		let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${authorNotes} note di ${markOptions.author}</p>`
 		$('#footnote-alert').prepend(alert_footnote);
 		$("#footnote-alert").fadeTo(3500, 500).slideUp(500, function () {
@@ -1174,11 +1179,11 @@ function markFootnote(location, mark){
 				$("#alert-count").remove();
 			});
 		});
-	}	
+	}
 
 }
 
-// look for an XSLT stylesheet and convert the document into XML according to this XSLT. 
+// look for an XSLT stylesheet and convert the document into XML according to this XSLT.
 async function saveAsXML(filename, content, styleName, options) {
 	var xmlDoc = document.implementation.createDocument("", "", null);
 	var clonedNode = xmlDoc.importNode(content, true);
@@ -1305,7 +1310,51 @@ function download(filename, content, format) {
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
 
-async function saveMetadata(event) {
+async function checkMetadata(){
+	//Remove previous metadata form if exist
+	if($('#add-metadata .modal-dialog')){
+		$('#add-metadata .modal-dialog').remove()
+	}
+	console.log(currentMetadata);
+	if(isEmptyObject(currentMetadata)){
+		//Passing empty object to tpl function and remove all {$} variables
+		let form = $('#metadataTpl').html();
+		let newForm = form.tpl(currentMetadata,true);
+
+		//Append new empty form
+		$('#add-metadata').append(newForm);
+
+	}else{
+		//Extract ident
+		let ident = currentMetadata.ident;
+		let split = ident.split('_');
+		currentMetadata.ident = split[3];
+
+		//Create new form from template
+		let string = $('#metadataTpl').html();
+		let newForm = string.tpl(currentMetadata);
+
+		//Append new form
+		$('#add-metadata').append(newForm);
+		
+		if(currentMetadata.roleList.length > 1){
+
+		}else{
+			let roles = document.querySelectorAll('#author-role option');
+			
+			roles.forEach(role => {
+			 	if(currentMetadata.roleList[0] === role.getAttribute('value')) role.setAttribute('selected','select');
+			})
+		}
+
+		$('#save-metadata').text('Aggiorna');
+		$('#save-metadata').attr('onclick','saveMetadata(true)')
+	}
+}
+async function saveMetadata(update = false) {
+
+	let objId = ""
+	if(update) objId = splitFilename(currentFilename,"objId");
 
 	let file = currentFilename;
 	let n = $('#ident').val();
@@ -1323,7 +1372,9 @@ async function saveMetadata(event) {
 	let eventDate = $('#event-date').val();
 	let additionalNotes = $('#additional-notes').val();
 
-	let data = { file, ident, author, role, curator, abstract, doctype, doctopic, docstatus, provenanceP, provenanceU, eventPlace, eventDate, additionalNotes };
+	let data = { 
+		objId, file, ident, author, role, curator, abstract, doctype, doctopic, docstatus, provenanceP, provenanceU, eventPlace, eventDate, additionalNotes 
+	};
 
 	const requestOptions = {
 		method: 'POST',
@@ -1332,17 +1383,34 @@ async function saveMetadata(event) {
 		},
 		body: JSON.stringify(data),
 	};
+
 	//showSpinner();
-	const response = await fetch("/api/metadata", requestOptions);
-	const text = await response.text();
+	let response, text;
+
+	if(update){
+		response = await fetch("/api/update_metadata",requestOptions);
+		text = await response.text();
+	}else{
+		response = await fetch("/api/save_metadata", requestOptions);
+		text = await response.text();
+	}
+	let msg = $('#msg');
 
 	if (!response.ok) {
-		let err = $('#errors');
-		err.text(text);
-		$('#add-metadata').animate({ scrollTop: err }, 400);
+		msg.css('display','block');
+		msg.addClass('alert-danger').removeClass('alert-success');
+		msg.text(text);
+		$('#add-metadata').animate({ scrollTop: msg }, 400);
 	} else {
-		$('#add-metadata').modal('toggle')
-		currentFilename = text;
+		if(update){
+			msg.css('display','block');
+			msg.addClass('alert-success').removeClass('alert-danger');
+			msg.text(text);
+			$('#add-metadata').animate({ scrollTop: msg }, 400);
+		}else{
+			msg.css('display','none');
+			$('#add-metadata').modal('toggle')
+			currentFilename = text;}
 	}
 
 }
