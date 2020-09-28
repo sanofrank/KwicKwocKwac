@@ -30,7 +30,7 @@
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item dropdown active">
 						<a class="nav-link dropdown-toggle" href="#" id="fileList" data-toggle="dropdown"
-							aria-haspopup="true" aria-expanded="false">File</a>
+							aria-haspopup="true" aria-expanded="false">Documenti</a>
 						<div id="fileMenu" class="dropdown-menu" aria-labelledby="fileList">
 						</div>
 					</li>
@@ -173,9 +173,9 @@
 									</label>
 									<label class="small" title="Chenge the document status to working, done, default">
 										Cambia stato dei lavori
-										<button id="status" type="button" class="btn btn-primary btn-sm"
-											onclick="changeStatus()"></button>
 									</label>
+									<button id="status" type="button" class="btn btn-primary btn-sm" 
+											onclick="changeStatus()"></button>
 								</div>
 							</nav>
 						</div>
@@ -441,7 +441,7 @@
 							istituzionale ricoperto in quel momento dall'autore del documento. Cliccando sull'icona
 							<i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori
 							ruoli.</small>
-						<select id="author-role" name="role" class="form-control role"
+						<select id="role" name="role" class="form-control role"
 							aria-describedby="author-role-metadata">
 							<option hidden disabled selected value>Seleziona il ruolo...</option>
 							<option class="role-option" value="role.01">Delegato Aspirante della Gioventù Cattolica
@@ -520,7 +520,7 @@
 						<small style="margin-bottom: 10px;" class="form-text text-muted">La tipologia testuale che
 							caratterizza il documento. Cliccando sull'icona <i class="fa fa-plus"
 								aria-hidden="true"></i> è possibile aggiungere ulteriori tipologie.</small>
-						<select name="doctype" class="form-control doctype" aria-describedby="doctype-metadata">
+						<select name="doctype" id="doctype" class="form-control doctype" aria-describedby="doctype-metadata">
 							<option hidden disabled selected value>Scegli una tipologia...</option>
 							<option class="doctype-option" value="doctype.01">Articolo su periodico</option>
 							<option class="doctype-option" value="doctype.02">Articolo su quotidiano</option>
@@ -547,7 +547,7 @@
 						<small style="margin-bottom: 10px;" class="form-text text-muted">La tematica generale
 							presente nel testo del documento. Cliccando sull'icona <i class="fa fa-plus"
 								aria-hidden="true"></i> è possibile aggiungere ulteriori tematiche.</small>
-						<select name="doctopic" class="form-control doctopic" aria-describedby="doctopic-metadata">
+						<select name="doctopic" id="doctopic" class="form-control doctopic" aria-describedby="doctopic-metadata">
 							<option hidden disabled selected value>Scegli una tematica...</option>
 							<option class="doctopic-option" value="doctopic.01">Chiesa</option>
 							<option class="doctopic-option" value="doctopic.02">Cultura/Istruzione</option>

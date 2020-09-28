@@ -686,6 +686,7 @@ function hidePublished(x) {
 
 function hideUnpublished(x) {
 	if (x.checked) {
+		console.log("hideUNpub");
 		document.getElementById("unpubMetadata").setAttribute("hidden", true);
 		document.getElementById("pubMetadata").removeAttribute("hidden");
 	}
@@ -1310,6 +1311,49 @@ function download(filename, content, format) {
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
 
+function fillForm(data,id,addFunction, value){
+
+	if(value){
+		if(typeof data === 'object'){
+			console.log("object",data);
+			for(let i = 0; i < data.length; i++){
+				if(i == 0){
+					let selector = `.${id}`;
+					let input = document.querySelector(selector);
+					input.setAttribute('value',data[i]);
+				}else{
+					addFunction();
+					let added_selector = `#added-${id}${i} input`
+					let added_inputs = document.querySelector(added_selector);
+					added_inputs.setAttribute('value',data[i]);
+				}
+			}
+		}else{
+			addFunction();
+			let value_selector = `#${id}`
+			let input = document.querySelector(value_selector);
+			input.setAttribute('value',data);
+		}
+	}else{
+		for(let i = 0; i < data.length; i++){
+			if(i == 0){
+				let selector = `#${id} option`;
+				let inputs = document.querySelectorAll(selector);
+				inputs.forEach(input => {
+					if(data[i] === input.getAttribute('value')) input.setAttribute('selected','select');
+				})
+			}else{
+				addFunction();
+				let added_selector = `#added-${id}${i} option`
+				let added_inputs = document.querySelectorAll(added_selector);
+				added_inputs.forEach(added_input => {
+					if(data[i] === added_input.getAttribute('value')) added_input.setAttribute('selected','select');
+				})
+			}			
+		}
+	}
+}
+
 async function checkMetadata(){
 	//Remove previous metadata form if exist
 	if($('#add-metadata .modal-dialog')){
@@ -1330,23 +1374,40 @@ async function checkMetadata(){
 		let split = ident.split('_');
 		currentMetadata.ident = split[3];
 
-		//Create new form from template
+		//Create new form from template and add single value field parsing
 		let string = $('#metadataTpl').html();
 		let newForm = string.tpl(currentMetadata);
 
 		//Append new form
 		$('#add-metadata').append(newForm);
-		
-		if(currentMetadata.roleList.length > 1){
 
-		}else{
-			let roles = document.querySelectorAll('#author-role option');
-			
-			roles.forEach(role => {
-			 	if(currentMetadata.roleList[0] === role.getAttribute('value')) role.setAttribute('selected','select');
-			})
-		}
+		//Required fields array
+		if(currentMetadata.roleList.length > 0) fillForm(currentMetadata.roleList,"role",addRole,false);
+		if(currentMetadata.doctypeList.length > 0) fillForm(currentMetadata.doctypeList,"doctype",addDoctype,false);
+		if(currentMetadata.doctopicList.length > 0) fillForm(currentMetadata.doctopicList,"doctopic",addDoctopic,false);
+		if(currentMetadata.eventPlace) fillForm(currentMetadata.eventPlace,"event-place",addEventPlace,true);
+		if(currentMetadata.eventDate) fillForm(currentMetadata.eventDate,"event-date",addEventDate,true);
 		
+		//Provenance value object
+		switch (currentMetadata.docstatus) {
+			case "published":
+				let pub = $('#inlineRadio1');
+				pub.prop("checked", true);
+				hideUnpublished(pub[0]);
+
+				fillForm(currentMetadata.provenance,"bibsource",addBibsource,true)
+				break;
+			case "unpublished":
+				let unpub = $('#inlineRadio2');
+				unpub.prop("checked", true);
+				hidePublished(unpub[0]);
+
+				fillForm(currentMetadata.provenance,"archsource",addArchsource,true)
+				break;
+			default:
+				break;
+		}
+
 		$('#save-metadata').text('Aggiorna');
 		$('#save-metadata').attr('onclick','saveMetadata(true)')
 	}
@@ -1366,14 +1427,25 @@ async function saveMetadata(update = false) {
 	let doctype = $('select.doctype').map((_, el) => el.value).get();
 	let doctopic = $('select.doctopic').map((_, el) => el.value).get();
 	let docstatus = $('input[type=radio][name=docstatus]:checked').val();
-	let provenanceP = $('.bibsource').map((_, el) => el.value).get();
-	let provenanceU = $('.archsource').map((_, el) => el.value).get();
+	
+	let provenance;
+	switch(docstatus) {
+		case "unpublished" :
+			provenance = $('.archsource').map((_, el) => el.value).get();
+			break;
+		case "published":
+			provenance = $('.bibsource').map((_, el) => el.value).get();
+			break;
+		default:
+			provenance = undefined; 
+	}
+
 	let eventPlace = $('#event-place').val();
 	let eventDate = $('#event-date').val();
 	let additionalNotes = $('#additional-notes').val();
 
 	let data = { 
-		objId, file, ident, author, role, curator, abstract, doctype, doctopic, docstatus, provenanceP, provenanceU, eventPlace, eventDate, additionalNotes 
+		objId, file, ident, author, role, curator, abstract, doctype, doctopic, docstatus, provenance, eventPlace, eventDate, additionalNotes 
 	};
 
 	const requestOptions = {
@@ -1385,33 +1457,29 @@ async function saveMetadata(update = false) {
 	};
 
 	//showSpinner();
-	let response, text;
+	let response, text, json;
 
 	if(update){
 		response = await fetch("/api/update_metadata",requestOptions);
 		text = await response.text();
 	}else{
 		response = await fetch("/api/save_metadata", requestOptions);
-		text = await response.text();
+		json = await response.json();
 	}
 	let msg = $('#msg');
+	update ? msg.text(text) : msg.text(json.msg)
 
-	if (!response.ok) {
+	if(!response.ok){		
 		msg.css('display','block');
 		msg.addClass('alert-danger').removeClass('alert-success');
-		msg.text(text);
 		$('#add-metadata').animate({ scrollTop: msg }, 400);
-	} else {
-		if(update){
-			msg.css('display','block');
-			msg.addClass('alert-success').removeClass('alert-danger');
-			msg.text(text);
-			$('#add-metadata').animate({ scrollTop: msg }, 400);
-		}else{
-			msg.css('display','none');
-			$('#add-metadata').modal('toggle')
-			currentFilename = text;}
-	}
+	} else{
+		if(!update) currentFilename = json.fileName;
+
+		msg.css('display','block');
+		msg.addClass('alert-success').removeClass('alert-danger');
+		$('#add-metadata').animate({ scrollTop: msg }, 400);
+		}
 
 }
 

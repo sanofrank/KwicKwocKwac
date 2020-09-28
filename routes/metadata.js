@@ -30,8 +30,7 @@ router.post('/update_metadata', async (req,res) => {
         doctypeList: req.body.doctype,
         doctopicList: req.body.doctopic,
         docstatus: req.body.docstatus,
-        provenanceP: req.body.provenanceP,
-        provenanceU: req.body.provenanceU,
+        provenance: req.body.provenance,
         eventPlace: req.body.eventPlace,
         eventDate: req.body.eventDate,
         additionalNotes: req.body.additionalNotes
@@ -64,8 +63,7 @@ router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo 
         doctypeList: req.body.doctype,
         doctopicList: req.body.doctopic,
         docstatus: req.body.docstatus,
-        provenanceP: req.body.provenanceP,
-        provenanceU: req.body.provenanceU,
+        provenance: req.body.provenance,
         eventPlace: req.body.eventPlace,
         eventDate: req.body.eventDate,
         additionalNotes: req.body.additionalNotes
@@ -77,6 +75,7 @@ router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo 
             return res.status(400).send(err);}
 
         let id = metadata._id;
+        let response = {};
 
         let split = file.split('_');
         let newFilename = `${split[0]}_${split[1]}_${split[2]}_${split[3]}_${split[4]}_${split[5]}_${id}`
@@ -89,7 +88,11 @@ router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo 
             console.log("Successfully renamed the directory.")
             }
         })
-        return res.send(newFilename);
+        
+        response.msg = "Metadati salvati correttamente"
+        response.fileName = newFilename;
+        
+        return res.send(response);
     });
 });
 

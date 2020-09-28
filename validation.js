@@ -122,17 +122,16 @@ const metadataValidation = (data) => {
                         'string.empty': `Almeno un riferimento bibliografico è obbligatorio.`
                     })
                 )
-            }),
-        provenanceU: Joi.array().when(
-            'docstatus', {
-                is: 'unpublished', 
-                then: Joi.array().items(
-                    Joi.string()
-                    .messages({
-                        'string.empty': `Almeno una segnatura archivistica è obbligatoria.`
-                    })
-                )
-            }),
+            }).concat(Joi.array().when(
+                'docstatus', {
+                    is: 'unpublished', 
+                    then: Joi.array().items(
+                        Joi.string()
+                        .messages({
+                            'string.empty': `Almeno una segnatura archivistica è obbligatoria.`
+                        })
+                    )
+                })),
         eventPlace: Joi.string().allow(''),
         eventDate: Joi.number()
             .min(1916)

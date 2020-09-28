@@ -55,16 +55,7 @@ const metadataSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    provenanceP: {
-        type: Array,
-        default: undefined,
-        properties: {
-            provenanceStatement: {
-                type: String
-            }
-        }
-    },
-    provenanceU: {
+    provenance: {
         type: Array,
         default: undefined,
         properties: {
