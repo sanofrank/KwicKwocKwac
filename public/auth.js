@@ -1,5 +1,57 @@
+//Change password
+async function change_password(){
+    event.preventDefault();
+
+    let new_pass = $('#new-password').val();
+    let confirm_pass = $('#confirm-password').val();
+
+    let data = {new_pass,confirm_pass};
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }
+
+    const response = await fetch('api/change_password',requestOptions);
+    const text = await response.text();
+    var msg = $('#msg-change');
+
+    if(!response.ok){
+        msg.css('display','block');
+        msg.addClass('alert-danger').removeClass('alert-success');
+        msg.text(text);
+    }else{
+        msg.css('display','block');
+        msg.addClass('alert-success').removeClass('alert-danger');
+        
+        let redirect = `
+               Password cambiata correttamente. Clicca <a href='#' onclick = 'logout()'>qui</a> per eseguire di nuovo l'accesso o attendi {$counter} secondi.
+        `
+        var timer = {
+            counter : 5
+        }
+
+        var new_string = redirect.tpl(timer)
+        msg.html(new_string);
+
+        setInterval(() => {
+            timer.counter = timer.counter - 1;
+        
+            new_string = redirect.tpl(timer);
+            msg.html(new_string);
+            
+            if (timer.counter == 0) {
+                logout();
+            }
+        }, 1000);
+
+    }
+}
+
 async function login(){
-			
 
     let username = $('#usernameForm').val();
     let password = $('#password').val();
@@ -61,12 +113,26 @@ async function login(){
     }
 }
 
-//Fake logout
+//"Fake" logout
 function logout() {
     const origin = window.location.origin;
     location.assign(`${origin}/login`);
 }
 
+function show_hide(x){
+    let field = x.parentNode.parentNode.id;
+
+    event.preventDefault();
+    if($(`#${field} input`).attr("type") == "text"){
+        $(`#${field} input`).attr('type', 'password');
+        $(`#${field} i`).addClass( "fa-eye-slash" );
+        $(`#${field} i`).removeClass( "fa-eye" );
+    }else if($(`#${field} input`).attr("type") == "password"){
+        $(`#${field} input`).attr('type', 'text');
+        $(`#${field} i`).removeClass( "fa-eye-slash" );
+        $(`#${field} i`).addClass( "fa-eye" );
+    }
+}
 
 $('#form_log').on('keypress',function(e) {
     if(e.which == 13) {

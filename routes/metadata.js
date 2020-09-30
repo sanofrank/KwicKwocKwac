@@ -46,8 +46,13 @@ router.post('/update_metadata', async (req,res) => {
 
 router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo il salvataggio 
 
+    var response = {};
+
     const {error} = metadataValidation(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
+    if(error) {
+        response.msg = error.details[0].message;
+        return res.status(400).send(response);
+    }
 
     const dir = 'public/files';
 
@@ -75,7 +80,6 @@ router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo 
             return res.status(400).send(err);}
 
         let id = metadata._id;
-        let response = {};
 
         let split = file.split('_');
         let newFilename = `${split[0]}_${split[1]}_${split[2]}_${split[3]}_${split[4]}_${split[5]}_${id}`
@@ -91,7 +95,7 @@ router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo 
         
         response.msg = "Metadati salvati correttamente"
         response.fileName = newFilename;
-        
+
         return res.send(response);
     });
 });

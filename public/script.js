@@ -1458,16 +1458,17 @@ async function saveMetadata(update = false) {
 
 	//showSpinner();
 	let response, text, json;
+	let msg = $('#msg');
 
 	if(update){
 		response = await fetch("/api/update_metadata",requestOptions);
 		text = await response.text();
+		msg.text(text);
 	}else{
 		response = await fetch("/api/save_metadata", requestOptions);
 		json = await response.json();
+		msg.text(json.msg);
 	}
-	let msg = $('#msg');
-	update ? msg.text(text) : msg.text(json.msg)
 
 	if(!response.ok){		
 		msg.css('display','block');

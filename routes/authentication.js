@@ -4,10 +4,34 @@ const bcrypt = require('bcryptjs');
 const verify = require('./verifyToken');
 //const { pool } = require('../dbConfig');
 const User = require('../model/User');
-const { loginValidation, registerValidation } = require('../validation');
+const { loginValidation, registerValidation, changePassValidation } = require('../validation');
 
 router.get('/index', verify, (req,res) => {
     res.render("index.html");
+})
+
+router.post('/change_password', async (req,res) => {
+
+    const token = req.cookies.auth_token;
+    if(!token) res.status(400).send("No token provided");
+
+    const verified = jwt.verify(token,process.env.TOKEN_SECRET);
+    const objID = verified.id;
+
+    const change = req.body;
+
+    const {error} = changePassValidation(change);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    //HASH PASSWORDS
+    const salt = await bcrypt.genSalt(10); //random generated data
+    const hashPassword = await bcrypt.hash(req.body.new_pass,salt); //combines salt to hashes password
+
+    const update = await User.findByIdAndUpdate({_id: objID},{password: hashPassword}, function(err,data){
+        if(err) return res.status(400).send("Non è possibile cambiare password")
+
+        return res.send("Password cambiata con successo.");
+    })
 })
 
 router.post('/login', async (req,res) => {

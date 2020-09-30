@@ -109,7 +109,7 @@ router.post('/upload', async (req,res) => {
         let sez = req.body.sez;
         let vol = req.body.vol;
         let tom = req.body.tom;
-        let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_0`
+        let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`
 
         let path = `${dir}/${fileName}`;
         let htmlPath = `${path}/index.html`;

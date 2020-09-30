@@ -38,9 +38,9 @@
 						<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown"
 							aria-haspopup="true" aria-expanded="false">Operazioni</a>
 						<div id="commandMenu" class="dropdown-menu" aria-labelledby="dropdown01">
-							<a class="dropdown-item" href="#" onclick='toggleStyles()'>Show annotations</a>
+							<a class="dropdown-item" href="#" onclick='toggleStyles()'>Mostra annotazioni</a>
 							<a id="metadata-toggle"class="dropdown-item" href="#" data-toggle="modal"
-								data-target="#add-metadata">Add Metadata</a>
+								data-target="#add-metadata">Aggiungi Metadati</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="#" onclick="downloadDoc('html')">Scarica HTML</a>
 							<a class="dropdown-item" href="#" onclick="downloadDoc('tei')">Scarica TEI</a>
@@ -72,10 +72,17 @@
 								class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span
 								class="sr-only">Modifica documento</span></a>
 					</li>
-					<li class="nav-item active">
-						<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#logout"><span
-								class="oi oi-account-logout" title="Logout from platform" aria-hidden="true"></span>
-							<span class="sr-only">Esci</span></a>
+					<li class="nav-item dropdown active"> 
+						<a class="nav-link dropdown-toggle" href="#" id="user-options" data-toggle="dropdown" 
+						aria-haspopup="true" aria-expanded="false"><span
+								class="oi oi-person" title="User preferences" aria-hidden="true"></span>
+							<span class="sr-only">Utente</span>
+						</a>
+						<div id="user-menu" class="dropdown-menu dropdown-menu-right" aria-labelledby="user-options">
+							<a id="change-password-option"class="dropdown-item" href="#" data-toggle="modal" data-target="#change-password">Cambia password</a>
+							<a id="logout-option" class="dropdown-item" href="#" data-toggle="modal"
+								data-target="#logout">Esci</a>
+						</div>
 					</li>
 					<li class="nav-item active">
 						<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span
@@ -197,6 +204,45 @@
 	</div>
 
 	<!-- Modals -->
+	<div class="modal fade" id="change-password" tabindex="-1" role="dialog" aria-labelledby="changePassword" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="changePassword">Cambia password</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div id="msg-change" class="alert" role="alert" style="display:none"></div>
+					<p>Inserire due volte la nuova password per cambiarla.</p>
+					<form id="change-password-form">
+						<div class="form-group">
+						<div id="new-password-input" class="input-group">
+							<input id="new-password" class="form-control" type="password" placeholder="Nuova password">
+							<div class="input-group-append">
+									<a class="input-group-text" id="new-password-eye" href="" onclick="show_hide(this)">
+										<i class="fa fa-eye-slash" aria-hidden="true"></i>
+									</a>
+							</div>
+						</div>
+						<small class="form-text text-muted">La nuova password deve contenere almeno 6 caratteri</small>
+
+						</div>
+						<div class="form-group">
+						<div id="confirm-password-input" class="input-group">
+							<input id="confirm-password" class="form-control" type="password" placeholder="Ripeti password">
+							</div>
+						</div>
+					</form>
+					<div class="float-right">
+						<button type="button" class="btn btn-primary"
+							onclick="change_password()">Salva</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="modal fade" id="logout" tabindex="-1" role="dialog" aria-labelledby="logoutLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
