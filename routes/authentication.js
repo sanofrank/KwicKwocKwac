@@ -82,43 +82,82 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
         email: req.body.email,
         password: hashPassword 
     });
+
+    //Email template
+    const email_tpl = `
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <title>Demystifying Email Design</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        .name{
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+    </head>
+    <body style="margin: 0; padding: 0;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%"> 
+            <tr>
+                <td style="padding: 10px 0 30px 0;">
+                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border: 1px solid #cccccc; border-collapse: collapse; background-color:white; color:black">
+                        <tr>
+                            <td align="center" style="padding: 40px 0 30px 0; font-size: 28px; font-weight: bold; font-family: Arial, sans-serif;">
+                                <div id="title-div">
+                                    <h1 id="title" style="font-size: 200%; margin:0" class="name">KwicKwocKwac</h1>
+                                    <h2 id="subtitle" style="font-size: 90%; margin:0"class="name">progetto Aldo Moro</h2>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#ffffff" style="padding: 40px 30px 40px 30px;background-color:white; color:black">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="">
+                                    <tr>
+                                        <td style="font-family: Arial, sans-serif; font-size: 24px;">
+                                            <b>Credenziali di accesso</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 20px 0 30px 0; color: #153643; font-family: Arial, sans-serif; font-size: 16px; line-height: 20px;">
+                                            Carissim${req.body.gender} ${req.body.name},<br>
+                                            <br>
+                                            le comunichiamo che è stat${req.body.gender} registrat${req.body.gender} alla piattaforma di marcatura <b>KwicKwocKwac</b> per il progetto Aldo Moro con le seguenti credenziali:<br>
+                                            <br>
+                                            <b>Nome utente</b>: ${req.body.name}<br>
+                                            <b>Password</b>: ${req.body.password}<br>
+                                            <br>
+                                            Una volta eseguito l'accesso alla piattaforma sarà poi possibile cambiare password cliccando nell'icona Utente in alto a destra.<br>
+                                            <br>
+                                            Un cordiale saluto,<br>
+                                            Progetto Aldo Moro                                    
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#0368d9" style="padding: 30px 30px 30px 30px;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                    <tr>
+                                        <td style="color: #ffffff; font-family: Arial, sans-serif; font-size: 14px;" width="75%">
+                                            &reg; ProgettoAldoMoro2020<br/>
+                                        </td>                                    
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    `
     try{
     const savedUser = await user.save();
     
-    //Gender
-    const gender = req.body.gender
-    var html_body;
-
-    if(gender === 'm'){
-        html_body = `
-        Carissimo ${req.body.name},<br>
-        <br>
-        le comunichiamo che è stato registrato alla piattaforma di marcatura <b>KwicKwocKwac</b> per il progetto Aldo Moro con le seguenti credenziali:<br>
-        <br>
-        <b>Nome utente</b>: ${req.body.name}<br>
-        <b>Password</b>: ${req.body.password}<br>
-        <br>
-        Una volta eseguito l'accesso alla piattaforma sarà poi possibile cambiare password cliccando nell'icona Utente in alto a destra.<br>
-        <br>
-        Un cordiale saluto,<br>
-        Progetto Aldo Moro
-    `
-    }else{
-        html_body = `
-        Carissima ${req.body.name},<br>
-        <br>
-        le comunichiamo che è stata registrata alla piattaforma di marcatura KwicKwocKwac per il progetto Aldo Moro con le seguenti credenziali:<br>
-        <br>
-        <i>Nome utente</i>: ${req.body.name}<br>
-        <i>Password</i>: ${req.body.password}<br>
-        <br>
-        Una volta eseguito l'accesso alla piattaforma sarà poi possibile cambiare password cliccando nell'icona Utente in alto a destra.<br>
-        <br>
-        Un cordiale saluto,<br>
-        Progetto Aldo Moro
-    `
-    }
-
     let transporter = nodemailer.createTransport({
         host: "outlook.office365.com",
         port: 587,
@@ -133,19 +172,19 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
     let info = await transporter.sendMail({
         from: 'aldomoro@unibo.it', // sender address
         to: `${req.body.email}`, // list of receivers
-        subject: "Progetto Aldo Moro", // Subject line
-        html: html_body
+        subject: "Credenziali Progetto Aldo Moro", // Subject line
+        html: email_tpl
     });
-    console.log("Message sent: %s", info.messageId);
 
     return res.send('Registered');
     }catch(err){
-        res.status(400).send("catch error",err);
+        res.status(400).send(err);
     }
 });
 
 router.get('/verify', verify, (req,res) => {
     res.json({editmode: true});
 });
+
 
 module.exports = router;

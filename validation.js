@@ -58,6 +58,14 @@ const registerValidation = (data) => {
                 'string.min': `L'indirizzo email deve contenere almeno 6 caratteri.`,
                 'string.email': `L'indirizzo email deve essere valido.`
             }),
+        gender: Joi.string()
+            .max(1)
+            .required()
+            .messages(
+                {
+                    'string.empty': "Inserire il genere dell'utente",
+                }
+            ),
         password: Joi.string()
             .min(6)
             .required()
