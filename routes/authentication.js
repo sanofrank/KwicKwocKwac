@@ -2,7 +2,7 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const verify = require('./verifyToken');
-//const { pool } = require('../dbConfig');
+const nodemailer = require('nodemailer');
 const User = require('../model/User');
 const { loginValidation, registerValidation, changePassValidation } = require('../validation');
 
@@ -71,7 +71,7 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
     //CHECKING USER ALREADY IN DATABASE
     const emailExist = await User.findOne({email: req.body.email}); //check in the DB
     if(emailExist) return res.status(400).send('Email already exists');
-    
+
     //HASH PASSWORDS
     const salt = await bcrypt.genSalt(10); //random generated data
     const hashPassword = await bcrypt.hash(req.body.password,salt); //combines salt to hashes password
@@ -84,6 +84,60 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
     });
     try{
     const savedUser = await user.save();
+    
+    //Gender
+    const gender = req.body.gender
+    var html_body;
+
+    if(gender === 'm'){
+        html_body = `
+        Carissimo ${req.body.name},<br>
+        <br>
+        le comunichiamo che è stato registrato alla piattaforma di marcatura <b>KwicKwocKwac</b> per il progetto Aldo Moro con le seguenti credenziali:<br>
+        <br>
+        <b>Nome utente</b>: ${req.body.name}<br>
+        <b>Password</b>: ${req.body.password}<br>
+        <br>
+        Una volta eseguito l'accesso alla piattaforma sarà poi possibile cambiare password cliccando nell'icona Utente in alto a destra.<br>
+        <br>
+        Un cordiale saluto,<br>
+        Progetto Aldo Moro
+    `
+    }else{
+        html_body = `
+        Carissima ${req.body.name},<br>
+        <br>
+        le comunichiamo che è stata registrata alla piattaforma di marcatura KwicKwocKwac per il progetto Aldo Moro con le seguenti credenziali:<br>
+        <br>
+        <i>Nome utente</i>: ${req.body.name}<br>
+        <i>Password</i>: ${req.body.password}<br>
+        <br>
+        Una volta eseguito l'accesso alla piattaforma sarà poi possibile cambiare password cliccando nell'icona Utente in alto a destra.<br>
+        <br>
+        Un cordiale saluto,<br>
+        Progetto Aldo Moro
+    `
+    }
+
+    let transporter = nodemailer.createTransport({
+        host: "outlook.office365.com",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: "francesco.paolucci7@unibo.it", // generated ethereal user
+          pass: "IKnowIt'sOver86", // generated ethereal password
+        },
+      });
+
+    // send mail with defined transport object
+    let info = await transporter.sendMail({
+        from: 'aldomoro@unibo.it', // sender address
+        to: `${req.body.email}`, // list of receivers
+        subject: "Progetto Aldo Moro", // Subject line
+        html: html_body
+    });
+    console.log("Message sent: %s", info.messageId);
+
     return res.send('Registered');
     }catch(err){
         res.status(400).send("catch error",err);
@@ -95,37 +149,3 @@ router.get('/verify', verify, (req,res) => {
 });
 
 module.exports = router;
-
-
-// POSTGRES LOGIN
-    // pool.query(
-    //     `SELECT * FROM users WHERE name = $1`, [login.username], (error,result) =>{
-    //         if(error) throw error;
-
-    //         if(result.rows.length > 0){
-    //             const user = result.rows[0];
-
-    //             bcrypt.compare(login.password, user.password, (error, isMatch) => {
-    //                 if(error) throw error;
-
-    //                 if(isMatch){
-    //                     //Create and assign token
-    //                     const token = jwt.sign({uuid: user.uuid},process.env.TOKEN_SECRET); //pass some data to the token
-    //                     console.log(user);
-    //                     //res.header('auth-token',token).send(token);
-    //                     res.cookie('auth_token', token, 
-    //                     {
-    //                         maxAge: 3600,
-    //                         httpOnly: true,
-    //                         //secure: true
-    //                     })
-    //                     res.send('Logged in');
-    //                 }else{
-    //                     return res.status(400).send('Invalid password');
-    //                 }
-    //             });
-    //         }else{
-    //             return res.status(400).send('Username incorrect');
-    //         };
-    //     }
-    // );
