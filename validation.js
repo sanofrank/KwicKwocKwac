@@ -1,6 +1,27 @@
 //Validation
 const Joi = require('@hapi/joi');
 
+//Change Password validation
+const changePassValidation = (data) => {
+    const schema = Joi.object({
+        new_pass: Joi.string()
+            .min(6)
+            .required()
+            .messages({
+                'string.min': 'La nuova password deve contenere almeno 6 caratteri.',
+                'string.empty': 'Inserisci la nuova password.'
+            }),
+        confirm_pass: Joi.string()
+            .required()
+            .valid(Joi.ref('new_pass'))
+            .messages({
+                'string.empty': 'Inserire nuovamente la password per conferma.',
+                'any.only': `Le due password non coincidono.`
+            })
+    });
+    return schema.validate(data);
+}
+
 //Login validation
 const loginValidation = (data) => {
     const schema = Joi.object({
@@ -37,6 +58,14 @@ const registerValidation = (data) => {
                 'string.min': `L'indirizzo email deve contenere almeno 6 caratteri.`,
                 'string.email': `L'indirizzo email deve essere valido.`
             }),
+        gender: Joi.string()
+            .max(1)
+            .required()
+            .messages(
+                {
+                    'string.empty': "Inserire il genere dell'utente",
+                }
+            ),
         password: Joi.string()
             .min(6)
             .required()
@@ -122,17 +151,16 @@ const metadataValidation = (data) => {
                         'string.empty': `Almeno un riferimento bibliografico è obbligatorio.`
                     })
                 )
-            }),
-        provenanceU: Joi.array().when(
-            'docstatus', {
-                is: 'unpublished', 
-                then: Joi.array().items(
-                    Joi.string()
-                    .messages({
-                        'string.empty': `Almeno una segnatura archivistica è obbligatoria.`
-                    })
-                )
-            }),
+            }).concat(Joi.array().when(
+                'docstatus', {
+                    is: 'unpublished', 
+                    then: Joi.array().items(
+                        Joi.string()
+                        .messages({
+                            'string.empty': `Almeno una segnatura archivistica è obbligatoria.`
+                        })
+                    )
+                })),
         eventPlace: Joi.string().allow(''),
         eventDate: Joi.number()
             .min(1916)
@@ -149,4 +177,5 @@ const metadataValidation = (data) => {
 
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
-module.exports.metadataValidation = metadataValidation
+module.exports.metadataValidation = metadataValidation;
+module.exports.changePassValidation = changePassValidation;

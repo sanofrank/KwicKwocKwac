@@ -322,3 +322,8 @@ h1 {
 #fileParams{
 	margin-top: 1em
 }
+
+#new-password-eye,#new-password-eye:hover{
+	color: black;
+	text-decoration: none;
+}
