@@ -106,9 +106,9 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
                         <tr>
                             <td align="center" style="padding: 40px 0 30px 0; font-size: 28px; font-weight: bold; font-family: Arial, sans-serif;">
                                 <div id="title-div">
-                                    <h1 id="title" style="font-size: 200%; margin:0" class="name">KwicKwocKwac</h1>
+                                    <h1 id="title" style="font-size: 200%; margin:0; color:#343B3F" class="name">KwicKwocKwac</h1>
                                     <hr style="border: 2px solid #0368D9; margin-top: 1px; margin-bottom: 1px; width:60%;"/>
-                                    <h2 id="subtitle" style="font-size: 90%; margin:0"class="name">progetto Aldo Moro</h2>
+                                    <h2 id="subtitle" style="font-size: 90%; margin:0; color:#343B3F"class="name">progetto Aldo Moro</h2>
                                 </div>
                             </td>
                         </tr>
