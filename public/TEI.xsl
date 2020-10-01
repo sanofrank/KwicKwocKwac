@@ -352,8 +352,14 @@
 		</tei:byline>
 	</xsl:template>
 
-	<xsl:template match="html:i">
+	<xsl:template match="html:i|html:em">
 		<tei:span rend="italic">
+			<xsl:apply-templates />
+		</tei:span>
+	</xsl:template>
+
+	<xsl:template match="html:b|html:strong">
+		<tei:span rend="bold">
 			<xsl:apply-templates />
 		</tei:span>
 	</xsl:template>
@@ -404,13 +410,13 @@
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'bib')]">
-		<tei:bibl ref="#{@data-ref}">
+		<tei:bibl xml:id="{@id}">
 			<xsl:apply-templates />
 		</tei:bibl>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'quote')]">
-		<tei:cit ref="#{@data-ref}">
+		<tei:cit xml:id="{@id}">
 			<xsl:apply-templates />
 		</tei:cit>
 	</xsl:template>
@@ -419,6 +425,28 @@
 		<tei:quote>
 			<xsl:apply-templates />
 		</tei:quote>
+	</xsl:template>
+
+	<xsl:template match="html:sup">
+		<xsl:apply-templates />
+	</xsl:template>
+
+	<xsl:template match="html:li[contains(@data-owner, 'curator')]">
+		<tei:note xml:id='{@id}' place='bottom' type='footnote' subtype='curator-note'>
+			<xsl:apply-templates />
+		</tei:note>
+	</xsl:template>
+
+	<xsl:template match="html:li[contains(@data-owner, 'AldoMoro')]">
+		<tei:note xml:id='{@id}' place='bottom' type='footnote' subtype='moro-note'>
+			<xsl:apply-templates />
+		</tei:note>
+	</xsl:template>
+
+	<xsl:template match="html:a">
+		<tei:ref target="{@href}">
+			<xsl:apply-templates />
+		</tei:ref>
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'person')]" mode="inner">
