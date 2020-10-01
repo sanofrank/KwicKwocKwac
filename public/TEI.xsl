@@ -6,6 +6,7 @@
 	<xsl:param name="publication">No publication details</xsl:param>
 	<xsl:param name="source">No source details</xsl:param>
 	<xsl:param name="authority">Edizione nazionale delle opere di Aldo Moro</xsl:param>
+	<xsl:param name="author">Aldo Moro</xsl:param>
 
 	<xsl:output encoding="UTF-8" indent="yes" method="xml" />
 	<xsl:key name="persons" match="html:span[contains(@class, 'person')]/@about" use="." />
@@ -24,6 +25,7 @@
 							<xsl:value-of select="$title" />
 						</tei:title>
 						<tei:author role="">
+							<xsl:value-of select="$author">
 						</tei:author>
 						<tei:principal>
 						</tei:principal>

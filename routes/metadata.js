@@ -23,6 +23,7 @@ router.post('/update_metadata', async (req,res) => {
     const objId = req.body.objId;
     let meta = {
         ident: req.body.ident,
+        title: req.body.title,
         author: req.body.author,
         roleList: req.body.role,
         curator: req.body.curator,
@@ -59,7 +60,8 @@ router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo 
     let file = req.body.file;
     let currPath = `${dir}/${file}`
 
-    const metadata = new Metadata ({                    // crea un nuovo record di metadati
+    const metadata = new Metadata ({
+        title: req.body.title,
         ident: req.body.ident,
         author: req.body.author,
         roleList: req.body.role,
