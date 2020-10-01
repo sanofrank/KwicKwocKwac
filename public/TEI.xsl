@@ -410,7 +410,13 @@
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'quote')]">
-		<tei:quote ref="#{@data-ref}">
+		<tei:cit ref="#{@data-ref}">
+			<xsl:apply-templates />
+		</tei:cit>
+	</xsl:template>
+
+	<xsl:template match="html:span[contains(@class, 'quote-text')]">
+		<tei:quote>
 			<xsl:apply-templates />
 		</tei:quote>
 	</xsl:template>

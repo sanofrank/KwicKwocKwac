@@ -419,13 +419,13 @@
 							<label for="ident">Numero del documento</label><br>
 							<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre
 								compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi:
-								<samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
+								<samp>001</samp>, <samp>002</samp>, <samp>003</samp>... <samp>010</samp>, <samp>011</samp>, <samp>012</samp>...</small>
 							<input type="text" class="form-control" id="ident" aria-describedby="id-metadata">
 						</div>
 						<div class="form-group">
 							<label for="author">Autore del documento</label>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
-								Cognome) dell'autore del documento. Esempio: <samp>Aldo Moro</samp>.</small>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (<strong>Nome
+								Cognome completi</strong>) dell'autore del documento. Esempio: <samp>Aldo Moro</samp>.</small>
 							<input type="text" class="form-control" id="author" aria-describedby="author-metadata">
 						</div>
 						<div class="form-group role-group">
@@ -494,8 +494,8 @@
 						</div>
 						<div class="form-group">
 							<label for="curator">Ricercatore curatore</label>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
-								Cognome) del ricercatore che ha curato la trascrizione e marcatura del documento.
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (<strong>Nome
+								Cognome completi</strong>) del ricercatore che ha curato la trascrizione e marcatura del documento.
 								Esempio: <samp>Mario Rossi</samp>.</small>
 							<input type="text" class="form-control" id="curator" aria-describedby="curator-metadata">
 						</div>
@@ -503,8 +503,7 @@
 							<label for="abstract">Abstract</label>
 							<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale
 								del documento che ne riassume i contenuti e che lo contestualizza all'interno
-								dell'universo biografico di Aldo Moro. Esempio: abstract introduttivo dell'opera X nel
-								Volume 1.</small>
+								dell'universo biografico di Aldo Moro. Per un esempio di abstract, vedi la sezione <strong>La strutturazione formale dell’opera</strong> delle Linee Guida.</small>
 							<textarea type="text" class="form-control" id="abstract"
 								aria-describedby="abstract-metadata" rows="3"></textarea>
 						</div>
@@ -561,7 +560,7 @@
 							<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il
 								documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata
 								(<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni
-								metadatali differenti.</small>
+								di provenienza differenti.</small>
 							<div id="docstatus">
 								<div class="form-check form-check-inline">
 									<input class="form-check-input docstatus" type="radio" name="docstatus"
