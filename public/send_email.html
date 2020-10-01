@@ -8,7 +8,7 @@
     <link href="./auth.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <title>Accedi</title>
+    <title>Cambia password</title>
 </head>
 <body>
     <div id="container" class="container">
@@ -20,22 +20,19 @@
         </div>
         <div id = "form_container" class="col">
             <form id="form_log">
-                <h3>Accedi</h3>
+                <h3>Cambia password</h3>
                 <hr class="my-2" />
                 <p id ="errors"></p>
                 <div class="form-group">
-                    <label data-error="wrong" data-success="right" for="usernameForm">Nome utente</label>
-          			<input type="text" id="usernameForm" class="form-control validate" placeholder="Inserisci nome">
-                </div>
-                <div class="form-group">
-                  <label for="password">Password</label>
-                  <input type="password" class="form-control" id="password" placeholder="Inserisci password">
+                    <label data-error="wrong" data-success="right" for="emailForm">Email</label>
+                    <input type="email" id="emailForm" class="form-control validate" placeholder="Inserisci email">
+                    <small class="form-text text-muted">Inserisci il tuo indirizzo di posta elettronica di registrazione per ricevere una email con le istruzioni per cambiare password</small>
                 </div>
                 <div>
-                   <!-- <p>Hai dimenticato la password? <a href="/send_email">Cambiala qui.</a></p> -->
+                    <p>Ci hai ripensato? <a href="/login">Accedi qui.</a></p>                
                 </div>
               </form>
-              <button id="login" type="submit" class="btn btn-primary" onclick="login()">Accedi</button>
+              <button id="login" type="submit" class="btn btn-primary" onclick="send_email()">Invia</button>
         </div>
         </div>
     </div>

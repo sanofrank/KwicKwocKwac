@@ -107,6 +107,7 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
                             <td align="center" style="padding: 40px 0 30px 0; font-size: 28px; font-weight: bold; font-family: Arial, sans-serif;">
                                 <div id="title-div">
                                     <h1 id="title" style="font-size: 200%; margin:0" class="name">KwicKwocKwac</h1>
+                                    <hr style="border: 2px solid #0368D9; margin-top: 1px; margin-bottom: 1px; width:60%;"/>
                                     <h2 id="subtitle" style="font-size: 90%; margin:0"class="name">progetto Aldo Moro</h2>
                                 </div>
                             </td>
@@ -123,12 +124,16 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
                                         <td style="padding: 20px 0 30px 0; color: #153643; font-family: Arial, sans-serif; font-size: 16px; line-height: 20px;">
                                             Carissim${req.body.gender} ${req.body.name},<br>
                                             <br>
-                                            le comunichiamo che è stat${req.body.gender} registrat${req.body.gender} alla piattaforma di marcatura <b>KwicKwocKwac</b> per il progetto Aldo Moro con le seguenti credenziali:<br>
+                                            le comunichiamo che è stat${req.body.gender} registrat${req.body.gender} alla piattaforma di marcatura <b><a href="http://aldomorodigitale.unibo.it/login">KwicKwocKwac</a></b> per il progetto Aldo Moro con le seguenti credenziali:<br>
                                             <br>
                                             <b>Nome utente</b>: ${req.body.name}<br>
                                             <b>Password</b>: ${req.body.password}<br>
                                             <br>
                                             Una volta eseguito l'accesso alla piattaforma sarà poi possibile cambiare password cliccando nell'icona Utente in alto a destra.<br>
+                                            <br>
+                                            In questa mail sono anche presenti come allegato le <b>linee guida</b> da consultare come preparazione alla marcatura dei testi e il <b>manuale d'istruzione</b> della piattaforma.<br>
+                                            <br>
+                                            Clicchi <a href="http://aldomorodigitale.unibo.it/login">qui</a> per accedere.<br>
                                             <br>
                                             Un cordiale saluto,<br>
                                             Progetto Aldo Moro                                    
@@ -156,8 +161,10 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
     </html>
     `
     try{
-    const savedUser = await user.save();
-    
+
+    var guide = 'LineeGuidaTestiMoro.pdf'
+    var manual = 'Manuale_1.0.pdf'
+
     let transporter = nodemailer.createTransport({
         host: "outlook.office365.com",
         port: 587,
@@ -173,8 +180,20 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
         from: 'aldomoro@unibo.it', // sender address
         to: `${req.body.email}`, // list of receivers
         subject: "Credenziali Progetto Aldo Moro", // Subject line
-        html: email_tpl
+        html: email_tpl,
+        attachments: [{
+            filename: 'LineeGuida_ProgettoAldoMoro.pdf',
+            path: `./doc/${guide}`,
+            contentType: 'application/pdf'
+          },
+        {
+            filename: 'Manuale_KwicKwocKwac_1.0.pdf',
+            path: `./doc/${manual}`,
+            contentType: 'application/pdf'
+        }]
     });
+
+    const savedUser = await user.save();
 
     return res.send('Registered');
     }catch(err){

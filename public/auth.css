@@ -1,8 +1,17 @@
 
+hr{
+    border: 2px solid #0368D9;
+}
+
+#title-div hr {
+    width: 60%;
+    border: 1px solid #0368D9;
+
+}
+
 #container{
     width: 100%;
-    margin:0 auto;
-    padding: 10em;
+    padding-top: 12em;
 }
 
 #form_container{
@@ -16,16 +25,16 @@
 }
 
 #title{
-    font-size: 300%;
+    font-size: 350%;
 }
 
 #subtitle{
-    font-size: 100%;
+    font-size: 140%;
 }
 
 #title-div{
     text-align: center;
-    padding: 2.5em;
+    padding: 2.5em 0 2.5em 0;
     float:right;
     height: 100%;
 }

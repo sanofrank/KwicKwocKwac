@@ -724,20 +724,11 @@ function goto(id) {
 	}, 5000);
 }
 
-//Extract work title from the current file name
-function getTitle(fileName) {
-
-	let split = fileName.split('_');
-	let title = split[4];
-
-	return title;
-}
-
 // download the currently loaded document to the local disk
 function downloadDoc(type) {
 	var publicationTpl = `Converted into {$type} by "{$software}" on {$date} from the original source at "{$src}". `;
 	var options = {
-		title: getTitle(currentFilename),
+		title: splitFilename(currentFilename,"work"),
 		publication: publicationTpl.tpl({
 			type: type.toUpperCase(),
 			software: softwareName,
@@ -1312,7 +1303,6 @@ function download(filename, content, format) {
 /* ------------------------------------------------------------------------------ */
 
 function fillForm(data,id,addFunction, value){
-
 	if(value){
 		if(typeof data === 'object'){
 			console.log("object",data);

@@ -609,7 +609,7 @@ var kwic = new (function () {
 		},
 		// assign this entity to trash. 
 		putToTrash: function() {
-			this.switchTo('trash',true,type)
+			this.switchTo('trash',true)
 		}
 	}
 
