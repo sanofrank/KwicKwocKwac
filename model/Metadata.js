@@ -7,6 +7,12 @@ const metadataSchema = new mongoose.Schema({
         min: 9,
         max: 9
     },
+    title: {
+        type: String,
+        required: true,
+        min: 6,
+        max: 255
+    },
     author: {
         type: String,
         required: true,

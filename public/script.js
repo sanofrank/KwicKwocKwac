@@ -1408,10 +1408,11 @@ async function saveMetadata(update = false) {
 	let objId = ""
 	if(update) objId = splitFilename(currentFilename,"objId");
 
+	let title = splitFilename(currentFilename, "work")
 	let file = currentFilename;
 	let n = $('#ident').val();
 	let ident = $('div#file').attr('data-path') + n
-	let author = $('#author').val();
+	let author = "Aldo Moro";
 	let role = $('select.role').map((_, el) => el.value).get();
 	let curator = $('#curator').val();
 	let abstract = $('#abstract').val();
@@ -1436,7 +1437,7 @@ async function saveMetadata(update = false) {
 	let additionalNotes = $('#additional-notes').val();
 
 	let data = { 
-		objId, file, ident, author, role, curator, abstract, doctype, doctopic, docstatus, provenance, eventPlace, eventDate, additionalNotes 
+		objId, file, title, ident, author, role, curator, abstract, doctype, doctopic, docstatus, provenance, eventPlace, eventDate, additionalNotes 
 	};
 
 	const requestOptions = {
