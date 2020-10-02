@@ -424,8 +424,8 @@ function getCurrentView() {
 		view.scroll = $('#categoryPane .active')[0].scrollTop
 		view.openEls = $('.entityContainer.open').map(function () { return this.id; }).get()
 		view.openCards = $('.entityContainer .card.collapse.show').map(function () { return this.id; }).get()
-		view.openEls = $('.citationContainer.open').map(function () { return this.id; }).get()
-		view.openCards = $('.citationContainer .card.collapse.show').map(function () { return this.id; }).get()
+		view.openEls_cit = $('.citationContainer.open').map(function () { return this.id; }).get()
+		view.openCards_cit = $('.citationContainer .card.collapse.show').map(function () { return this.id; }).get()
 	}
 	return view
 }
@@ -440,6 +440,7 @@ function setCurrentView(view) {
 		view.openEls.forEach(function (i) { $('#' + i).addClass('open') })
 		view.openCards.forEach(function (i) { $('#' + i).addClass('show') })
 	}
+	console.log(view);
 }
 
 function docList(elements) {
