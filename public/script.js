@@ -377,9 +377,7 @@ function setupKWIC(location, saveView) {
 
 	} else {
 		mentions = kwic.findMentions('.mention', location);
-		//blocks = kwic.findBlocks('.block',location); //FIND ALL BLOCKS
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
-		console.log(list);
 		var c0 = kwic.toHTML(
 			kwic.allCategories,
 			{
@@ -428,7 +426,6 @@ function getCurrentView() {
 		view.openCards = $('.entityContainer .card.collapse.show').map(function () { return this.id; }).get()
 		view.openEls = $('.citationContainer.open').map(function () { return this.id; }).get()
 		view.openCards = $('.citationContainer .card.collapse.show').map(function () { return this.id; }).get()
-
 	}
 	return view
 }

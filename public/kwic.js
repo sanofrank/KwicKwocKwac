@@ -190,10 +190,20 @@ var kwic = new (function () {
 		console.log("node.firstChild,r.ec",node.firstChild,r.ec,r.ec.parentNode.parentNode)
 
 		quoteText = document.createElement('span');
-		quote.setStartBefore(node.firstChild);
-		quote.setEndBefore(aNode.parentNode)
+
+		//if there is a footnote.
+		if(aNode) {
+			quote.setStartBefore(node.firstChild);
+			quote.setEndBefore(aNode.parentNode);
+			quote.surroundContents(quoteText);
+		}else{
+			quote.setStartBefore(node.firstChild);
+			quote.setEndAfter(node.lastChild);
+			quote.surroundContents(quoteText);
+		}
+		
 		console.log("NEW QUOTE",quote);
-		quote.surroundContents(quoteText);
+		
 		quoteText.classList.add('quote-text');
 
 		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
@@ -743,8 +753,8 @@ var kwic = new (function () {
 			kwic.addToEditList(beforeEdit, afterEdit)
 		},
 		referenceString: function(rs,label) {
-			if(rs==true) this.node.classList.remove('metion-rs')
-			if(rs==false) this.node.classList.add('mention-rs');
+			if(rs) this.node.classList.remove('metion-rs')
+			if(!rs) this.node.classList.add('mention-rs');
 			this.prop('rs',label,true)
 		},
 		switchTo: function(entity,force) {
