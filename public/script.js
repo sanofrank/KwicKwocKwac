@@ -368,6 +368,10 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
+		if ($('#markAll').is(':checked')) {
+			$('#markAll').prop('checked', false);
+			prefs('markAll',false,false);
+		}
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
@@ -408,7 +412,7 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html("")
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
-		$('#trash-pane').remove()
+		$('#trash-pane').remove()		
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 	}
@@ -498,8 +502,8 @@ function categoriesList(list) {
 function referencesList(list) {
 
 	let referenceItemTpl = `
-				<button type="button" class="btn selectButton {$entity}" data-mark="{$entity}" onclick="doAction('{$letter}',event.altKey,event.shiftKey)">
-					{$label} ({$letter})
+				<button type="button" style=" white-space: nowrap;"class="btn selectButton {$entity}" data-mark="{$entity}" onclick="doAction('{$letter}',event.altKey,event.shiftKey)">
+					{$label} </br> ({$letter})
 				</button> `
 
 	let referenceCssTpl = `
@@ -518,7 +522,7 @@ function referencesList(list) {
 	kwic.setReferences(list);
 }
 
-function prefs(type, input) {
+function prefs(type, input, setup=true) {
 	if (type == 'width') {
 		setLayout('width', input)
 	} else if (type == 'height') {
@@ -526,7 +530,7 @@ function prefs(type, input) {
 	} else {
 		kwic.setPrefs(type, input)
 	}
-	setupKWIC(documentLocation, true)
+	if(setup) setupKWIC(documentLocation, true)
 }
 
 function setLayout(type, value) {
@@ -724,20 +728,11 @@ function goto(id) {
 	}, 5000);
 }
 
-//Extract work title from the current file name
-function getTitle(fileName) {
-
-	let split = fileName.split('_');
-	let title = split[4];
-
-	return title;
-}
-
 // download the currently loaded document to the local disk
 function downloadDoc(type) {
 	var publicationTpl = `Converted into {$type} by "{$software}" on {$date} from the original source at "{$src}". `;
 	var options = {
-		title: getTitle(currentFilename),
+		title: splitFilename(currentFilename,"work"),
 		publication: publicationTpl.tpl({
 			type: type.toUpperCase(),
 			software: softwareName,
@@ -1312,7 +1307,6 @@ function download(filename, content, format) {
 /* ------------------------------------------------------------------------------ */
 
 function fillForm(data,id,addFunction, value){
-
 	if(value){
 		if(typeof data === 'object'){
 			console.log("object",data);

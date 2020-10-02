@@ -84,7 +84,7 @@ router.get('/load', async (req, res) => {
         let split = fileName.split('_')
         const objId = split[6];
 
-        if(!objId) return res.send(json);
+        if(!objId || objId === "undefined") return res.send(json);
 
         await Metadata.findOne({_id: objId}, function(err, data){
             if(err) return res.status(404).send("ID dell'opera non valido")

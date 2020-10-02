@@ -5,6 +5,7 @@ const cors = require('cors');
 const verify = require('./routes/verifyToken');
 const fileUpload = require('express-fileupload');
 const mongo = require('./dbConfig');
+const fs = require('fs')
 
 
 const app = express();
@@ -28,7 +29,6 @@ app.engine('html', require('ejs').renderFile);
 
 
 app.get('/index', verify, (req,res) => {
-    console.log(req.params.user);
     res.render('index.html')
 })
 
@@ -36,13 +36,24 @@ app.get('/login', (req,res) =>{
     res.render("login.html");
 })
 
-app.get('/register', (req,res) =>{
-    res.render("register.html");
+app.get('/send_email', (req,res) =>{
+    res.render("send_email.html");
 })
 
 app.get('/', verify , function( req, res ) {
     res.redirect('/index')
    });
+
+app.get('/read', function(req,res){
+    let file = req.query.file;
+
+    fs.readFile(`./doc/${file}`, (err, data) => {
+        if (err) throw err;
+        console.log(data);
+
+        return res.send(data);
+      });
+})
 
 app.use(express.static('public'))
 
