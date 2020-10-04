@@ -1183,6 +1183,7 @@ async function saveAsXML(filename, content, styleName, options) {
 	var clonedNode = xmlDoc.importNode(content, true);
 	xmlDoc.appendChild(clonedNode);
 	$.get(styleName).then(async (xsl) => {
+		console.log('1');
 		var domparser = new DOMParser();
 		var doc = domparser.parseFromString('', 'text/xml')
 		var xsltProcessor = new XSLTProcessor();
@@ -1199,6 +1200,7 @@ async function saveAsXML(filename, content, styleName, options) {
 }
 
 async function getMetadata(fragment, doc) {
+	console.log('2');
 	let file = currentFilename;
 	split = file.split('_');
 	let id = split[6];
@@ -1290,7 +1292,7 @@ function download(filename, content, format) {
 	var element = document.createElement('a');
 	element.setAttribute('href', 'data:' + format + ';charset=utf-8,' + encodeURIComponent(content));
 	element.setAttribute('download', filename);
-
+	
 	element.style.display = 'none';
 	document.body.appendChild(element);
 
