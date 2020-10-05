@@ -741,7 +741,15 @@ function downloadDoc(type) {
 	if (type == 'html') {
 		download(currentFilename, $('#file').html(), "text/html", options)
 	} else if (type == 'tei') {
-		saveAsXML(currentFilename, $('#file')[0], '/TEI.xsl', options)
+		let id = splitFilename(currentFilename,'objId')
+
+		if(!id || id==='undefined'){
+			if (confirm('Sei sicuro di voler esportare il file in TEI senza aver aggiunto i Metadati?')) {
+				saveAsXML(currentFilename, $('#file')[0], '/TEI.xsl', options)
+			  }
+		}else{
+			saveAsXML(currentFilename, $('#file')[0], '/TEI.xsl', options)
+		}
 	} else {
 		alert('Download as ' + type + ' not implemented yet')
 	}
@@ -1183,7 +1191,7 @@ async function saveAsXML(filename, content, styleName, options) {
 	var clonedNode = xmlDoc.importNode(content, true);
 	xmlDoc.appendChild(clonedNode);
 	$.get(styleName).then(async (xsl) => {
-		console.log('1');
+		console.log(xsl);
 		var domparser = new DOMParser();
 		var doc = domparser.parseFromString('', 'text/xml')
 		var xsltProcessor = new XSLTProcessor();
@@ -1196,17 +1204,22 @@ async function saveAsXML(filename, content, styleName, options) {
 		var xmls = new XMLSerializer()
 		var content = xmls.serializeToString(fragmentWithMeta.firstElementChild)
 		download(filename + '.xml', content, 'text/xml')
-	})
+	}).catch((err) => console.log("ERROR on get(styleName)",err));
 }
 
 async function getMetadata(fragment, doc) {
-	console.log('2');
-	let file = currentFilename;
-	split = file.split('_');
-	let id = split[6];
+
+	let id = splitFilename(currentFilename,'objId');
+	
+	//if empty object.
+	if(!id || id === "undefined"){
+		return fragment;
+	}
+	
 	const getIdOptions = {
 		headers: { 'Content-type': 'application/json' }
 	}
+
 	let response = await fetch("/api/getId?id=" + id, getIdOptions);
 	const json = await response.json();
 
@@ -1234,33 +1247,19 @@ async function getMetadata(fragment, doc) {
 		doctopic = "#" + doctopic
 		referred_doctopics.push(doctopic)
 	})
+	
 	fragment.querySelectorAll('catRef')[1].setAttribute('target', referred_doctopics.join(" "))
-
 	fragment.querySelector('revisionDesc').setAttribute('status', json.docstatus)
 
-	if (json.provenanceP[0] == "") {
-		json.provenanceP.pop()
-	} else if (json.provenanceU[0] == "") {
-		json.provenanceU.pop()
-	}
-
-	if (json.provenanceP.length != 0 && json.provenanceU.length == 0) {
-		json.provenanceP.forEach((prov) => {
+	if (json.provenance.length > 0) {
+		json.provenance.forEach((prov) => {
 			let p = doc.createElementNS("http://www.tei-c.org/ns/1.0", "p");
 			let textNode = doc.createTextNode(prov)
 			p.appendChild(textNode);
 			let list = fragment.querySelector('list')
 			list.appendChild(p)
 		})
-	} else if (json.provenanceP.length == 0 && json.provenanceU.length != 0) {
-		json.provenanceU.forEach((prov) => {
-			let p = doc.createElementNS("http://www.tei-c.org/ns/1.0", "p");
-			let textNode = doc.createTextNode(prov)
-			p.appendChild(textNode);
-			let list = fragment.querySelector('list')
-			list.appendChild(p)
-		})
-	}
+	} 
 
 	if (json.eventDate != undefined && json.eventPlace != undefined) {
 		let evDate = doc.createElementNS("http://www.tei-c.org/ns/1.0", "date");

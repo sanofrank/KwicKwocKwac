@@ -25,7 +25,7 @@
 							<xsl:value-of select="$title" />
 						</tei:title>
 						<tei:author role="">
-							<xsl:value-of select="$author">
+							<xsl:value-of select="$author" />
 						</tei:author>
 						<tei:principal>
 						</tei:principal>
