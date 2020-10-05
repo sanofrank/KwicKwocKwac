@@ -1,4 +1,8 @@
 #Ignore enviromental variables
 .env
+
+#Ignore pdx library
 /public/pdx.js
-/public/files
+
+#Ignore files 
+/public/files/*
