@@ -1,3 +1,4 @@
 #Ignore enviromental variables
 .env
-pdx.js
+/public/pdx.js
+/public/files
