@@ -1352,15 +1352,22 @@ async function checkMetadata(){
 	if($('#add-metadata .modal-dialog')){
 		$('#add-metadata .modal-dialog').remove()
 	}
-	console.log(currentMetadata);
+	
+	let fileName = splitFilename(currentFilename,'work');
+	let user = splitFilename(currentFilename,'user');
+
+	let header = `Metadati dell'opera ${fileName}`;
+
 	if(isEmptyObject(currentMetadata)){
 		//Passing empty object to tpl function and remove all {$} variables
 		let form = $('#metadataTpl').html();
 		let newForm = form.tpl(currentMetadata,true);
 
+		
 		//Append new empty form
 		$('#add-metadata').append(newForm);
-
+		$('#add-metadata #addMetadata-sub').text(header);
+		$('#add-metadata #curator').val(user);
 	}else{
 		//Extract ident
 		let ident = currentMetadata.ident;
@@ -1373,6 +1380,7 @@ async function checkMetadata(){
 
 		//Append new form
 		$('#add-metadata').append(newForm);
+		$('#add-metadata #addMetadata-sub').text(header);
 
 		//Required fields array
 		if(currentMetadata.roleList.length > 0) fillForm(currentMetadata.roleList,"role",addRole,false);

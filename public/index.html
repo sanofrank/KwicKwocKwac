@@ -466,17 +466,18 @@
 				</button>
 			</div>
 			<div class="modal-body">
+				<h6 class="pb-3" id="addMetadata-sub"></h6>
 				<form>
 					<div id="msg" class="alert" role="alert" style="display:none"></div>
 					<div class="form-group">
-						<label for="ident">Numero del documento</label><br>
+						<label for="ident">Numero del documento *</label><br>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre
 							compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi:
 							<samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
 						<input type="text" class="form-control" id="ident" aria-describedby="id-metadata" value="{$ident}">
 					</div>
 					<div class="form-group role-group">
-						<label>Ruolo dell'autore</label>
+						<label>Ruolo dell'autore *</label>
 						<button style="float:right" type="button"
 							class="btn btn-primary btn-sm" onclick="addRole()"><i class="fa fa-plus"
 								aria-hidden="true"></i>
@@ -542,14 +543,14 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="curator">Ricercatore curatore</label>
+						<label for="curator">Ricercatore curatore *</label>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
 							Cognome) del ricercatore che ha curato la trascrizione e marcatura del documento.
 							Esempio: <samp>Mario Rossi</samp>.</small>
 						<input type="text" class="form-control" id="curator" aria-describedby="curator-metadata" value="{$curator}">
 					</div>
 					<div class="form-group">
-						<label for="abstract">Abstract</label>
+						<label for="abstract">Abstract *</label>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale
 							del documento che ne riassume i contenuti e che lo contestualizza all'interno
 							dell'universo biografico di Aldo Moro. Esempio: abstract introduttivo dell'opera X nel
@@ -558,7 +559,7 @@
 							aria-describedby="abstract-metadata" rows="3">{$abstract}</textarea>
 					</div>
 					<div class="form-group doctype-group">
-						<label>Tipologia del documento</label><button style="float:right" type="button"
+						<label>Tipologia del documento *</label><button style="float:right" type="button"
 							class="btn btn-primary btn-sm" onclick="addDoctype()"><i class="fa fa-plus"
 								aria-hidden="true"></i></button>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">La tipologia testuale che
@@ -585,7 +586,7 @@
 						</select>
 					</div>
 					<div class="form-group doctopic-group">
-						<label>Tematica del documento</label><button style="float:right" type="button"
+						<label>Tematica del documento *</label><button style="float:right" type="button"
 							class="btn btn-primary btn-sm" onclick="addDoctopic()"><i class="fa fa-plus"
 								aria-hidden="true"></i></button>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">La tematica generale
@@ -606,7 +607,7 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="docstatus">Stato del documento</label>
+						<label for="docstatus">Stato del documento *</label>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il
 							documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata
 							(<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni
@@ -626,7 +627,7 @@
 					</div>
 					<div id="pubMetadata" hidden=true>
 						<div class="form-group bibsource-group">
-							<label>Riferimento bibliografico</label><button style="float:right" type="button"
+							<label>Riferimento bibliografico *</label><button style="float:right" type="button"
 								class="btn btn-primary btn-sm" onclick="addBibsource()"><i class="fa fa-plus"
 									aria-hidden="true"></i></button>
 							<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
@@ -639,7 +640,7 @@
 					</div>
 					<div id="unpubMetadata" hidden=false>
 						<div class="form-group archsource-group">
-							<label>Segnatura archivistica</label><button style="float:right" type="button"
+							<label>Segnatura archivistica *</label><button style="float:right" type="button"
 								class="btn btn-primary btn-sm" onclick="addArchsource()"><i class="fa fa-plus"
 									aria-hidden="true"></i></button>
 							<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
@@ -678,6 +679,11 @@
 							aria-describedby="additionalnotes-metadata" rows="3">{$additionalNotes}</textarea>
 					</div>
 				</form>
+				<small>
+					* campo obbligatorio
+				</small>
+			</div>
+			<div class='modal-footer'>
 				<button type="button" id="save-metadata" class="btn btn-primary" onclick="saveMetadata()">Salva</button>
 			</div>
 		</div>

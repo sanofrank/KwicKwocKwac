@@ -23,7 +23,7 @@ let mongo = {
     connect: () => {
         mongoose.connect(
         process.env.DB_CONNECT,
-        { useNewUrlParser: true},
+        { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
         () => console.log('Connected to DB',mongoose.connection.readyState)
         ).catch(error => console.log('connaction failed',error));
     }
