@@ -55,15 +55,54 @@ var kwic = new (function () {
 	function compatibleExtremes(range, mention) {
 		if (range.startContainer.parentElement == range.endContainer.parentElement) return true //Meaning that if the selection is plain, untouched and it's in the same node.
 		
+		const formatters = ['B','STRONG','I','EM','MARK','SMALL','DEL','INS']
+
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
 		
-		if (mention && (start.classList.contains('mention') || start.classList.contains('block')))
+		if (mention && (start.classList.contains('mention')))
 			start = start.parentElement // will remove it anyway
-		if (mention && (end.classList.contains('mention') || end.classList.contains('block')))
+		if (mention && (end.classList.contains('mention')))
 			end = end.parentElement // will remove it anyway
+		if (start.classList.contains('quote-text'))
+			start = start.parentElement.parentElement // will remove it anyway
+		if (end.classList.contains('quote-text'))
+			end = end.parentElement.parentElement // will remove it anyway
+		//Check if formatter extreme
+		if(!mention){
+			let start_tag = start.tagName;
+			let end_tag = end.tagName;
+			console.log(start_tag,end_tag);
+			if(formatters.find(el => el == start_tag))
+				start = start.parentElement;
+			if(formatters.find(el => el == end_tag))
+				end = end.parentElement;
+		}
 
 		return  start == end
+	}
+
+	function compatibleExtremesRef(range, supNode){
+		if(supNode){
+			let start = range.startContainer.parentElement;
+			let end = supNode.parentElement.parentElement;
+			console.log("Extremes before",start,end);
+
+			if (start.classList.contains('mention') || start.classList.contains('quote'))
+				start = start.parentElement // will remove it anyway
+			if (end.classList.contains('mention') || end.classList.contains('quote'))
+				end = end.parentElement // will remove it anyway
+			if (start.classList.contains('quote-text'))
+				start = start.parentElement.parentElement
+			if (end.classList.contains('quote-text'))
+				end = end.parentElement.parentElement
+
+			console.log("Extremes after",start,end);
+
+			return start == end;
+		}else{
+			return compatibleExtremes(range,false);
+		}
 	}
 
 	// remove the tag wrapping a mention
@@ -90,25 +129,25 @@ var kwic = new (function () {
 			unwrap(range.startContainer.parentElement)
 		if (range.endContainer.parentElement.classList.contains('mention') && mention) 
 			unwrap(range.endContainer.parentElement)
-		if (range.startContainer.parentElement.classList.contains('block') && !mention) 
-			unwrap(range.startContainer.parentElement)
-		if (range.endContainer.parentElement.classList.contains('block') && !mention) 
-			unwrap(range.endContainer.parentElement)
-		//In case there's a mention on the end or start of range with a block element.	
-		if (range.endContainer.parentElement.classList.contains('mention') && !mention){ 
-			var endNode = range.endContainer.parentNode;
+		// if (range.startContainer.parentElement.classList.contains('block') && !mention) 
+		// 	unwrap(range.startContainer.parentElement)
+		// if (range.endContainer.parentElement.classList.contains('block') && !mention) 
+		// 	unwrap(range.endContainer.parentElement)
+		// //In case there's a mention on the end or start of range with a block element.	
+		// if (range.endContainer.parentElement.classList.contains('mention') && !mention){ 
+		// 	var endNode = range.endContainer.parentNode;
 
-			range.setStart(r.sc,r.so);
-			range.setEndAfter(endNode);
-		}	
-		if (range.startContainer.parentElement.classList.contains('mention') && !mention){
-			var startNode = range.startContainer.parentNode;
+		// 	range.setStart(r.sc,r.so);
+		// 	range.setEndAfter(endNode);
+		// }	
+		// if (range.startContainer.parentElement.classList.contains('mention') && !mention){
+		// 	var startNode = range.startContainer.parentNode;
 
-			range.setStartBefore(startNode);
-			if(!endNode){
-				range.setEnd(r.ec,r.eo);
-			}
-		}	
+		// 	range.setStartBefore(startNode);
+		// 	if(!endNode){
+		// 		range.setEnd(r.ec,r.eo);
+		// 	}
+		// }	
 					
 		if(!endNode && !startNode){
 			range.setStart(r.sc, r.so)
@@ -132,66 +171,108 @@ var kwic = new (function () {
 		return node
 	}
 
-	function wrapQuote(range,node,aNode){
+	function wrapBib(range,node){
 		let documentFragment;
-		let quote = document.createRange();
-		console.log("wrapQuote",quote,aNode);
-		
+
+		//Range object information 
 		var r = {
 			sc: range.startContainer, 
 			so: range.startOffset, 
 			ec: range.endContainer, 
 			eo: range.endOffset
 		}
-		console.log("tagName range",range.endContainer.tagName);
 
+		//Unwrap any bibref tag or quote tag
+		if (range.startContainer.parentElement.classList.contains('bibref') || range.startContainer.parentElement.classList.contains('quote-text')) 
+			unwrap(range.startContainer.parentElement)
+		if (range.endContainer.parentElement.classList.contains('bibref') || range.endContainer.parentElement.classList.contains('quote-text')) 
+			unwrap(range.endContainer.parentElement)
+		
+		range.setStart(r.sc, r.so)
+		range.setEnd(r.ec, r.eo)
+
+		documentFragment = range.extractContents();
+			
+		node.appendChild(documentFragment);
+		range.insertNode(node);
+		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
+		if (node.parentElement.classList.contains('bibref')) unwrap(node)
+
+		var inner = node.querySelectorAll('.bibref')
+		for (var i=0; i<inner.length; i++) {
+			unwrap(inner[i]) 
+			}
+		return node
+	}
+
+	function wrapQuote(range,node,aNode){
+		let documentFragment;
+		let quote = document.createRange(); //quote-text range
+		
+		//Range object information 
+		var r = {
+			sc: range.startContainer, 
+			so: range.startOffset, 
+			ec: range.endContainer, 
+			eo: range.endOffset
+		}
+		
+		//Unwrap any quote tag
 		if (range.startContainer.parentElement.classList.contains('quote')) 
 			unwrap(range.startContainer.parentElement)
 		if (range.endContainer.parentElement.classList.contains('quote')) 
 			unwrap(range.endContainer.parentElement)
-		if (range.endContainer.parentElement.tagName == "A"){
-			console.log("footnote",range);
-			
-			let footnote = range.endContainer.parentElement;
+		//Unwrap quote-text two times deeper
+		if (range.startContainer.parentElement.classList.contains('quote-text')){
+			let parent = range.startContainer.parentElement;
+			let grandParent = parent.parentElement;
+			console.log("start",parent,grandParent);
 
-			while(footnote != null && !footnote.classList.contains('quote')){
-				console.log(footnote);
-				footnote = footnote.parentElement;
+			unwrap(parent);
+			unwrap(grandParent);
+		}
+		if (range.endContainer.parentElement.classList.contains('quote-text')){
+			let parent = range.endContainer.parentElement;
+			let grandParent = parent.parentElement;
+			console.log("end",parent,grandParent);
+
+			unwrap(parent);
+			unwrap(grandParent);
+		}
+		//Unwrap from supNode if not text node.
+		if (aNode && range.startContainer.nodeType != 3 && range.startContainer.classList.contains('quote')){
+			if(range.startContainer.firstChild.classList.contains('quote-text')){
+				unwrap(range.startContainer.firstChild)
 			}
-			if(footnote){
-				console.log("unwrap footnote",footnote);
-				unwrap(footnote);
-				range.setEndAfter(r.ec.parentNode.parentNode);
-				console.log("range after unwrap",range);
-			}else{
-				console.log(range);
-
-				let parent = range.endContainer.parentElement;
-
-				while(parent.previousSibling == null){
-					parent = parent.parentNode;
-				}
-				console.log(parent);
-
-				range.setEndAfter(parent);
+			unwrap(range.startContainer);
+		}
+		if (aNode && range.endContainer.nodeType != 3 && range.endContainer.classList.contains('quote')){
+			if(range.endContainer.firstChild.classList.contains('quote-text')){
+				unwrap(range.endContainer.firstChild)
 			}
+			unwrap(range.endContainer);
+		}
+		
+		//Set range end after A node if forward
+		if(aNode){
+			range.setEndAfter(aNode.parentNode);
+			console.log("range after unwrap",aNode.parentNode);
 		}else{
 			range.setEnd(r.ec,r.eo);
 		}
+		//Set range start before A node if backward
+		//TODO
 
 		range.setStart(r.sc, r.so)
-		//range.setEnd(r.ec, r.eo)
 
 		documentFragment = range.extractContents();
 			
 		node.appendChild(documentFragment);
 		range.insertNode(node);
 		
-		console.log("node.firstChild,r.ec",node.firstChild,r.ec,r.ec.parentNode.parentNode)
-
 		quoteText = document.createElement('span');
 
-		//if there is a footnote.
+		//if there is a footnote create quote-text span
 		if(aNode) {
 			quote.setStartBefore(node.firstChild);
 			quote.setEndBefore(aNode.parentNode);
@@ -208,10 +289,14 @@ var kwic = new (function () {
 
 		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
 		if (node.parentElement.classList.contains('quote')) unwrap(node)
-		//if (node.parentNode.nextSiblings.classList.contains('quote')) unwrap(node);
+
 		var inner = node.querySelectorAll('.quote')
 		for (var i=0; i<inner.length; i++) {
 			unwrap(inner[i]) 
+		}
+		var inner_text = node.querySelectorAll('.quote-text')
+		for (var i=1; i<inner_text.length; i++) { //i=1 because the first quote-text element is always the new inner_text
+			unwrap(inner_text[i]) 
 		}
 
 		return node
@@ -995,9 +1080,10 @@ var kwic = new (function () {
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
-			//if (!compatibleExtremes(nodeOrRange,mention)) return {}
-			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
-			this.node = wrapQuote(nodeOrRange,document.createElement('span'), options.supNode);			
+			let supNode = options.supNode;
+			console.log(supNode);
+			if (!compatibleExtremesRef(nodeOrRange,supNode)) return {}
+			this.node = wrapQuote(nodeOrRange,document.createElement('span'), supNode);			
 		}
 		
 		if(this.node.getElementsByClassName('quote-text')[0])
@@ -1019,6 +1105,7 @@ var kwic = new (function () {
 		this.footnoteText = options.footnoteText || null;
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
 		this.citation = this.node.attributes.about.value
+		this.quote_text = this.node.getElementsByClassName('quote-text')[0];
 	
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
@@ -1078,7 +1165,9 @@ var kwic = new (function () {
 			this.prop('label','Trashed quote',true)
 		},
 		unwrap: function() {
-			unwrap(this.node)
+			//Double unwrap
+			unwrap(this.quote_text);
+			unwrap(this.node);
 		}
 	}
 
@@ -1091,9 +1180,9 @@ var kwic = new (function () {
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
-			if (!compatibleExtremes(nodeOrRange,mention)) return {}
+			if (!compatibleExtremesRef(nodeOrRange,mention)) return {}
 			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
-			this.node = wrap(nodeOrRange,document.createElement('span'),mention);			
+			this.node = wrapBib(nodeOrRange,document.createElement('span'));			
 		}
 
 		this.inner = this.node.innerHTML;

@@ -495,17 +495,18 @@
 				</button>
 			</div>
 			<div class="modal-body">
+				<h6 class="pb-3" id="addMetadata-sub"></h6>
 				<form>
 					<div id="msg" class="alert" role="alert" style="display:none"></div>
 					<div class="form-group">
-						<label for="ident">Numero del documento</label><br>
+						<label for="ident">Numero del documento *</label><br>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre
 							compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi:
 							<samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
 						<input type="text" class="form-control" id="ident" aria-describedby="id-metadata" value="{$ident}">
 					</div>
 					<div class="form-group role-group">
-						<label>Ruolo dell'autore</label>
+						<label>Ruolo dell'autore *</label>
 						<button style="float:right" type="button"
 							class="btn btn-primary btn-sm" onclick="addRole()"><i class="fa fa-plus"
 								aria-hidden="true"></i>
@@ -517,14 +518,14 @@
 						<input name="role" list="roles" class="form-control role" aria-describedby="author-role-metadata"><datalist id="roles"><option class="role-option" value="Delegato Aspirante della Gioventù Cattolica" data-value="role.01"><option class="role-option" value="Studente" data-value="role.02"><option class="role-option" value="Membro della FUCI" data-value="role.03"><option class="role-option" value="Presidente del circolo di Bari della FUCI" data-value="role.04"><option class="role-option" value="Assistente volontario alla cattedra di diritto e procedura penale" data-value="role.05"><option class="role-option" value="Presidente nazionale della FUCI" data-value="role.06"><option class="role-option" value="Professore di Filosofia del Diritto" data-value="role.07"><option class="role-option" value="Membro del Movimento Laureati dell\'Azione Cattolica" data-value="role.08"><option class="role-option" value="Membro dell\'Ufficio stampa del governo Badoglio" data-value="role.09"><option class="role-option" value="Giornalista e commentatore politico" data-value="role.10"><option class="role-option" value="Presidente del Comitato direttivo provvisorio per la FUCI meridionale" data-value="role.11"><option class="role-option" value="Segretario Centrale del Movimento Laureati dell\'Azione Cattolica" data-value="role.12"><option class="role-option" value='Direttore di "Studium"' data-value="role.13"><option class="role-option" value="Membro dell\'Assemblea Costituente" data-value="role.14"><option class="role-option" value="Vicepresidente del gruppo democristiano alla Costituente" data-value="role.15"><option class="role-option" value="Membro della Camera dei Deputati" data-value="role.16"><option class="role-option" value="Sottosegretario al ministero degli Affari Esteri con delega per l\'Emigrazione" data-value="role.17"><option class="role-option" value="Membro dell\'Unione Giuristi Cattolici" data-value="role.18"><option class="role-option" value="Membro di Iniziativa Democratica" data-value="role.19"><option class="role-option" value="Professore di diritto penale" data-value="role.20"><option class="role-option" value="Professore di diritto e procedura penale" data-value="role.21"><option class="role-option" value="Membro della Comissione parlamentare di esame del disegno di legge relativo" data-value="role.22"><option class="role-option" value="Presidente del gruppo DC alla Camera" data-value="role.23"><option class="role-option" value="Ministro di Grazia e Giustizia" data-value="role.24"><option class="role-option" value="Consigliere nazionale della DC" data-value="role.25"><option class="role-option" value="Ministro della Pubblica Istruzione" data-value="role.26"><option class="role-option" value="Segretario politico della DC" data-value="role.27"><option class="role-option" value="Presidente del Consiglio" data-value="role.28"><option class="role-option" value="Titolare ad interim del ministero degli Esteri" data-value="role.29"><option class="role-option" value="Ministero degli Esteri" data-value="role.30"><option class="role-option" value="Presidente della Commissione Affari Esteri della Camera" data-value="role.31"><option class="role-option" value="Presidente di turno della Comunità Europea" data-value="role.32"><option class="role-option" value="Presidente del Consiglio Nazionale della DC" data-value="role.33"></datalist>
 					</div>
 					<div class="form-group">
-						<label for="curator">Ricercatore curatore</label>
+						<label for="curator">Ricercatore curatore *</label>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
 							Cognome) del ricercatore che ha curato la trascrizione e marcatura del documento.
 							Esempio: <samp>Mario Rossi</samp>.</small>
 						<input type="text" class="form-control" id="curator" aria-describedby="curator-metadata" value="{$curator}">
 					</div>
 					<div class="form-group">
-						<label for="abstract">Abstract</label>
+						<label for="abstract">Abstract *</label>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale
 							del documento che ne riassume i contenuti e che lo contestualizza all'interno
 							dell'universo biografico di Aldo Moro. Per un esempio di abstract, vedi la sezione <strong>La strutturazione formale dell'opera</strong> nelle Linee Guida.</small>
@@ -532,7 +533,7 @@
 							aria-describedby="abstract-metadata" rows="3">{$abstract}</textarea>
 					</div>
 					<div class="form-group doctype-group">
-						<label>Tipologia del documento</label><button style="float:right" type="button"
+						<label>Tipologia del documento *</label><button style="float:right" type="button"
 							class="btn btn-primary btn-sm" onclick="addDoctype()"><i class="fa fa-plus"
 								aria-hidden="true"></i></button>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">La tipologia testuale che
@@ -559,7 +560,7 @@
 						</select>
 					</div>
 					<div class="form-group doctopic-group">
-						<label>Tematica del documento</label><button style="float:right" type="button"
+						<label>Tematica del documento *</label><button style="float:right" type="button"
 							class="btn btn-primary btn-sm" onclick="addDoctopic()"><i class="fa fa-plus"
 								aria-hidden="true"></i></button>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">La tematica generale
@@ -580,7 +581,7 @@
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="docstatus">Stato del documento</label>
+						<label for="docstatus">Stato del documento *</label>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il
 							documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata
 							(<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni
@@ -600,7 +601,7 @@
 					</div>
 					<div id="pubMetadata" hidden=true>
 						<div class="form-group bibsource-group">
-							<label>Riferimento bibliografico</label><button style="float:right" type="button"
+							<label>Riferimento bibliografico *</label><button style="float:right" type="button"
 								class="btn btn-primary btn-sm" onclick="addBibsource()"><i class="fa fa-plus"
 									aria-hidden="true"></i></button>
 							<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
@@ -613,7 +614,7 @@
 					</div>
 					<div id="unpubMetadata" hidden=false>
 						<div class="form-group archsource-group">
-							<label>Segnatura archivistica</label><button style="float:right" type="button"
+							<label>Segnatura archivistica *</label><button style="float:right" type="button"
 								class="btn btn-primary btn-sm" onclick="addArchsource()"><i class="fa fa-plus"
 									aria-hidden="true"></i></button>
 							<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
@@ -652,6 +653,11 @@
 							aria-describedby="additionalnotes-metadata" rows="3">{$additionalNotes}</textarea>
 					</div>
 				</form>
+				<small>
+					* campo obbligatorio
+				</small>
+			</div>
+			<div class='modal-footer'>
 				<button type="button" id="save-metadata" class="btn btn-primary" onclick="saveMetadata()">Salva</button>
 			</div>
 		</div>

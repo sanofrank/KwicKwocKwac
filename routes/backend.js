@@ -81,6 +81,7 @@ router.get('/load', async (req, res) => {
 
         //res.set('Content-Type: text/html');
         //Check metadata
+        console.log(fileName);
         let split = fileName.split('_')
         const objId = split[6];
 
@@ -179,7 +180,7 @@ router.post('/save' , async (req,res) => {
             fs.writeFile(htmlPath,content, (err) => {
                 if(err) return res.status(400).send(`File non salvato corretamente`);
             });
-            return res.send(`File salvato correttamente in ${htmlPath}`);
+            return res.send(`File salvato correttamente`);
         };
 
         return res.send('File empty');

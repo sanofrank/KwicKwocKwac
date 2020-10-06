@@ -110,37 +110,3 @@ router.get('/getId', async (req, res) => {
 })
 
 module.exports = router;
-
-
-// POSTGRES LOGIN
-    // pool.query(
-    //     `SELECT * FROM users WHERE name = $1`, [login.username], (error,result) =>{
-    //         if(error) throw error;
-
-    //         if(result.rows.length > 0){
-    //             const user = result.rows[0];
-
-    //             bcrypt.compare(login.password, user.password, (error, isMatch) => {
-    //                 if(error) throw error;
-
-    //                 if(isMatch){
-    //                     //Create and assign token
-    //                     const token = jwt.sign({uuid: user.uuid},process.env.TOKEN_SECRET); //pass some data to the token
-    //                     console.log(user);
-    //                     //res.header('auth-token',token).send(token);
-    //                     res.cookie('auth_token', token, 
-    //                     {
-    //                         maxAge: 3600,
-    //                         httpOnly: true,
-    //                         //secure: true
-    //                     })
-    //                     res.send('Logged in');
-    //                 }else{
-    //                     return res.status(400).send('Invalid password');
-    //                 }
-    //             });
-    //         }else{
-    //             return res.status(400).send('Username incorrect');
-    //         };
-    //     }
-    // );

@@ -65,7 +65,7 @@
 }
 
 .showStyles .mention[data-rs] {
-    border: 1px solid black;
+    border: 1px outset red;
 }
 
 .rs-active {

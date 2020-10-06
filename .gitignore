@@ -2,7 +2,16 @@
 .env
 
 #Ignore pdx library
-/public/pdx.js
+public/pdx.js
 
 #Ignore files 
-/public/files/*
+public/files/
+public/oldFiles/
+TEIexample/
+
+#Ignore font-awesome library
+public/font-awesome-4.7.0/
+
+#node modules
+node_modules/
+
