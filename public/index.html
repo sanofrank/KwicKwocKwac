@@ -85,6 +85,11 @@
 						</div>
 					</li>
 					<li class="nav-item active">
+							<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#documentation"><span
+									class="oi oi-book border-light rounded-circle"
+									title="Documentation" aria-hidden="true"></span> <span class="sr-only">Documentazione</span></a>
+					</li>
+					<li class="nav-item active">
 						<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span
 								class="oi oi-question-mark border-light rounded-circle"
 								title="Info about KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">Informazioni</span></a>
@@ -266,6 +271,30 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="modal fade" id="documentation" tabindex="-1" role="dialog" aria-labelledby="documentationLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="documentationLabel">Documentazione</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<h1>Informazioni principali</h1>
+						<ol>
+							<li>Accedere: inserisci il nome utente e la password che ti abbiamo mandato per mail;</li>
+							<li>Caricare il documento: clicca su Documenti e seleziona il documento su cui vuoi lavorare;</li>
+							<li>Marcare: seleziona la parte del testo d'interesse (es. il nome di una persona) e clicca sulla rispettiva categoria (es. Persone);</li>
+						</ol>
+						
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+			</div>
 	</div>
 	<div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="aboutLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
@@ -485,61 +514,7 @@
 							istituzionale ricoperto in quel momento dall'autore del documento. Cliccando sull'icona
 							<i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori
 							ruoli.</small>
-						<select id="role" name="role" class="form-control role"
-							aria-describedby="author-role-metadata">
-							<option hidden disabled selected value>Seleziona il ruolo...</option>
-							<option class="role-option" value="role.01">Delegato Aspirante della Gioventù Cattolica
-							</option>
-							<option class="role-option" value="role.02">Studente</option>
-							<option class="role-option" value="role.03">Membro della FUCI</option>
-							<option class="role-option" value="role.04">Presidente del circolo di Bari della FUCI
-							</option>
-							<option class="role-option" value="role.05">Assistente volontario alla cattedra di
-								diritto e procedura penale</option>
-							<option class="role-option" value="role.06">Presidente nazionale della FUCI</option>
-							<option class="role-option" value="role.07">Professore di Filosofia del Diritto</option>
-							<option class="role-option" value="role.08">Membro del Movimento Laureati dell'Azione
-								Cattolica</option>
-							<option class="role-option" value="role.09">Membro dell'Ufficio stampa del governo
-								Badoglio</option>
-							<option class="role-option" value="role.10">Giornalista e commentatore politico</option>
-							<option class="role-option" value="role.11">Presidente del Comitato direttivo
-								provvisorio per la FUCI meridionale</option>
-							<option class="role-option" value="role.12">Segretario Centrale del Movimento Laureati
-								dell'Azione Cattolica</option>
-							<option class="role-option" value="role.13">Direttore di "Studium"</option>
-							<option class="role-option" value="role.14">Membro dell'Assemblea Costituente</option>
-							<option class="role-option" value="role.15">Vicepresidente del gruppo democristiano alla
-								Costituente</option>
-							<option class="role-option" value="role.16">Membro della Camera dei Deputati</option>
-							<option class="role-option" value="role.17">Sottosegretario al ministero degli Affari
-								Esteri con delega per l'Emigrazione</option>
-							<option class="role-option" value="role.18">Membro dell'Unione Giuristi Cattolici
-							</option>
-							<option class="role-option" value="role.19">Membro di Iniziativa Democratica</option>
-							<option class="role-option" value="role.20">Professore di diritto penale</option>
-							<option class="role-option" value="role.21">Professore di diritto e procedura penale
-							</option>
-							<option class="role-option" value="role.22">Membro della Comissione parlamentare di
-								esame del disegno di legge relativo alla costituzione e al funzionamento della Corte
-								Costituzionale</option>
-							<option class="role-option" value="role.23">Presidente del gruppo DC alla Camera
-							</option>
-							<option class="role-option" value="role.24">Ministro di Grazia e Giustizia</option>
-							<option class="role-option" value="role.25">Consigliere nazionale della DC</option>
-							<option class="role-option" value="role.26">Ministro della Pubblica Istruzione</option>
-							<option class="role-option" value="role.27">Segretario politico della DC</option>
-							<option class="role-option" value="role.28">Presidente del Consiglio</option>
-							<option class="role-option" value="role.29">Titolare ad interim del ministero degli
-								Esteri</option>
-							<option class="role-option" value="role.30">Ministero degli Esteri</option>
-							<option class="role-option" value="role.31">Presidente della Commissione Affari Esteri
-								della Camera</option>
-							<option class="role-option" value="role.32">Presidente di turno della Comunità Europea
-							</option>
-							<option class="role-option" value="role.33">Presidente del Consiglio Nazionale della DC
-							</option>
-						</select>
+						<input name="role" list="roles" class="form-control role" aria-describedby="author-role-metadata"><datalist id="roles"><option class="role-option" value="Delegato Aspirante della Gioventù Cattolica" data-value="role.01"><option class="role-option" value="Studente" data-value="role.02"><option class="role-option" value="Membro della FUCI" data-value="role.03"><option class="role-option" value="Presidente del circolo di Bari della FUCI" data-value="role.04"><option class="role-option" value="Assistente volontario alla cattedra di diritto e procedura penale" data-value="role.05"><option class="role-option" value="Presidente nazionale della FUCI" data-value="role.06"><option class="role-option" value="Professore di Filosofia del Diritto" data-value="role.07"><option class="role-option" value="Membro del Movimento Laureati dell\'Azione Cattolica" data-value="role.08"><option class="role-option" value="Membro dell\'Ufficio stampa del governo Badoglio" data-value="role.09"><option class="role-option" value="Giornalista e commentatore politico" data-value="role.10"><option class="role-option" value="Presidente del Comitato direttivo provvisorio per la FUCI meridionale" data-value="role.11"><option class="role-option" value="Segretario Centrale del Movimento Laureati dell\'Azione Cattolica" data-value="role.12"><option class="role-option" value='Direttore di "Studium"' data-value="role.13"><option class="role-option" value="Membro dell\'Assemblea Costituente" data-value="role.14"><option class="role-option" value="Vicepresidente del gruppo democristiano alla Costituente" data-value="role.15"><option class="role-option" value="Membro della Camera dei Deputati" data-value="role.16"><option class="role-option" value="Sottosegretario al ministero degli Affari Esteri con delega per l\'Emigrazione" data-value="role.17"><option class="role-option" value="Membro dell\'Unione Giuristi Cattolici" data-value="role.18"><option class="role-option" value="Membro di Iniziativa Democratica" data-value="role.19"><option class="role-option" value="Professore di diritto penale" data-value="role.20"><option class="role-option" value="Professore di diritto e procedura penale" data-value="role.21"><option class="role-option" value="Membro della Comissione parlamentare di esame del disegno di legge relativo" data-value="role.22"><option class="role-option" value="Presidente del gruppo DC alla Camera" data-value="role.23"><option class="role-option" value="Ministro di Grazia e Giustizia" data-value="role.24"><option class="role-option" value="Consigliere nazionale della DC" data-value="role.25"><option class="role-option" value="Ministro della Pubblica Istruzione" data-value="role.26"><option class="role-option" value="Segretario politico della DC" data-value="role.27"><option class="role-option" value="Presidente del Consiglio" data-value="role.28"><option class="role-option" value="Titolare ad interim del ministero degli Esteri" data-value="role.29"><option class="role-option" value="Ministero degli Esteri" data-value="role.30"><option class="role-option" value="Presidente della Commissione Affari Esteri della Camera" data-value="role.31"><option class="role-option" value="Presidente di turno della Comunità Europea" data-value="role.32"><option class="role-option" value="Presidente del Consiglio Nazionale della DC" data-value="role.33"></datalist>
 					</div>
 					<div class="form-group">
 						<label for="curator">Ricercatore curatore</label>
@@ -552,8 +527,7 @@
 						<label for="abstract">Abstract</label>
 						<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale
 							del documento che ne riassume i contenuti e che lo contestualizza all'interno
-							dell'universo biografico di Aldo Moro. Esempio: abstract introduttivo dell'opera X nel
-							Volume 1.</small>
+							dell'universo biografico di Aldo Moro. Per un esempio di abstract, vedi la sezione <strong>La strutturazione formale dell'opera</strong> nelle Linee Guida.</small>
 						<textarea type="text" class="form-control" id="abstract"
 							aria-describedby="abstract-metadata" rows="3">{$abstract}</textarea>
 					</div>
@@ -664,9 +638,9 @@
 						<label for="event-date">Data dell'evento</label><button id="ed-button" style="float:right"
 							type="button" class="btn btn-primary btn-sm" onclick="addEventDate()"><i
 								class="fa fa-plus" aria-hidden="true"></i></button>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">L'anno in cui è avvenuto
+						<small style="margin-bottom: 10px;" class="form-text text-muted">La data in cui è avvenuto
 							l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus"
-								aria-hidden="true"></i> è possibile inserire il metadato. Esempio: l'anno originario
+								aria-hidden="true"></i> è possibile inserire il metadato. Esempio: l'anno o il giorno originario
 							in cui Moro ha tenuto il discorso successivamente riportato nel documento.</small>
 					</div>
 					<div class="form-group">

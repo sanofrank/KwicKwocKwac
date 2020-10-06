@@ -142,7 +142,7 @@ const metadataValidation = (data) => {
             .messages({
                 'any.required': `Lo stato del documento è obbligatorio.`
             }),
-        provenanceP: Joi.array().when(
+        provenance: Joi.array().when(
             'docstatus', {
                 is: 'published', 
                 then: Joi.array().items(
@@ -162,13 +162,27 @@ const metadataValidation = (data) => {
                     )
                 })),
         eventPlace: Joi.string().allow(''),
-        eventDate: Joi.number()
+        day: Joi.number().allow('')
+            .min(1)
+            .max(31)
+            .messages({
+                'number.min': `Il giorno deve essere un numero compreso tra 1 e 31.`,
+                'number.max': `Il giorno deve essere un numero compreso tra 1 e 31.`,
+            }),
+        month: Joi.number().allow('')
+            .min(1)
+            .max(12)
+            .messages({
+                'number.min': `Il mese deve essere un numero compreso tra 1 e 12.`,
+                'number.max': `Il mese deve essere un numero compreso tra 1 e 12.`,
+            }),
+        year: Joi.number()
             .min(1916)
             .max(1978)
             .messages({
-                'number.min': `La data dell'evento deve essere un anno compreso tra il 1916 e il 1978.`,
-                'number.max': `La data dell'evento deve essere un anno compreso tra il 1916 e il 1978.`,
-                'number.base': `La data dell'evento deve essere un anno singolo.`
+                'number.min': `L'anno deve essere un numero compreso tra 1916 e 1978.`,
+                'number.max': `L'anno deve essere un numero compreso tra 1916 e 1978.`,
+                'number.base': `L'anno deve essere un numero.`
             }),
         additionalNotes: Joi.string().allow('')
     });

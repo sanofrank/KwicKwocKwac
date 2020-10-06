@@ -81,7 +81,7 @@ const metadataSchema = new mongoose.Schema({
         required: false,
     },
     eventDate: {
-        type: Number,
+        type: String,
         requires: false
     },
     additionalNotes: {
