@@ -55,10 +55,12 @@ var kwic = new (function () {
 	function compatibleExtremes(range, mention) {
 		if (range.startContainer.parentElement == range.endContainer.parentElement) return true //Meaning that if the selection is plain, untouched and it's in the same node.
 		
+		const formatters = ['B','STRONG','I','EM','MARK','SMALL','DEL','INS']
+
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
 		
-		if (mention && (start.classList.contains('mention') || start.classList.contains('quote-text')))
+		if (mention && (start.classList.contains('mention')))
 			start = start.parentElement // will remove it anyway
 		if (mention && (end.classList.contains('mention')))
 			end = end.parentElement // will remove it anyway
@@ -66,12 +68,21 @@ var kwic = new (function () {
 			start = start.parentElement.parentElement // will remove it anyway
 		if (end.classList.contains('quote-text'))
 			end = end.parentElement.parentElement // will remove it anyway
-		
+		//Check if formatter extreme
+		if(!mention){
+			let start_tag = start.tagName;
+			let end_tag = end.tagName;
+			console.log(start_tag,end_tag);
+			if(formatters.find(el => el == start_tag))
+				start = start.parentElement;
+			if(formatters.find(el => el == end_tag))
+				end = end.parentElement;
+		}
 
 		return  start == end
 	}
 
-	function compatibleExtremesQuotes(range, supNode){
+	function compatibleExtremesRef(range, supNode){
 		if(supNode){
 			let start = range.startContainer.parentElement;
 			let end = supNode.parentElement.parentElement;
@@ -118,25 +129,25 @@ var kwic = new (function () {
 			unwrap(range.startContainer.parentElement)
 		if (range.endContainer.parentElement.classList.contains('mention') && mention) 
 			unwrap(range.endContainer.parentElement)
-		if (range.startContainer.parentElement.classList.contains('block') && !mention) 
-			unwrap(range.startContainer.parentElement)
-		if (range.endContainer.parentElement.classList.contains('block') && !mention) 
-			unwrap(range.endContainer.parentElement)
-		//In case there's a mention on the end or start of range with a block element.	
-		if (range.endContainer.parentElement.classList.contains('mention') && !mention){ 
-			var endNode = range.endContainer.parentNode;
+		// if (range.startContainer.parentElement.classList.contains('block') && !mention) 
+		// 	unwrap(range.startContainer.parentElement)
+		// if (range.endContainer.parentElement.classList.contains('block') && !mention) 
+		// 	unwrap(range.endContainer.parentElement)
+		// //In case there's a mention on the end or start of range with a block element.	
+		// if (range.endContainer.parentElement.classList.contains('mention') && !mention){ 
+		// 	var endNode = range.endContainer.parentNode;
 
-			range.setStart(r.sc,r.so);
-			range.setEndAfter(endNode);
-		}	
-		if (range.startContainer.parentElement.classList.contains('mention') && !mention){
-			var startNode = range.startContainer.parentNode;
+		// 	range.setStart(r.sc,r.so);
+		// 	range.setEndAfter(endNode);
+		// }	
+		// if (range.startContainer.parentElement.classList.contains('mention') && !mention){
+		// 	var startNode = range.startContainer.parentNode;
 
-			range.setStartBefore(startNode);
-			if(!endNode){
-				range.setEnd(r.ec,r.eo);
-			}
-		}	
+		// 	range.setStartBefore(startNode);
+		// 	if(!endNode){
+		// 		range.setEnd(r.ec,r.eo);
+		// 	}
+		// }	
 					
 		if(!endNode && !startNode){
 			range.setStart(r.sc, r.so)
@@ -160,9 +171,43 @@ var kwic = new (function () {
 		return node
 	}
 
+	function wrapBib(range,node){
+		let documentFragment;
+
+		//Range object information 
+		var r = {
+			sc: range.startContainer, 
+			so: range.startOffset, 
+			ec: range.endContainer, 
+			eo: range.endOffset
+		}
+
+		//Unwrap any bibref tag or quote tag
+		if (range.startContainer.parentElement.classList.contains('bibref') || range.startContainer.parentElement.classList.contains('quote-text')) 
+			unwrap(range.startContainer.parentElement)
+		if (range.endContainer.parentElement.classList.contains('bibref') || range.endContainer.parentElement.classList.contains('quote-text')) 
+			unwrap(range.endContainer.parentElement)
+		
+		range.setStart(r.sc, r.so)
+		range.setEnd(r.ec, r.eo)
+
+		documentFragment = range.extractContents();
+			
+		node.appendChild(documentFragment);
+		range.insertNode(node);
+		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
+		if (node.parentElement.classList.contains('bibref')) unwrap(node)
+
+		var inner = node.querySelectorAll('.bibref')
+		for (var i=0; i<inner.length; i++) {
+			unwrap(inner[i]) 
+			}
+		return node
+	}
+
 	function wrapQuote(range,node,aNode){
 		let documentFragment;
-		let quote = document.createRange();
+		let quote = document.createRange(); //quote-text range
 		
 		//Range object information 
 		var r = {
@@ -171,8 +216,7 @@ var kwic = new (function () {
 			ec: range.endContainer, 
 			eo: range.endOffset
 		}
-		console.log("range endContainer", range.endContainer);
-
+		
 		//Unwrap any quote tag
 		if (range.startContainer.parentElement.classList.contains('quote')) 
 			unwrap(range.startContainer.parentElement)
@@ -217,49 +261,18 @@ var kwic = new (function () {
 			range.setEnd(r.ec,r.eo);
 		}
 		//Set range start before A node if backward
-
-		// if (range.endContainer.parentElement.tagName == "A"){
-			
-		// 	let footnote = range.endContainer.parentElement;
-
-		// 	while(footnote != null && !footnote.classList.contains('quote')){
-		// 		console.log(footnote);
-		// 		footnote = footnote.parentElement;
-		// 	}
-		// 	if(footnote){
-		// 		console.log("unwrap footnote",footnote);
-		// 		unwrap(footnote);
-		// 		range.setEndAfter(r.ec.parentNode.parentNode);
-		// 		console.log("range after unwrap",range);
-		// 	}else{
-		// 		console.log(range);
-
-		// 		let parent = range.endContainer.parentElement;
-
-		// 		while(parent.previousSibling == null){
-		// 			parent = parent.parentNode;
-		// 		}
-		// 		console.log(parent);
-
-		// 		range.setEndAfter(parent);
-		// 	}
-		// }else{
-		// 	range.setEnd(r.ec,r.eo);
-		// }
+		//TODO
 
 		range.setStart(r.sc, r.so)
-		//range.setEnd(r.ec, r.eo)
 
 		documentFragment = range.extractContents();
 			
 		node.appendChild(documentFragment);
 		range.insertNode(node);
 		
-		//console.log("node.firstChild,r.ec",node.firstChild,r.ec,r.ec.parentNode.parentNode)
-
 		quoteText = document.createElement('span');
 
-		//if there is a footnote.
+		//if there is a footnote create quote-text span
 		if(aNode) {
 			quote.setStartBefore(node.firstChild);
 			quote.setEndBefore(aNode.parentNode);
@@ -1069,7 +1082,7 @@ var kwic = new (function () {
 		} else {
 			let supNode = options.supNode;
 			console.log(supNode);
-			if (!compatibleExtremesQuotes(nodeOrRange,supNode)) return {}
+			if (!compatibleExtremesRef(nodeOrRange,supNode)) return {}
 			this.node = wrapQuote(nodeOrRange,document.createElement('span'), supNode);			
 		}
 		
@@ -1167,9 +1180,9 @@ var kwic = new (function () {
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
-			if (!compatibleExtremes(nodeOrRange,mention)) return {}
+			if (!compatibleExtremesRef(nodeOrRange,mention)) return {}
 			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
-			this.node = wrap(nodeOrRange,document.createElement('span'),mention);			
+			this.node = wrapBib(nodeOrRange,document.createElement('span'));			
 		}
 
 		this.inner = this.node.innerHTML;
