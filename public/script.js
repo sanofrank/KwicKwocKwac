@@ -1356,7 +1356,7 @@ async function checkMetadata(){
 	let fileName = splitFilename(currentFilename,'work');
 	let user = splitFilename(currentFilename,'user');
 
-	let header = `Metadati dell'opera ${fileName}`;
+	let header = `Metadati dell'opera "${fileName}"`;
 
 	if(isEmptyObject(currentMetadata)){
 		//Passing empty object to tpl function and remove all {$} variables
