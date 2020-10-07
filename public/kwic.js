@@ -149,10 +149,10 @@ var kwic = new (function () {
 		// 	}
 		// }	
 					
-		if(!endNode && !startNode){
-			range.setStart(r.sc, r.so)
-			range.setEnd(r.ec, r.eo)
-		}
+		//if(!endNode && !startNode){
+		range.setStart(r.sc, r.so)
+		range.setEnd(r.ec, r.eo)
+		//}
 		range.surroundContents(node); //moves content of the range into a new node, placing the new node at the start of the specified range
 		node.parentElement.normalize() //puts the specified node and all of its sub-tree into a "normalized" form
 		if (node.parentElement.classList.contains('mention') && mention) unwrap(node)

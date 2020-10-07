@@ -77,9 +77,7 @@ router.post('/save_metadata', async (req,res) => { // xasync finchè aspettiamo 
     });
 
     const savedMetadata = await metadata.save(function(err,data){
-        if(err){
-            console.log(err);
-            return res.status(400).send(err);}
+        if(err) return res.status(400).send(err);
 
         let id = metadata._id;
 

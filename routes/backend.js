@@ -81,7 +81,6 @@ router.get('/load', async (req, res) => {
 
         //res.set('Content-Type: text/html');
         //Check metadata
-        console.log(fileName);
         let split = fileName.split('_')
         const objId = split[6];
 
