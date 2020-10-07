@@ -368,10 +368,8 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
-		if ($('#markAll').is(':checked')) {
-			$('#markAll').prop('checked', false);
-			prefs('markAll',false,false);
-		}
+		$('#markAll').prop('disabled',true)
+		$('#markAll').prop('checked',false)
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
@@ -411,6 +409,8 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
+		$('#markAll').prop('disable',false);
+		$('#markAll').prop('checked',true);
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 	}
@@ -867,17 +867,17 @@ function setStatus(status) {
 		case "default":
 			removeStatus("status");
 			$("#status").addClass("default");
-			$("#status").html("Default");
+			$("#status").html("Da avviare");
 			break
 		case "working":
 			removeStatus("status");
 			$("#status").addClass("working");
-			$("#status").html("Working");
+			$("#status").html("In corso");
 			break
 		case "done":
 			removeStatus("status");
 			$("#status").addClass("done");
-			$("#status").html("Done");
+			$("#status").html("Terminato");
 			break
 	}
 
@@ -919,17 +919,17 @@ async function changeStatus() {
 		case 'default':
 			$("#status").removeClass("done");
 			$("#status").addClass("default");
-			$("#status").html("Default");
+			$("#status").html("Da avviare");
 			break
 		case 'working':
 			$("#status").removeClass("default");
 			$("#status").addClass("working");
-			$("#status").html("Working");
+			$("#status").html("In corso");
 			break
 		case 'done':
 			$("#status").removeClass("working");
 			$("#status").addClass("done");
-			$("#status").html("Done");
+			$("#status").html("Terminato");
 			break
 	}
 
@@ -1305,44 +1305,81 @@ function download(filename, content, format) {
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
 
-function fillForm(data,id,addFunction, value){
+function fillForm(data,id,addFunction, value, datalist = false){
+	//value field
 	if(value){
+		//array of values 
 		if(typeof data === 'object'){
-			console.log("object",data);
 			for(let i = 0; i < data.length; i++){
 				if(i == 0){
+					//class input selector
 					let selector = `.${id}`;
 					let input = document.querySelector(selector);
 					input.setAttribute('value',data[i]);
 				}else{
 					addFunction();
+					//added ID input
 					let added_selector = `#added-${id}${i} input`
 					let added_inputs = document.querySelector(added_selector);
 					added_inputs.setAttribute('value',data[i]);
 				}
 			}
-		}else{
-			addFunction();
+		}else{ //single value e.g. date metadata
+			if(addFunction) addFunction();
 			let value_selector = `#${id}`
 			let input = document.querySelector(value_selector);
 			input.setAttribute('value',data);
 		}
 	}else{
-		for(let i = 0; i < data.length; i++){
-			if(i == 0){
-				let selector = `#${id} option`;
-				let inputs = document.querySelectorAll(selector);
-				inputs.forEach(input => {
-					if(data[i] === input.getAttribute('value')) input.setAttribute('selected','select');
-				})
-			}else{
-				addFunction();
-				let added_selector = `#added-${id}${i} option`
-				let added_inputs = document.querySelectorAll(added_selector);
-				added_inputs.forEach(added_input => {
-					if(data[i] === added_input.getAttribute('value')) added_input.setAttribute('selected','select');
-				})
-			}			
+		// datalist options
+		if(datalist){
+			for(let i = 0; i < data.length; i++){
+				if(i == 0){
+					let selector = `.${id}-option`;
+					let options = document.querySelectorAll(selector); //datalist options
+
+					options.forEach(option => {
+						if(data[i] === option.getAttribute('data-value')){	//check option data-value e.g. role.01,role.02,role.03,... equal to saved data
+							let input = document.querySelector(`input[name='${id}']`);
+							let value = option.getAttribute('value');
+							
+							input.setAttribute('value',value); //set input value attribute equal to option matched value 
+						}
+					})
+				}else{
+					//data.length > 1
+					addFunction();
+					let added_selector = `#added-${id}${i} option`;
+					let added_options = document.querySelectorAll(added_selector);
+
+					added_options.forEach(added_option => {
+						if(data[i] === added_option.getAttribute('data-value')){
+							let input = document.querySelector(`#added-${id}${i} input`);
+							let value = added_option.getAttribute('value');
+							
+							input.setAttribute('value',value);
+						}
+					})
+				}
+			}
+		}else{
+			//select option HTML element 
+			for(let i = 0; i < data.length; i++){
+				if(i == 0){
+					let selector = `#${id} option`;
+					let inputs = document.querySelectorAll(selector);
+					inputs.forEach(input => {
+						if(data[i] === input.getAttribute('value')) input.setAttribute('selected','select');
+					})
+				}else{
+					addFunction();
+					let added_selector = `#added-${id}${i} option`
+					let added_inputs = document.querySelectorAll(added_selector);
+					added_inputs.forEach(added_input => {
+						if(data[i] === added_input.getAttribute('value')) added_input.setAttribute('selected','select');
+					})
+				}			
+			}
 		}
 	}
 }
@@ -1357,7 +1394,7 @@ async function checkMetadata(){
 	let user = splitFilename(currentFilename,'user');
 
 	let header = `Metadati dell'opera "${fileName}"`;
-
+	console.log(currentMetadata);
 	if(isEmptyObject(currentMetadata)){
 		//Passing empty object to tpl function and remove all {$} variables
 		let form = $('#metadataTpl').html();
@@ -1383,11 +1420,22 @@ async function checkMetadata(){
 		$('#add-metadata #addMetadata-sub').text(header);
 
 		//Required fields array
-		if(currentMetadata.roleList.length > 0) fillForm(currentMetadata.roleList,"role",addRole,false);
+		if(currentMetadata.roleList.length > 0) fillForm(currentMetadata.roleList,"role",addRole,false,true);
 		if(currentMetadata.doctypeList.length > 0) fillForm(currentMetadata.doctypeList,"doctype",addDoctype,false);
 		if(currentMetadata.doctopicList.length > 0) fillForm(currentMetadata.doctopicList,"doctopic",addDoctopic,false);
 		if(currentMetadata.eventPlace) fillForm(currentMetadata.eventPlace,"event-place",addEventPlace,true);
-		if(currentMetadata.eventDate) fillForm(currentMetadata.eventDate,"event-date",addEventDate,true);
+		if(currentMetadata.eventDate) {
+			//split date and manage single field
+			let split_date = currentMetadata.eventDate.split('-');
+			let year = split_date[0];
+			let month = split_date[1];
+			let day = split_date[2];
+			
+			addEventDate();
+			if(year) fillForm(year,'event-year',null,true)
+			if(month) fillForm(month,'event-month',null,true)
+			if(day) fillForm(day,'event-day',null,true)
+		}
 		
 		//Provenance value object
 		switch (currentMetadata.docstatus) {
@@ -1413,6 +1461,7 @@ async function checkMetadata(){
 		$('#save-metadata').attr('onclick','saveMetadata(true)')
 	}
 }
+
 async function saveMetadata(update = false) {
 
 	let objId = ""
@@ -1454,7 +1503,9 @@ async function saveMetadata(update = false) {
 	let year = $("#event-year").val()
 	let month = $("#event-month").val()
 	let day = $("#event-day").val()
-	let eventDate = `${year}-${month}-${day}`;
+	let eventDate;
+	if(year || month || day) eventDate = `${year}-${month}-${day}`;
+
 	let additionalNotes = $('#additional-notes').val();
 
 	let data = { 
