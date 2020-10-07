@@ -409,7 +409,7 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
-		$('#markAll').prop('disable',false);
+		$('#markAll').prop('disabled',false);
 		$('#markAll').prop('checked',true);
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
@@ -719,9 +719,14 @@ function showMentions() {
 
 // scroll main document to position of a mention (when clicking on a mention in the left pane)
 function goto(id) {
-	var t = $(id)[0].offsetTop - 100;
+	let element = $(id)[0];
+
+	//footnote A tag with href reference inside SUP element
+	if(element.tagName == 'A') element = element.parentElement 
+			
+	var t = element.offsetTop - 100;
 	$('#file').animate({ scrollTop: t }, 400);
-	console.log($(id)[0],$(id)[0].offsetTop,t)
+
 	$(id).addClass('animate');
 	setTimeout(function () {
 		$(id).removeClass('animate');
@@ -1163,21 +1168,14 @@ function validate(t) {
 
 // Changes href animation scrolling
 function anchorGoto(location){
-	
+
 	document.querySelectorAll(`${location} a[href^="#"]`).forEach(anchor => {
 		anchor.addEventListener('click', (e) => {
 			e.preventDefault();
 
 			let id = anchor.getAttribute('href');
-			let element = $(id)[0];
-
-			//footnote A tag with href reference inside SUP element
-			if(element.tagName == 'A') element = element.parentElement 
+			goto(id);
 			
-			//goto function
-			var t = element.offsetTop - 100;
-			console.log($(id)[0],$(id)[0].offsetTop,t,element)
-			$('#file').animate({ scrollTop: t }, 400);
 		})
 	});
 }
