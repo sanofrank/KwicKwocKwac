@@ -1503,7 +1503,9 @@ async function saveMetadata(update = false) {
 	let year = $("#event-year").val()
 	let month = $("#event-month").val()
 	let day = $("#event-day").val()
-	let eventDate = `${year}-${month}-${day}`;
+	let eventDate;
+	if(year || month || day) eventDate = `${year}-${month}-${day}`;
+
 	let additionalNotes = $('#additional-notes').val();
 
 	let data = { 
