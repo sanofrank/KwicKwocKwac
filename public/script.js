@@ -368,10 +368,8 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
-		if ($('#markAll').is(':checked')) {
-			$('#markAll').prop('checked', false);
-			prefs('markAll',false,false);
-		}
+		$('#markAll').prop('disabled',true)
+		$('#markAll').prop('checked',false)
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
@@ -411,6 +409,8 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
+		$('#markAll').prop('disable',false);
+		$('#markAll').prop('checked',true);
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 	}
@@ -867,17 +867,17 @@ function setStatus(status) {
 		case "default":
 			removeStatus("status");
 			$("#status").addClass("default");
-			$("#status").html("Default");
+			$("#status").html("Da avviare");
 			break
 		case "working":
 			removeStatus("status");
 			$("#status").addClass("working");
-			$("#status").html("Working");
+			$("#status").html("In corso");
 			break
 		case "done":
 			removeStatus("status");
 			$("#status").addClass("done");
-			$("#status").html("Done");
+			$("#status").html("Terminato");
 			break
 	}
 
@@ -919,17 +919,17 @@ async function changeStatus() {
 		case 'default':
 			$("#status").removeClass("done");
 			$("#status").addClass("default");
-			$("#status").html("Default");
+			$("#status").html("Da avviare");
 			break
 		case 'working':
 			$("#status").removeClass("default");
 			$("#status").addClass("working");
-			$("#status").html("Working");
+			$("#status").html("In corso");
 			break
 		case 'done':
 			$("#status").removeClass("working");
 			$("#status").addClass("done");
-			$("#status").html("Done");
+			$("#status").html("Terminato");
 			break
 	}
 
