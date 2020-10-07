@@ -589,6 +589,7 @@ async function load(file) {
 		$('#file').animate({ scrollTop: 0 }, 400);
 		$('#commandList').removeClass('d-none');
 		markFootnote(documentLocation, mark = true)
+		anchorGoto(documentLocation);
 		setupKWIC(documentLocation, false);
 	}
 	hideSpinner();
@@ -720,6 +721,7 @@ function showMentions() {
 function goto(id) {
 	var t = $(id)[0].offsetTop - 100;
 	$('#file').animate({ scrollTop: t }, 400);
+	console.log($(id)[0],$(id)[0].offsetTop,t)
 	$(id).addClass('animate');
 	setTimeout(function () {
 		$(id).removeClass('animate');
@@ -1158,6 +1160,27 @@ function validate(t) {
 /*                                UTILITIES                                       */
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
+
+// Changes href animation scrolling
+function anchorGoto(location){
+	
+	document.querySelectorAll(`${location} a[href^="#"]`).forEach(anchor => {
+		anchor.addEventListener('click', (e) => {
+			e.preventDefault();
+
+			let id = anchor.getAttribute('href');
+			let element = $(id)[0];
+
+			//footnote A tag with href reference inside SUP element
+			if(element.tagName == 'A') element = element.parentElement 
+			
+			//goto function
+			var t = element.offsetTop - 100;
+			console.log($(id)[0],$(id)[0].offsetTop,t,element)
+			$('#file').animate({ scrollTop: t }, 400);
+		})
+	});
+}
 
 // Mark curator note and author note
 function markFootnote(location, mark){
