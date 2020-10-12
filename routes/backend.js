@@ -105,52 +105,150 @@ router.post('/upload', async (req,res) => {
         const verified = jwt.verify(token,process.env.TOKEN_SECRET);
         const username = verified.username;
 
-        let opera = req.body.opera;
-        let sez = req.body.sez;
-        let vol = req.body.vol;
-        let tom = req.body.tom;
-        let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`
+        const type = req.body.type;
+        const sez = req.body.sez;
+        const vol = req.body.vol;
+        const tom = req.body.tom;
 
-        let path = `${dir}/${fileName}`;
-        let htmlPath = `${path}/index.html`;
-        let content;
+        if(type === "docx"){
+            if(!req.files)   return res.status(400).send('Scegliere almeno un documento da caricare')
 
-        if (opera !== ""){
-            if(!fs.existsSync(path)){
-                await mkDir(path);
+            let filenames = req.body.filenames
+            let files = req.files.file; 
+
+            //Convert files and filenames into array if only 1 element
+            if(!files.length && typeof filenames == 'string'){
+                files = [files];
+                filenames = [filenames];
             }
+
+            for(i in files){
+                let opera = filenames[i];
+
+                let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
+                let path = `${dir}/${fileName}`;
+                let htmlPath = `${path}/index.html`;
+
+                let content;
+
+                if (opera !== ""){
+                    if(!fs.existsSync(path)){
+                        await mkDir(path);
+                    }
+                }
+
+                let docFile = files[i].data;
+                
+                const result = await mammoth.convertToHtml({buffer: docFile});
+                content = await result.value;
+
+                if(content!== "" && !content.includes("Key Words In Context")){
+                    fs.writeFile(htmlPath,content, (err) => {
+                        if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
+                    });
+                }else{
+                    return res.send(`File ${opera} vuoto`)
+                };
+
+            }
+            
         }
-        //Conversione da DOCX a HTML
-        if(req.files && req.body.type.match('docx')){
+        
+        if(type === "html"){
             
-            let docFile = req.files.file;
-            
-            const result = await mammoth.convertToHtml({buffer: docFile.data});
-            content = await result.value;
+            if(req.body.data.length == 0) return res.status(400).send('Scegliere almeno un documento da caricare')
 
-        }else{
+            let sez = req.body.sez;
+            let vol = req.body.vol;
+            let tom = req.body.tom;
+            let data = req.body.data;
             
-            let newPath = `files/${fileName}`;
             
-            let out = req.body.content;
-            let regex = new RegExp(newPath,'g');
+            data.forEach(async file => {
+                let opera = file.filename;
 
-            content = out.replace(regex,"");
-            content.replace(regex,"");
+                let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
+                let path = `${dir}/${fileName}`;
+                let htmlPath = `${path}/index.html`;
+
+                let content;
+
+                if (opera !== ""){
+                    if(!fs.existsSync(path)){
+                        await mkDir(path);
+                    }
+                }
+
+                let newPath = `files/${fileName}`;
+                
+                let out = file.content;
+                let regex = new RegExp(newPath,'g');
+
+                content = out.replace(regex,"");
+                content.replace(regex,"");
+
+                if(content!== "" && !content.includes("Key Words In Context")){
+                    fs.writeFile(htmlPath,content, (err) => {
+                        if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
+                    });
+                }else{
+                    return res.send(`File ${opera} vuoto`)
+                };
+            })
         }
 
-        if(content!== "" && !content.includes("Key Words In Context")){
-            fs.writeFile(htmlPath,content, (err) => {
-                if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
-            });
-            return res.send(`File ${opera} salvato correttamente in ${htmlPath}`);
-        };
-
-        return res.send('File empty');
-
+            return res.send('File salvati correttamente')
+            
     }catch(err){
         res.status(400).send(err);
     }
+
+    //     let opera = req.body.opera;
+    //     let sez = req.body.sez;
+    //     let vol = req.body.vol;
+    //     let tom = req.body.tom;
+    //     let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`
+
+    //     let path = `${dir}/${fileName}`;
+    //     let htmlPath = `${path}/index.html`;
+    //     let content;
+
+    //     if (opera !== ""){
+    //         if(!fs.existsSync(path)){
+    //             await mkDir(path);
+    //         }
+    //     }
+    //     //Conversione da DOCX a HTML
+    //     if(req.files && req.body.type.match('docx')){
+            
+    //         let docFile = req.files.file;
+            
+    //         const result = await mammoth.convertToHtml({buffer: docFile.data});
+    //         content = await result.value;
+
+    //     }else{
+            
+    //         let newPath = `files/${fileName}`;
+            
+    //         let out = req.body.content;
+    //         let regex = new RegExp(newPath,'g');
+
+    //         content = out.replace(regex,"");
+    //         content.replace(regex,"");
+    //     }
+
+    //     if(content!== "" && !content.includes("Key Words In Context")){
+    //         fs.writeFile(htmlPath,content, (err) => {
+    //             if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
+    //         });
+    //         return res.send(`File ${opera} salvato correttamente in ${htmlPath}`);
+    //     };
+
+    //     return res.send('File empty');
+
+    // }catch(err){
+    //     res.status(400).send(err);
+    // }
 });
 
 router.post('/save' , async (req,res) => {
