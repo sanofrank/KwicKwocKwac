@@ -28,9 +28,14 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<ul class="navbar-nav mr-auto">
+					<li class="nav-link active nav-item"><span class="d-inline-block">
+						<span class="oi oi-magnifying-glass"></span>
+					</li>
 					<li class="nav-item dropdown active">
-						<a class="nav-link dropdown-toggle" href="#" id="fileList" data-toggle="dropdown"
-							aria-haspopup="true" aria-expanded="false">Documenti</a>
+						<!--<a class="nav-link dropdown-toggle" href="#" id="fileList" data-toggle="dropdown"
+							aria-haspopup="true" aria-expanded="false">Documenti</a>-->
+						<input class="nav-link dropdown-toggle" type="text" id="fileList" data-toggle="dropdown" 
+							aria-haspopup="true" aria-expanded="false" onkeyup="filterDocuments()" placeholder="Cerca documenti">
 						<div id="fileMenu" class="dropdown-menu overflow-auto" aria-labelledby="fileList">
 						</div>
 					</li>

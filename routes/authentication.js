@@ -10,6 +10,11 @@ router.get('/index', verify, (req,res) => {
     res.render("index.html");
 })
 
+//TODO logout by changing expire date on auth_token
+router.post('/logout', async (req, res) => {
+    
+})
+
 router.post('/change_password', async (req,res) => {
 
     const token = req.cookies.auth_token;

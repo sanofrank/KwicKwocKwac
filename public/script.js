@@ -320,6 +320,40 @@ function treeClick(e, callback) {
 	}
 }
 
+// Filter document search by character
+function filterDocuments(){
+	// Declare variables
+	var input, filter, container, files, i, txtValue, visible = 0;
+	input = document.getElementById('fileList');
+	filter = input.value.toUpperCase();
+	container = document.getElementById("fileMenu");
+	files = container.getElementsByTagName('a');
+  
+	// Loop through all list items, and hide those who don't match the search query
+	for (i = 0; i < files.length; i++) {
+	  label = files[i].getElementsByTagName('div')[0]; // label div
+	  txtValue = label.textContent || label.innerText;
+	  if (txtValue.toUpperCase().indexOf(filter) > -1) {
+		visible++;  
+		files[i].classList.remove('d-none');
+		files[i].classList.add('d-flex');
+	  } else {
+		files[i].classList.remove('d-flex');
+		files[i].classList.add('d-none');
+	  }
+	}
+
+	//resize fileMenu
+	if(visible > 13){
+		$('#fileMenu').css("height", "30em")
+	}else{
+		$('#fileMenu').css("height", "");
+	}
+		
+
+  }
+
+
 /* ------------------------------------------------------------------------------ */
 /*                                                                                */
 /*                                VIEW-RELATED FUNCTIONS                          */
@@ -444,23 +478,31 @@ function setCurrentView(view) {
 }
 
 function docList(elements) {
+
+	if($('#fileMenu').children()) $('#fileMenu')[0].innerHTML = '' //empty docList if already populated
+
 	var menuItemTpl =
-		`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
-					{$label}
-					<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  						<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-					</svg>
-				</a>`
+		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+		<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+		<div class="flex-grow-1 pr-3 fileLabel">
+		{$label}
+		</div>
+		</a>`
 	var menuItemTplSu =
-		`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
-				{$label} <span class=" border border-primary rounded text-primary">{$user}</span>
-				<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-					<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-				</svg>
-			</a>`
-	
+		`			
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+			<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+			<div class="flex-grow-1 pr-3 fileLabel">
+			{$label}
+			</div>
+			<span class="badge  border border-primary rounded text-primary">{$user}</span>
+			</svg>
+			</a>
+		`		
 	//resize fileMenu
-	if(elements.list.length > 9){
+	if(elements.list.length > 13){
 		$('#fileMenu').css("height", "30em")
 	}else{
 		$('#fileMenu').css("height", "");
@@ -909,7 +951,9 @@ async function uploadDoc(dataHTML,dataDOCX) {
 	}else{
 		msg.css('display','block');
 		msg.addClass('alert-success').removeClass('alert-danger');
-			
+		
+		fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+
 		return msg.text(text);
 	}
 }
@@ -986,6 +1030,7 @@ async function changeStatus() {
 			break
 	}
 
+	return fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 }
 
 // user is changing label, sort or wikidata Id

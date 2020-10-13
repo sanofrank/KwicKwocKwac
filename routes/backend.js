@@ -35,7 +35,7 @@ router.get('/list', async (req, res) => {
                     let sezione = split[1]
                     let volume = split[2]
                     let tomo = split[3]
-                    let opera = split[4] //.replace(/([A-Z])/g, ' $1').trim()
+                    let opera = split[4]
                     let status = split[5];
 
                     let obj = {
@@ -134,6 +134,9 @@ router.post('/upload', async (req,res) => {
                 if (opera !== ""){
                     if(!fs.existsSync(path)){
                         await mkDir(path);
+                    }else{
+                     //TODO remove file or ask to remove
+                     return res.status(400).send('Il documento è già presente nella piattaforma, si prega di rimuoverlo prima di ricaricarlo.')
                     }
                 }
 
