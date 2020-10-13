@@ -1196,7 +1196,7 @@ function uploadFileSetup(evt) {
 		doc_list[0].innerHTML = '' //remove all files
 		uploadHTML = []; // empty html array
 		uploadDOCX = new FormData(); // empty docx formdata		
-		$('#docFile').val(''); //empty docFile input
+		//$('#docFile').val(''); //empty docFile input
 	}
 
 	doc_list[0].innerText = 'Inserisci un titolo per ogni documento' // TODO Da spostare all'interno del DIV
