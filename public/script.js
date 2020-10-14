@@ -70,21 +70,23 @@ async function main() {
 		credentials: 'include'
 	};
 
-	const response = await fetch('/api/verify', loginOptions);
-	const json = await response.json();
-	const aut = json.editmode;
+	// const response = await fetch('/api/verify', loginOptions);
+	// const json = await response.json();
+	// const aut = json.editmode;
 
-	if (aut) {
-		$('#Login').modal('hide'); //close modal
+	// console.log(aut);
 
-		//remove modal attributes
-		$('#edit-mode').removeAttr('data-toggle');
-		$('#edit-mode').removeAttr('data-target');
+	// if (aut) {
+	// 	$('#Login').modal('hide'); //close modal
 
-		$("#edit-mode").attr("onclick", "toggleEdit()"); //togleEdit() insted of login()
+	// 	//remove modal attributes
+	// 	$('#edit-mode').removeAttr('data-toggle');
+	// 	$('#edit-mode').removeAttr('data-target');
 
-		toggleEdit();
-	}
+	// 	$("#edit-mode").attr("onclick", "toggleEdit()"); //togleEdit() insted of login()
+
+	// 	toggleEdit();
+	// }
 
 	fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 	fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));

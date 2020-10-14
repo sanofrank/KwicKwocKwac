@@ -114,9 +114,13 @@ async function login(){
 }
 
 //"Fake" logout
-function logout() {
+async function logout() {
     const origin = window.location.origin;
-    location.assign(`${origin}/login`);
+
+    const token = await fetch('/api/logout')
+    if(token){
+        location.assign(`${origin}/login`);
+    }
 }
 
 function show_hide(x){

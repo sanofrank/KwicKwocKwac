@@ -13,6 +13,9 @@ router.get('/index', verify, (req,res) => {
 //TODO logout by changing expire date on auth_token
 router.post('/logout', async (req, res) => {
     
+    const token = req.cookies.auth_token;
+    if(!token) res.status(400).send("No token provided");
+    
 })
 
 router.post('/change_password', async (req,res) => {
@@ -61,7 +64,7 @@ router.post('/login', async (req,res) => {
     //res.header('auth-token',token).send(token);
     res.cookie('auth_token', token, 
     {
-        expires: new Date(Date.now() + 9000000),        
+        expires: new Date(Date.now() + 24 * 3600000),        
         httpOnly: true,
         //secure: true
     })
