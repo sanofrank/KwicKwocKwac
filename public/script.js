@@ -29,7 +29,8 @@ var documentLocation = '#file'           // the name of the div containing the l
 var nullSelection = null                 // the element being selected after an action has been dealt with (i.e. a null selection)
 var currentFilename = ""                 // the name of the file loaded at the moment from the "file" directory of the server
 var entityList                           // the list of entities loaded from the local file through the "import entities" command
-var uploadData;	                         // the information about a file ready to be uploaded throught the upload Document command
+var uploadHTML = [];	                 // the information about a file ready to be uploaded throught the upload Document command
+var uploadDOCX = new FormData;            // the information about docx file to be uploaded through the upload Document command
 var scrapShown;		                     // whether the Scraps pane is currently shown in the bottom left pane
 var trashShown;		                     // whether the trash pane is currently shown in the bottom left pane
 var editMode;                           // whether the user can add or modify mentions in the document shown
@@ -69,21 +70,23 @@ async function main() {
 		credentials: 'include'
 	};
 
-	const response = await fetch('/api/verify', loginOptions);
-	const json = await response.json();
-	const aut = json.editmode;
+	// const response = await fetch('/api/verify', loginOptions);
+	// const json = await response.json();
+	// const aut = json.editmode;
 
-	if (aut) {
-		$('#Login').modal('hide'); //close modal
+	// console.log(aut);
 
-		//remove modal attributes
-		$('#edit-mode').removeAttr('data-toggle');
-		$('#edit-mode').removeAttr('data-target');
+	// if (aut) {
+	// 	$('#Login').modal('hide'); //close modal
 
-		$("#edit-mode").attr("onclick", "toggleEdit()"); //togleEdit() insted of login()
+	// 	//remove modal attributes
+	// 	$('#edit-mode').removeAttr('data-toggle');
+	// 	$('#edit-mode').removeAttr('data-target');
 
-		toggleEdit();
-	}
+	// 	$("#edit-mode").attr("onclick", "toggleEdit()"); //togleEdit() insted of login()
+
+	// 	toggleEdit();
+	// }
 
 	fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 	fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
@@ -98,7 +101,8 @@ async function main() {
 function basicCallbacks() {
 	$('#save').click(saveDoc)
 	$('#entityFile').change(uploadEntityFile);
-	$('#fileParams').change(fileParams);
+	$('.fileParams').change(fileParams);
+	$('input[name="inlineRadioOptions"]').change(emptyUpload);
 	$('#docFile').change(uploadFileSetup);
 	$(document).on('click', expandableSelector, treeClick)
 }
@@ -293,9 +297,7 @@ function dblclick(e) {
 
 	let parent = $(e.target).parent();
 	let id = $(parent).data('id');
-	let rs;
-
-	parent.hasClass('rs-active') ? rs = true : rs = false;
+	let rs = parent.hasClass('rs-active') ? true : false;
 
 	kwic.referencingString(id, rs);
 	setupKWIC(documentLocation, true);
@@ -319,6 +321,40 @@ function treeClick(e, callback) {
 		showWikidataEntity(parent)
 	}
 }
+
+// Filter document search by character
+function filterDocuments(){
+	// Declare variables
+	var input, filter, container, files, i, txtValue, visible = 0;
+	input = document.getElementById('fileList');
+	filter = input.value.toUpperCase();
+	container = document.getElementById("fileMenu");
+	files = container.getElementsByTagName('a');
+  
+	// Loop through all list items, and hide those who don't match the search query
+	for (i = 0; i < files.length; i++) {
+	  label = files[i].getElementsByTagName('div')[0]; // label div
+	  txtValue = label.textContent || label.innerText;
+	  if (txtValue.toUpperCase().indexOf(filter) > -1) {
+		visible++;  
+		files[i].classList.remove('d-none');
+		files[i].classList.add('d-flex');
+	  } else {
+		files[i].classList.remove('d-flex');
+		files[i].classList.add('d-none');
+	  }
+	}
+
+	//resize fileMenu
+	if(visible > 13){
+		$('#fileMenu').css("height", "30em")
+	}else{
+		$('#fileMenu').css("height", "");
+	}
+		
+
+  }
+
 
 /* ------------------------------------------------------------------------------ */
 /*                                                                                */
@@ -409,7 +445,7 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
-		$('#markAll').prop('disable',false);
+		$('#markAll').prop('disabled',false);
 		$('#markAll').prop('checked',true);
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
@@ -444,21 +480,36 @@ function setCurrentView(view) {
 }
 
 function docList(elements) {
-	var menuItemTpl =
-		`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
-					{$label}
-					<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  						<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-					</svg>
-				</a>`
-	var menuItemTplSu =
-		`<a class="dropdown-item" href="#" onclick='load("{$url}")'>
-				{$label} <span class=" border border-primary rounded text-primary">{$user}</span>
-				<svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-					<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-				</svg>
-			</a>`
 
+	if($('#fileMenu').children()) $('#fileMenu')[0].innerHTML = '' //empty docList if already populated
+
+	var menuItemTpl =
+		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+		<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+		<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+		<div class="flex-grow-1 pr-3 fileLabel">
+		{$label}
+		</div>
+		</a>`
+	var menuItemTplSu =
+		`			
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+			<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+			<div class="flex-grow-1 pr-3 fileLabel">
+			{$label}
+			</div>
+			<span class="badge  border border-primary rounded text-primary">{$user}</span>
+			</svg>
+			</a>
+		`		
+	//resize fileMenu
+	if(elements.list.length > 13){
+		$('#fileMenu').css("height", "30em")
+	}else{
+		$('#fileMenu').css("height", "");
+	}
+	
 	if (elements.su) {
 		for (var i = 0; i < elements.list.length; i++) {
 			$('#fileMenu').append(menuItemTplSu.tpl(elements.list[i]))
@@ -589,6 +640,7 @@ async function load(file) {
 		$('#file').animate({ scrollTop: 0 }, 400);
 		$('#commandList').removeClass('d-none');
 		markFootnote(documentLocation, mark = true)
+		anchorGoto(documentLocation);
 		setupKWIC(documentLocation, false);
 	}
 	hideSpinner();
@@ -718,8 +770,14 @@ function showMentions() {
 
 // scroll main document to position of a mention (when clicking on a mention in the left pane)
 function goto(id) {
-	var t = $(id)[0].offsetTop - 100;
+	let element = $(id)[0];
+
+	//footnote A tag with href reference inside SUP element
+	if(element.tagName == 'A') element = element.parentElement 
+			
+	var t = element.offsetTop - 100;
 	$('#file').animate({ scrollTop: t }, 400);
+
 	$(id).addClass('animate');
 	setTimeout(function () {
 		$(id).removeClass('animate');
@@ -777,9 +835,7 @@ function doAction(key, alt, shift) {
 	sel = document.getSelection()
 
 	if (rangeAcceptable(sel, documentLocation)) {
-		let action;
-
-		referenceMode ? action = kwic.doActionReference(key, alt, shift) : action = kwic.doAction(key, alt, shift); // If reference mode is active change action options
+		let action = referenceMode ? kwic.doActionReference(key, alt, shift) : kwic.doAction(key, alt, shift); // If reference mode is active change action options
 
 		if (action) {
 			setupKWIC(documentLocation, true)
@@ -819,46 +875,89 @@ async function saveDoc() {
 }
 
 // save a loaded document on the remote server
-async function uploadDoc(data) {
+async function uploadDoc(dataHTML,dataDOCX) {
+	// Alert box
+	let msg = $('#msg-upload')
 
-	sez = $('#sezNumber').val();
-	vol = $('#volNumber').val();
-	tom = $('#tomNumber').val();
-	opera = $('#operaName').val();
+	// docx files or html files
+	let format_radio = $('input[name="inlineRadioOptions"]:checked').val();
 
 	let requestOptions;
 
-	if (data.type === 'html') {
-		data.sez = sez;
-		data.vol = vol;
-		data.tom = tom;
-		data.opera = opera;
+	// Unique sez_vol_tom path
+	let sez = $('#sezNumber').val();
+	let vol = $('#volNumber').val();
+	let tom = $('#tomNumber').val();
+
+	// Opera values
+	let operaName = document.querySelectorAll("[id^='operaName-']")
+
+	// Get titles, if empty return error message
+	for(i in operaName){
+		if(operaName[i] instanceof HTMLElement){ // to avoid last loop for length element in operaName
+			let title = operaName[i].value
+		
+			if(!title || title === ''){ 
+				msg.css('display','block');
+				msg.addClass('alert-danger').removeClass('alert-success');
+			
+				return msg.text('Tutte le opere devono avere un titolo.');
+			}
+	
+			if(format_radio === "docx" && dataDOCX) dataDOCX.append('filenames',operaName[i].value); //append to dataDOCX.filenames all the titles
+			if(format_radio === "html" && dataHTML) dataHTML[i].filename = title; // Change title in case of changes / opera[0] index
+		}
+	};	
+
+	if(format_radio === 'docx'){
+		// append data info
+		dataDOCX.append('type', format_radio)
+		dataDOCX.append("sez", sez);
+		dataDOCX.append("vol", vol);
+		dataDOCX.append("tom", tom);
+
+		requestOptions = {
+			method: 'POST',
+			body: dataDOCX
+		};	
+	}
+	if(format_radio === 'html'){
+		// json object with store information
+		let files = {};
+
+		files.type = format_radio;
+		files.sez = sez;
+		files.vol = vol;
+		files.tom = tom;
+		files.data = dataHTML;
 
 		requestOptions = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(data)
+			body: JSON.stringify(files)
 		};
-	} else {
-		data.append("sez", sez);
-		data.append("vol", vol);
-		data.append("tom", tom);
-		data.append("opera", opera);
-
-		requestOptions = {
-			method: 'POST',
-			body: data
-		};
-	};
+	}
 
 	showSpinner();
 	const response = await fetch('/api/upload', requestOptions);
 	const text = await response.text();
 	hideSpinner();
 
-	if (text) alert(text);
+	if(!response.ok){
+		msg.css('display','block');
+		msg.addClass('alert-danger').removeClass('alert-success');
+			
+		return msg.text(text);
+	}else{
+		msg.css('display','block');
+		msg.addClass('alert-success').removeClass('alert-danger');
+		
+		fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+
+		return msg.text(text);
+	}
 }
 
 function setStatus(status) {
@@ -933,6 +1032,7 @@ async function changeStatus() {
 			break
 	}
 
+	return fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 }
 
 // user is changing label, sort or wikidata Id
@@ -1098,53 +1198,120 @@ function emptyTrash() {
 	}
 }
 
+// Enable file selection when sez,tom,vol and format are selected
 function fileParams() {
 
 	var vol = $('#volNumber').val();
 	var tom = $('#tomNumber').val();
-	var opera = $('#operaName').val();
+	var sez = $('#sezNumber').val();
+	let format_radio = $('input[name="inlineRadioOptions"]:checked').val();
+	
+	if (sez != '' && vol != '' && tom != '' && format_radio) {
+		if(format_radio === "html") $('#docFile').prop('accept', ".html")
+		if(format_radio === "docx") $('#docFile').prop('accept', ".docx")
 
-	if (vol != '' && tom != '' && opera != '') {
 		$('#docFile').prop('disabled', false)
+	}
+}
+
+// Empty list when the format is changed
+function emptyUpload(){
+	
+	let doc_list = $('#doc-list');
+	let list = $('#doc-list li');
+
+	// Empty every data if there have been some changes
+	if(list.length != 0){
+		doc_list[0].innerHTML = '' //remove all files
+		uploadHTML = []; // empty html array
+		uploadDOCX = new FormData(); // empty docx formdata
+		$('#docFile').val(''); //empty docFile input
+		doc_list[0].style.height = '' //resize ul list
+
 	}
 }
 
 // Load a file containing HTML to become a new document on the server.
 function uploadFileSetup(evt) {
-	var f = evt.target.files[0];
+	
+	var f;
+	let doc_list = $('#doc-list');
+	let list = $('#doc-list li');
+	
+	// Empty every data if there have been some changes
+	if(list.length != 0 || evt.target.files.length == 0){
+		doc_list[0].innerHTML = '' //remove all files
+		uploadHTML = []; // empty html array
+		uploadDOCX = new FormData(); // empty docx formdata		
+		//$('#docFile').val(''); //empty docFile input
+	}
 
-	if (f.type.match('html|text')) {
-		var reader = new FileReader();
-		reader.onloadend = function (e) {
-			var d = e.target.result; //content
-			if (validate(d)) {
-				uploadData = {
-					filename: f.name.replace(/\.[^/.]+$/, ""), // removes the filename extension
-					size: f.size,
-					content: d,
-					type: 'html'
+	doc_list[0].innerText = 'Inserisci un titolo per ogni documento' // TODO Da spostare all'interno del DIV
+
+	// Resize ul list if too many documents
+	if(evt.target.files.length > 6){
+		doc_list[0].style.height = '20em'; 
+	}else{
+		doc_list[0].style.height = '';
+	}
+
+	for(let i = 0; i < evt.target.files.length; i++){
+		let file = evt.target.files[i]
+		
+		//Populate HTML list
+		let li = document.createElement('li');
+		let label = document.createElement('label');
+		let input = document.createElement('input');
+
+		li.classList.add('list-group-item')
+
+		label.setAttribute('for',`operaName-${i}`)
+		label.style.marginRight = '1em'
+		label.innerText = 'Titolo';
+		
+		input.setAttribute('type','text');
+		input.style.width = '85%';
+		input.setAttribute('id',`operaName-${i}`);
+		input.setAttribute('name',`operaName-${i}`)
+		input.value = file.name.replace(/\.[^/.]+$/, "");
+		input.required = true;
+		
+		li.appendChild(label);
+		li.appendChild(input);
+
+		doc_list.append(li);
+		
+		//File information
+		if (file.type.match('html|text')) {
+			var reader = new FileReader();
+			reader.onloadend = function (e) {
+				var d = e.target.result; //content
+				if (validate(d)) {
+					f = {
+						filename: file.name.replace(/\.[^/.]+$/, ""), // removes the filename extension
+						size: file.size,
+						content: d,
+						type: 'html'
+					}
+					uploadHTML.push(f);
 				}
-				$('#uploadFile').prop('disabled', false)
-			}
+			};
+			reader.readAsText(file);
 		};
-		reader.readAsText(f);
-	};
-	if (f.type.match('application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
-		var reader = new FileReader();
-		reader.onloadend = function (e) {
-			var d = e.target.result; //content
-			if (validate(d)) {
 
-				uploadData = new FormData();
-				uploadData.append('filename', f.name.replace(/\.[^/.]+$/, ""));
-				uploadData.append('file', f);
-				uploadData.append('type', 'docx');
-
-				$('#uploadFile').prop('disabled', false)
-			}
+		if (file.type.match('application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
+			var reader = new FileReader();
+			reader.onloadend = function (e) {
+				var d = e.target.result; //content
+				if (validate(d)) {
+					uploadDOCX.append('file', file, file.name.replace(/\.[^/.]+$/, "") ); //Append file to formdata
+				}				
+			};
+			reader.readAsText(file);
 		};
-		reader.readAsText(f);
-	};
+	}
+
+	$('#uploadFile').prop('disabled', false)
 };
 
 function validate(t) {
@@ -1158,6 +1325,20 @@ function validate(t) {
 /*                                UTILITIES                                       */
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
+
+// Changes href animation scrolling
+function anchorGoto(location){
+
+	document.querySelectorAll(`${location} a[href^="#"]`).forEach(anchor => {
+		anchor.addEventListener('click', (e) => {
+			e.preventDefault();
+
+			let id = anchor.getAttribute('href');
+			goto(id);
+			
+		})
+	});
+}
 
 // Mark curator note and author note
 function markFootnote(location, mark){

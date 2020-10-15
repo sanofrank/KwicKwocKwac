@@ -196,6 +196,26 @@ figcaption {
 	height: 100% !important ;
 }
 
+.w-200{
+	width: 200% !important;
+}
+
+.w-250{
+	width: 250% !important;
+}
+
+.w-300{
+	width: 300% !important;
+}
+
+.w-350{
+	width: 350% !important;
+}
+
+.w-400{
+	width: 400% !important;
+}
+
 h1 {
 	font-size: 1.5em;
 }
@@ -326,4 +346,8 @@ h1 {
 #new-password-eye,#new-password-eye:hover{
 	color: black;
 	text-decoration: none;
+}
+
+#fileList{
+	color: black;
 }

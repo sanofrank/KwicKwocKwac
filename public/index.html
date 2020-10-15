@@ -28,10 +28,15 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<ul class="navbar-nav mr-auto">
+					<li class="nav-link active nav-item"><span class="d-inline-block">
+						<span class="oi oi-magnifying-glass"></span>
+					</li>
 					<li class="nav-item dropdown active">
-						<a class="nav-link dropdown-toggle" href="#" id="fileList" data-toggle="dropdown"
-							aria-haspopup="true" aria-expanded="false">Documenti</a>
-						<div id="fileMenu" class="dropdown-menu" aria-labelledby="fileList">
+						<!--<a class="nav-link dropdown-toggle" href="#" id="fileList" data-toggle="dropdown"
+							aria-haspopup="true" aria-expanded="false">Documenti</a>-->
+						<input class="nav-link dropdown-toggle" type="text" id="fileList" data-toggle="dropdown" 
+							aria-haspopup="true" aria-expanded="false" onkeyup="filterDocuments()" placeholder="Cerca documenti">
+						<div id="fileMenu" class="dropdown-menu overflow-auto" aria-labelledby="fileList">
 						</div>
 					</li>
 					<li class="nav-item dropdown active d-none" id="commandList">
@@ -516,26 +521,49 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<p><label for="docFile">Seleziona un file locale contenente un documento in formato <code>.docx</code> o <code>.html</code></label>
+					<div id="msg-upload" class="alert" role="alert" style="display:none"></div>
+					<p><label for="docFile">Seleziona una o più opere in formato <code>.docx</code> (<b style="color: #017BFE">Word</b>) o <code>.html</code> indicando la sezione, il volume e il tomo di appartenenza.</label>
 					</p>
-					<div id="fileParams">
-						<label for="sezNumber">Sezione</label>
-						<input type="number" id="sezNumber" name="sezNumber" min="1" max="2" required />
-						<label for="volNumber">Volume</label>
-						<input type="number" id="volNumber" name="volNumber" min="1" max="4" required />
-						<label for="tomNumber">Tomo</label>
-						<input type="number" id="tomNumber" name="tomNumber" min="1" max="2" required />
-						<br>
-						<label for="operaName">Opera</label>
-						<input type="text" id="operaName" name="operaName" required />
-					</div>
+					<form>
+						<div id ="filePath" class="fileParams form-row">
+							<div class="col">
+								<label for="sezNumber">Sezione</label>
+								<input type="number" id="sezNumber" name="sezNumber" min="1" max="2" required />						
+							</div>
+							<div class="col">
+								<label for="volNumber">Volume</label>
+								<input type="number" id="volNumber" name="volNumber" min="1" max="4" required />						
+							</div>
+							<div class="col">
+								<label for="tomNumber">Tomo</label>
+								<input type="number" id="tomNumber" name="tomNumber" min="1" max="2" required />						
+							</div>
+						</div>
+						<div id="fileFormat" class="fileParams pt-2 form-row">
+							<div class="col">
+								<span>Formato documento:</span>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio_docx" value="docx">
+									<label class="form-check-label" for="inlineRadio_docx">.docx (Word)</label>
+								  </div>
+								  <div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio_html" value="html">
+									<label class="form-check-label" for="inlineRadio_html">.html</label>
+								  </div>
+							</div>
+						</div>
+					</form>
 					<hr>
-					<input type="file" accept=".html, .docx" id="docFile" name="docFile" disabled />
+					<input type="file" id="docFile" name="docFile" style="padding-bottom: 1em;"disabled multiple />
+					<div>
+						<ul id="doc-list" class="list-group list-group-flush overflow-auto">						
+						</ul>			
+						</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal">Annulla</button>
-					<button type="button" id="uploadFile" class="btn btn-primary" data-dismiss="modal"
-						onclick="uploadDoc(uploadData)" disabled>Carica file</button>
+					<button type="button" class="btn btn-primary" onclick="emptyUpload()">Annulla</button>
+					<button type="button" id="uploadFile" class="btn btn-primary"
+						onclick="uploadDoc(uploadHTML,uploadDOCX)" disabled>Carica file</button>
 				</div>
 			</div>
 		</div>
