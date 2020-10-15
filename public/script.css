@@ -322,6 +322,18 @@ h1 {
 	color: green;
 }
 
+label .btn.default.active{
+	background-color: #017BFE;
+}
+
+label .btn.working.active{
+	background-color:#EDD818
+}
+
+label .btn.done.active{
+	background-color: green
+}
+
 .btn-sm {
 	border: none;
 	display: inline-block;
