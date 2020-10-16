@@ -22,7 +22,7 @@ router.get('/list', async (req, res) => {
         let su = false;
         const out = [];
 
-        if(username === "ProgettoAldoMoro" || username === "Francesco Paolucci") su = true; 
+        if(username === "ProgettoAldoMoro") su = true; 
 
         fs.readdir(dir, (err,files) => {
             if (err) return console.log('ERROR',err);

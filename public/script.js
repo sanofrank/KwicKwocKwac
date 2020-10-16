@@ -506,7 +506,6 @@ function docList(elements) {
 	if(!elements.su) $('#file-filter')[0].innerHTML = `
 		<div class="d-flex">
 			<h6 class="w-100">Filtri di ricerca</h6>
-			<span class="oi oi-trash flex-shrink-1" title="delete files" aria-hidden="true"></span>		
 		</div>
 		<div class="d-flex">
 			<div id="state-filter"class="w-100 p-2">
@@ -533,6 +532,7 @@ function docList(elements) {
 			<h6>Documenti</h6>
 		</div>
 	`
+	//<span class="oi oi-trash flex-shrink-1" title="delete files" aria-hidden="true"></span>		
 
 	//empty docList if already populated and add 
 	if($('#ulFile').children()) $('#ulFile')[0].innerHTML = '' 
@@ -547,16 +547,20 @@ function docList(elements) {
 		</a>`
 	var menuItemTplSu =
 		`			
-			<a class=" dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
 			<svg height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+			</svg>
 			<div class="flex-grow-1 pr-3 fileLabel">
 			{$label}
 			</div>
+			<div>
 			<span class="badge  border border-primary rounded text-primary">{$user}</span>
-			</svg>
+			</div>
 			</a>
 		`		
+		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}"/>
+
 	//resize fileMenu
 	if(elements.list.length > 13){
 		$('#ulFile').css("height", "26em")
@@ -710,7 +714,7 @@ function applyFilter() {
 			files[i].classList.remove('d-none');
 			apply_filter = false;
 		}
-		
+
 		//filter user and state check
 		let user_badge = su ? files[i].getElementsByClassName('badge')[0].textContent : null; //only if super-user
 		let status_svg = files[i].getElementsByTagName('svg')[0].classList; //classlist containing "default,working,done"
@@ -788,7 +792,7 @@ async function load(file) {
 		let path = (`${sezione}_${volume}_${tomo}_`);
 
 		// ADD data path here from file splitting
-		editMode = true;
+		toggleEdit();
 		$('#file').html(json.html);
 		$('#file').attr("status", status);
 		$('#file').attr('data-path', path);
@@ -807,6 +811,7 @@ async function load(file) {
 // switch to edit Mode and back
 function toggleEdit() {
 	editMode = !editMode
+	console.log(editMode);
 	editCallbacks(editMode)
 	editSetup(editMode)
 }

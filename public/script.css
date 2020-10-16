@@ -363,3 +363,8 @@ label .btn.done.active{
 #fileList{
 	color: black;
 }
+
+#trash-filter:hover{
+	cursor: pointer;
+	color: #596267;
+}
