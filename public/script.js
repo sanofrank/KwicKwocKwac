@@ -426,7 +426,8 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
-		$('#markAll').prop('disabled',true)
+		//$('#markAll').prop('disabled',true)
+		document.getElementById('markAll-label').style.display = "none";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
@@ -467,8 +468,8 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
-		$('#markAll').prop('disabled',false);
-		//$('#markAll').prop('checked',true);
+		//$('#markAll').prop('disabled',false);
+		document.getElementById('markAll-label').style.display = "";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 	}
