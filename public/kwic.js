@@ -59,7 +59,7 @@ var kwic = new (function () {
 
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
-		
+		console.log('start __ end',start,end,end.classList.contains('bibref'));
 		if (mention && (start.classList.contains('mention')))
 			start = start.parentElement // will remove it anyway
 		if (mention && (end.classList.contains('mention')))
@@ -68,6 +68,11 @@ var kwic = new (function () {
 			start = start.parentElement.parentElement // will remove it anyway
 		if (end.classList.contains('quote-text'))
 			end = end.parentElement.parentElement // will remove it anyway
+		if (start.classList.contains('bibref'))
+			start = start.parentElement // will remove it anyway
+		if (end.classList.contains('bibref'))
+			end = end.parentElement // will remove it anyway
+		console.log("AFTER RISALITA",start,end)
 		//Check if formatter extreme
 		if(!mention){
 			let start_tag = start.tagName;
@@ -78,7 +83,7 @@ var kwic = new (function () {
 			if(formatters.find(el => el == end_tag))
 				end = end.parentElement;
 		}
-
+		console.log(start==end)
 		return  start == end
 	}
 
@@ -108,6 +113,7 @@ var kwic = new (function () {
 	// remove the tag wrapping a mention
 	function unwrap(node) {
 		var p = node.parentElement
+		console.log('unwrap',node);
 		while (node.childNodes.length>0) {
 			p.insertBefore(node.childNodes[0],node)		
 		}
@@ -181,7 +187,7 @@ var kwic = new (function () {
 			ec: range.endContainer, 
 			eo: range.endOffset
 		}
-
+		
 		//Unwrap any bibref tag or quote tag
 		if (range.startContainer.parentElement.classList.contains('bibref') || range.startContainer.parentElement.classList.contains('quote-text')) 
 			unwrap(range.startContainer.parentElement)

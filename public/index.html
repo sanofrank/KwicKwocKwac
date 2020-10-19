@@ -97,25 +97,25 @@
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active editOnly" id="saveButton">
 						<a class="nav-link" href="#" role="button" onClick="saveDoc()"><span class="oi oi-folder"
-								title="Save document" aria-hidden="true"></span> <span>Salva documento</span></a>
+								title="Salva documento" aria-hidden="true"></span> <span>Salva documento</span></a>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-2 my-lg-0">
 					<li class="nav-item active" id="uploadButton">
 						<a class="nav-link editOnly" href="#" role="button" data-toggle="modal"
 							data-target="#FileUpload"><span class="oi oi-cloud-upload"
-								title="Upload local HTML document" aria-hidden="true"></span> <span
+								title="Carica documento in locale" aria-hidden="true"></span> <span
 								class="sr-only">Carica documento</span></a>
 					</li>
 					<li class="nav-item active" id="editButton">
 						<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()"><span
-								class="oi oi-pencil" title="Switch to edit mode" aria-hidden="true"></span> <span
+								class="oi oi-pencil" title="Passa alla modalità editing" aria-hidden="true"></span> <span
 								class="sr-only">Modifica documento</span></a>
 					</li>
 					<li class="nav-item dropdown active"> 
 						<a class="nav-link dropdown-toggle" href="#" id="user-options" data-toggle="dropdown" 
 						aria-haspopup="true" aria-expanded="false"><span
-								class="oi oi-person" title="User preferences" aria-hidden="true"></span>
+								class="oi oi-person" title="Preferenze Utente" aria-hidden="true"></span>
 							<span class="sr-only">Utente</span>
 						</a>
 						<div id="user-menu" class="dropdown-menu dropdown-menu-right" aria-labelledby="user-options">
@@ -127,12 +127,12 @@
 					<li class="nav-item active">
 							<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#documentation"><span
 									class="oi oi-book border-light rounded-circle"
-									title="Documentation" aria-hidden="true"></span> <span class="sr-only">Documentazione</span></a>
+									title="Documentazione" aria-hidden="true"></span> <span class="sr-only">Documentazione</span></a>
 					</li>
 					<li class="nav-item active">
 						<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span
 								class="oi oi-question-mark border-light rounded-circle"
-								title="Info about KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">Informazioni</span></a>
+								title="Informazioni su KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">Informazioni</span></a>
 					</li>
 				</ul>
 			</div>
@@ -165,7 +165,7 @@
 									<li class="nav-item ml-auto pointer dropPoint" data-level="trash" data-id="trash">
 										<a class="nav-link" id="trash-realtab" data-toggle="tab"
 											data-target="#trash-realpane">
-											<span class="oi oi-trash" title="Trash pane" aria-hidden="true"></span>
+											<span class="oi oi-trash" title="Cestino" aria-hidden="true"></span>
 											<span class="sr-only">Cestino</span>
 										</a>
 									</li>
@@ -209,21 +209,21 @@
 									aria-label="References" style="display:none">
 								</div>
 								<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
-									<label class="small" title="Pressing ALT inverts behaviour">
-										Estendi selezione a parola intera (ALT or ⌥)
+									<label class="small" title="Premenre ALT inverte la funzione">
+										Estendi selezione a parola intera (ALT o ⌥)
 										<span class="switch">
 											<input type="checkbox" checked onchange="prefs('extend', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
-									<label class="small" title="Pressing SHIFT inverts behaviour">
+									<label class="small" title="Premere SHIFT inverte la funzione">
 										Evidenzia tutte le istanze (⇧)
 										<span class="switch">
 											<input id="markAll" type="checkbox" checked onchange="prefs('markAll', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
-									<label class="small" title="Chenge the document status to working, done, default">
+									<label class="small" title="Cambia lo stato di marcatura da: Da avviare, In corso e Terminata">
 										Stato della marcatura
 									</label>
 									<button id="status" type="button" class="btn btn-primary btn-sm" 
@@ -439,7 +439,7 @@
 				<div class="modal-body">
 					<p>Un programma per visualizzare e modificare documenti digitali.</p>
 					<p class="text-center"><img src="/kwickwockwac.jpg" alt="an image of kwic, kwoc and kwac"
-							title="The three nephews of Paperinik"></p>
+							title="I tre nipoti di Paperinik"></p>
 					<p>© 2020 Fabio Vitali. All rights reserved.</p>
 				</div>
 				<div class="modal-footer">

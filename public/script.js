@@ -290,7 +290,6 @@ function drop(event) {
 	var target = { ...tg.dataset }
 	//source and target:
 	//level: "object type", id="object-id"
-	console.log("source,target", source, target);
 	if (!referenceMode) {
 		kwic.mergeData(source, target)
 	} else {
@@ -390,7 +389,7 @@ function setupKWIC(location, saveView) {
 		quotes = kwic.findQuotes('.quote', location);
 		bibref = kwic.findBibRef('.bibref', location);
 		list = kwic.organizeQuotes();
-		console.log("LISt", list);
+
 		var r0 = kwic.toHTMLref(
 			kwic.allReferences,
 			{
@@ -497,7 +496,6 @@ function setCurrentView(view) {
 		view.openEls.forEach(function (i) { $('#' + i).addClass('open') })
 		view.openCards.forEach(function (i) { $('#' + i).addClass('show') })
 	}
-	console.log(view);
 }
 
 function docList(elements) {
@@ -811,7 +809,6 @@ async function load(file) {
 // switch to edit Mode and back
 function toggleEdit() {
 	editMode = !editMode
-	console.log(editMode);
 	editCallbacks(editMode)
 	editSetup(editMode)
 }
@@ -903,7 +900,6 @@ function hidePublished(x) {
 
 function hideUnpublished(x) {
 	if (x.checked) {
-		console.log("hideUNpub");
 		document.getElementById("unpubMetadata").setAttribute("hidden", true);
 		document.getElementById("pubMetadata").removeAttribute("hidden");
 	}
@@ -979,6 +975,7 @@ function downloadDoc(type) {
 // export all entities in the currently loaded document to the local disk
 function exportEntities(type) {
 	var t = kwic.compactEntities(type)
+	// compactCitation(type);
 	if (type == 'JSON') {
 		download('ent-' + currentFilename + '.json', t, "application/json")
 	} else {
@@ -1535,7 +1532,6 @@ async function saveAsXML(filename, content, styleName, options) {
 	var clonedNode = xmlDoc.importNode(content, true);
 	xmlDoc.appendChild(clonedNode);
 	$.get(styleName).then(async (xsl) => {
-		console.log(xsl);
 		var domparser = new DOMParser();
 		var doc = domparser.parseFromString('', 'text/xml')
 		var xsltProcessor = new XSLTProcessor();
@@ -1738,7 +1734,7 @@ async function checkMetadata(){
 	let user = splitFilename(currentFilename,'user');
 
 	let header = `Metadati dell'opera "${fileName}"`;
-	console.log(currentMetadata);
+
 	if(isEmptyObject(currentMetadata)){
 		//Passing empty object to tpl function and remove all {$} variables
 		let form = $('#metadataTpl').html();
