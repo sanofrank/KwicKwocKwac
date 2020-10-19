@@ -88,6 +88,19 @@
 								</tei:place>
 							</xsl:for-each>
 						</tei:listPlace>
+						<tei:listBibl>
+							<xsl:for-each
+								select="//html:span[contains(@class, 'bib')]/@about[generate-id() = generate-id(key('bibref', .)[1])]">
+								<tei:bibl xml:id="{current()}">
+									<xsl:variable name="label" select="//html:span[@data-label and @about = current()]/@data-label" />
+									<xsl:apply-templates
+										select="//html:span[@about = current() and text()[generate-id() = generate-id(key('innerStrings', .)[1])]]"
+										mode="inner">
+										<xsl:with-param name="label" select="$label" />
+									</xsl:apply-templates>
+								</tei:bibl>
+							</xsl:for-each>
+						</tei:listBibl>
 					</tei:sourceDesc>
 				</tei:fileDesc>
 				<tei:encodingDesc>
@@ -412,7 +425,7 @@
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'bib')]">
-		<tei:bibl xml:id="{@id}">
+		<tei:bibl xml:id="{@id}" sameAs="#{@about}">
 			<xsl:apply-templates />
 		</tei:bibl>
 	</xsl:template>
