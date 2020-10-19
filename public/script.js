@@ -150,7 +150,7 @@ function editSetup(editMode) {
 	if (editMode) {
 		// popovers appear when searching wikidata for a term matching the entity
 		var popoverTitle = `
-                	<span class="text-info">Matching Wikidata entries</span>
+                	<span class="text-info">Corrispondenze con Wikidata</span>
 				  	<span class="button ml-auto p-1 pointer popoverHide">&times;</span>`
 
 		$('.popoverToggle').popover({
@@ -1247,7 +1247,7 @@ function popoverWiki() {
 				}
 				q += "</ul>"
 			} else {
-				var q = `<i>No relevant items found</i>`
+				var q = `<i>Nessun elemento rilevante trovato</i>`
 			}
 			$('#' + tmpId).removeClass('loading spinner').html(q);
 		})
