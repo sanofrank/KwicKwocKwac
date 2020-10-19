@@ -1235,7 +1235,7 @@ function popoverWiki() {
 
 	var label = this.dataset.label
 	var id = this.dataset.id
-	$.get("https://www.wikidata.org/w/api.php?action=wbsearchentities&origin=*&format=json&language=en&search=" + label)
+	$.get("https://www.wikidata.org/w/api.php?action=wbsearchentities&origin=*&format=json&language=it&uselang=it&search=" + label)
 		.then((data) => {
 			if (data.search.length > 0) {
 				var q = "<ul class='pl-3'>"
@@ -1265,11 +1265,11 @@ function showWikidataEntity(element) {
 	var entity = $(element).closest('[data-id]').attr('data-id')
 	var e = kwic.allEntities[entity]
 	if (e && e.wikidataId) {
-		$.get("https://www.wikidata.org/w/api.php?action=wbgetentities&origin=*&format=json&props=sitelinks&sitefilter=enwiki&ids=" + e.wikidataId).
+		$.get("https://www.wikidata.org/w/api.php?action=wbgetentities&origin=*&format=json&props=sitelinks&sitefilter=itwiki&ids=" + e.wikidataId).
 			then((data) => {
-				var lang = 'en'
+				var lang = 'it'
 				var title = encodeURI(data.entities[e.wikidataId].sitelinks[lang + 'wiki'].title)
-				$.get("https://en.wikipedia.org/w/api.php?format=json&action=query&origin=*&prop=extracts&exintro&explaintext&redirects=1&titles=" + title)
+				$.get("https://it.wikipedia.org/w/api.php?format=json&action=query&origin=*&prop=extracts&exintro&explaintext&redirects=1&titles=" + title)
 					.then((data) => {
 						var keys = Object.keys(data.query.pages)
 						var info = {
