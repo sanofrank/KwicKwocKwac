@@ -59,6 +59,8 @@ async function main() {
 	var a = window.getSelection() //returns a Selection object representing the range of text selected by the user or the current position of the caret.
 	a.collapse(nullSelection, 0) //collapses the current selection to a single point. The document is not modified.
 	kwic.setPrefs('loggedUser', 'Mario Rossi')  // fake login
+	$('#extendSel').prop('checked',false)
+	kwic.setPrefs('extend',false,false)
 
 	//Setting width and height of left and bottom panel, setting active class on current style and current sort
 	layoutSetup()
@@ -148,7 +150,7 @@ function editSetup(editMode) {
 	if (editMode) {
 		// popovers appear when searching wikidata for a term matching the entity
 		var popoverTitle = `
-                	<span class="text-info">Matching Wikidata entries</span>
+                	<span class="text-info">Corrispondenze con Wikidata</span>
 				  	<span class="button ml-auto p-1 pointer popoverHide">&times;</span>`
 
 		$('.popoverToggle').popover({
@@ -424,8 +426,8 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
-		$('#markAll').prop('disabled',true)
-		$('#markAll').prop('checked',false)
+		//$('#markAll').prop('disabled',true)
+		document.getElementById('markAll-label').style.display = "none";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
@@ -466,8 +468,8 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
-		$('#markAll').prop('disabled',false);
-		$('#markAll').prop('checked',true);
+		//$('#markAll').prop('disabled',false);
+		document.getElementById('markAll-label').style.display = "";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 	}
@@ -1245,7 +1247,7 @@ function popoverWiki() {
 				}
 				q += "</ul>"
 			} else {
-				var q = `<i>No relevant items found</i>`
+				var q = `<i>Nessun elemento rilevante trovato</i>`
 			}
 			$('#' + tmpId).removeClass('loading spinner').html(q);
 		})
@@ -1342,7 +1344,7 @@ function addEntities() {
 
 // empty trash, i.e., look for all mentions of category "trash" and remove the span around them
 function emptyTrash() {
-	if (confirm("You are about to empty the trash. Continue?")) {
+	if (confirm("Stai per svuotare il cestino. Vuoi continuare?")) {
 		for (i in kwic.allMentions) {
 			if (kwic.allMentions[i].category == 'trash')
 				kwic.allMentions[i].unwrap()
