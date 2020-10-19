@@ -431,10 +431,19 @@
 	</xsl:template>
 
 	<xsl:template match="html:span[contains(@class, 'quote')]">
-		<tei:cit xml:id="{@id}">
+		<xsl:variable name="count"> <!--count variable generating document order ID-->
+    		<xsl:number/>
+		</xsl:variable>
+		<tei:cit xml:id="quote-{$count}">
 			<xsl:apply-templates />
 		</tei:cit>
 	</xsl:template>
+
+	<!--<xsl:template match="html:span[contains(@class, 'quote')]">
+		<tei:cit xml:id="{@id}">
+			<xsl:apply-templates />
+		</tei:cit>
+	</xsl:template>-->
 
 	<xsl:template match="html:span[contains(@class, 'quote-text')]">
 		<tei:quote>

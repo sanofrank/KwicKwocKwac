@@ -34,6 +34,7 @@ var uploadDOCX = new FormData;            // the information about docx file to 
 var scrapShown;		                     // whether the Scraps pane is currently shown in the bottom left pane
 var trashShown;		                     // whether the trash pane is currently shown in the bottom left pane
 var editMode;                           // whether the user can add or modify mentions in the document shown
+var apply_filter = false;                // whether filter have been applyied on search documents
 var referenceMode;             			 // whether the reference panel is shown
 var currentMetadata = {};					// the metadata of the current loaded file
 const spinner = document.getElementById("spinner");
@@ -104,6 +105,14 @@ function basicCallbacks() {
 	$('.fileParams').change(fileParams);
 	$('input[name="inlineRadioOptions"]').change(emptyUpload);
 	$('#docFile').change(uploadFileSetup);
+	$('#user-filter').on('keypress',function(e) {
+		if(e.which == 13) {
+			applyFilter();
+		}
+	});
+	//$('#state-filter').change(() => $('#apply-filter').prop('disabled',false)) //enable apply filter button on selected status filter
+	//$('#user-filter').keyup(() => $('#apply-filter').prop('disabled',false)) //enable apply filter button on inserted text in user input
+	$(document).on('click', '#file-filter', e => e.stopPropagation()); //prevent closing dropdown-menu on click
 	$(document).on('click', expandableSelector, treeClick)
 }
 
@@ -281,7 +290,6 @@ function drop(event) {
 	var target = { ...tg.dataset }
 	//source and target:
 	//level: "object type", id="object-id"
-	console.log("source,target", source, target);
 	if (!referenceMode) {
 		kwic.mergeData(source, target)
 	} else {
@@ -323,33 +331,45 @@ function treeClick(e, callback) {
 }
 
 // Filter document search by character
-function filterDocuments(){
+function searchDocuments(){
 	// Declare variables
 	var input, filter, container, files, i, txtValue, visible = 0;
 	input = document.getElementById('fileList');
 	filter = input.value.toUpperCase();
 	container = document.getElementById("fileMenu");
 	files = container.getElementsByTagName('a');
-  
+	 
 	// Loop through all list items, and hide those who don't match the search query
 	for (i = 0; i < files.length; i++) {
 	  label = files[i].getElementsByTagName('div')[0]; // label div
 	  txtValue = label.textContent || label.innerText;
-	  if (txtValue.toUpperCase().indexOf(filter) > -1) {
-		visible++;  
-		files[i].classList.remove('d-none');
-		files[i].classList.add('d-flex');
-	  } else {
-		files[i].classList.remove('d-flex');
-		files[i].classList.add('d-none');
+	  // If apply_filter true search only on filter values
+	  if(apply_filter){
+		if (txtValue.toUpperCase().indexOf(filter) > -1 && files[i].classList.contains('filter')) {
+			visible++;  
+			files[i].classList.remove('d-none');
+			files[i].classList.add('d-flex');
+		  } else {
+			files[i].classList.remove('d-flex');
+			files[i].classList.add('d-none');
+		  }
+	  }else{
+		if (txtValue.toUpperCase().indexOf(filter) > -1) {
+			visible++;  
+			files[i].classList.remove('d-none');
+			files[i].classList.add('d-flex');
+		  } else {
+			files[i].classList.remove('d-flex');
+			files[i].classList.add('d-none');
+		  }
 	  }
 	}
 
 	//resize fileMenu
 	if(visible > 13){
-		$('#fileMenu').css("height", "30em")
+		$('#ulFile').css("height", "26em")
 	}else{
-		$('#fileMenu').css("height", "");
+		$('#ulFile').css("height", "");
 	}
 		
 
@@ -369,7 +389,7 @@ function setupKWIC(location, saveView) {
 		quotes = kwic.findQuotes('.quote', location);
 		bibref = kwic.findBibRef('.bibref', location);
 		list = kwic.organizeQuotes();
-		console.log("LISt", list);
+		console.log(list);
 		var r0 = kwic.toHTMLref(
 			kwic.allReferences,
 			{
@@ -392,7 +412,7 @@ function setupKWIC(location, saveView) {
 		$('#categoryTab').append(`
 					<li class="nav-item ml-auto pointer">
 						<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
-							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span>
+							<span class="oi oi-cog" title="Apri le preferenze" aria-hidden="true"></span>
 							<span class="sr-only">Preferences</span>
 						</a>
 					</li>`)
@@ -412,6 +432,7 @@ function setupKWIC(location, saveView) {
 	} else {
 		mentions = kwic.findMentions('.mention', location);
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
+		console.log(list);
 		var c0 = kwic.toHTML(
 			kwic.allCategories,
 			{
@@ -433,7 +454,7 @@ function setupKWIC(location, saveView) {
 		$('#categoryTab').append(`
 					<li class="nav-item ml-auto pointer">
 						<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
-							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span>
+							<span class="oi oi-cog" title="Apri le preferenze" aria-hidden="true"></span>
 							<span class="sr-only">Preferences</span>
 						</a>
 					</li>`)
@@ -476,12 +497,44 @@ function setCurrentView(view) {
 		view.openEls.forEach(function (i) { $('#' + i).addClass('open') })
 		view.openCards.forEach(function (i) { $('#' + i).addClass('show') })
 	}
-	console.log(view);
 }
 
 function docList(elements) {
 
-	if($('#fileMenu').children()) $('#fileMenu')[0].innerHTML = '' //empty docList if already populated
+	//remove filter if not superuser
+	if(!elements.su) $('#file-filter')[0].innerHTML = `
+		<div class="d-flex">
+			<h6 class="w-100">Filtri di ricerca</h6>
+		</div>
+		<div class="d-flex">
+			<div id="state-filter"class="w-100 p-2">
+			<span class="pr-2">Marcatura:</span>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineRadio_default" value="default">
+				<label class="form-check-label" for="inlineRadio1">Da avviare</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineRadio_working" value="working">
+				<label class="form-check-label" for="inlineRadio2">In corso</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="inlineRadio_done" value="option3">
+				<label class="form-check-label" for="inlineRadio3">Terminata</label>
+			</div>
+			</div>
+			<div class="flex-shrink-1 p-1">
+			<button id="apply-filter" type="button" class="btn btn-secondary btn-sm" onclick="applyFilter()">applica</button>
+			</div>
+		</div>
+		<hr>
+		<div class="d-inline-flex">
+			<h6>Documenti</h6>
+		</div>
+	`
+	//<span class="oi oi-trash flex-shrink-1" title="delete files" aria-hidden="true"></span>		
+
+	//empty docList if already populated and add 
+	if($('#ulFile').children()) $('#ulFile')[0].innerHTML = '' 
 
 	var menuItemTpl =
 		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
@@ -493,31 +546,35 @@ function docList(elements) {
 		</a>`
 	var menuItemTplSu =
 		`			
-			<a class=" dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
-			<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+			<svg height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+			</svg>
 			<div class="flex-grow-1 pr-3 fileLabel">
 			{$label}
 			</div>
+			<div>
 			<span class="badge  border border-primary rounded text-primary">{$user}</span>
-			</svg>
+			</div>
 			</a>
 		`		
+		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}"/>
+
 	//resize fileMenu
 	if(elements.list.length > 13){
-		$('#fileMenu').css("height", "30em")
+		$('#ulFile').css("height", "26em")
 	}else{
-		$('#fileMenu').css("height", "");
+		$('#ulFile').css("height", "");
 	}
 	
 	if (elements.su) {
 		for (var i = 0; i < elements.list.length; i++) {
-			$('#fileMenu').append(menuItemTplSu.tpl(elements.list[i]))
+			$('#ulFile').append(menuItemTplSu.tpl(elements.list[i]))
 		}
 	}
 	if (!elements.su) {
 		for (var i = 0; i < elements.list.length; i++) {
-			$('#fileMenu').append(menuItemTpl.tpl(elements.list[i]))
+			$('#ulFile').append(menuItemTpl.tpl(elements.list[i]))
 		}
 	}
 
@@ -610,6 +667,108 @@ function setLayout(type, value) {
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
 
+// apply filter on document search
+
+function applyFilter() {
+	// Declare variables
+	let users = [], status = [], su = true, input, container, files, i, visible = 0;
+	
+	// collect users
+	if($('#user-filter')[0]){
+		let user_string = $('#user-filter').val();
+		let split = user_string.split(',');
+
+		split.forEach(user => {
+			if(user!=''){
+				users.push(user.trim().toUpperCase());			
+			}
+		})
+	}else{
+		su = false;
+	}
+	//collect status
+	if($('#state-filter')){
+		let	check_input = $('#state-filter .form-check-input:checked');
+
+		for(input of check_input){
+			status.push(input.value);
+		}
+	}
+	// get all files row
+	container = document.getElementById("fileMenu");
+	files = container.getElementsByTagName('a');
+
+	// Loop through all list items, and hide those who don't match the search query
+	for (i = 0; i < files.length; i++) {
+		//clean filter
+		if(status.length > 0 || users.length > 0){ 
+			files[i].classList.remove('filter');
+			files[i].classList.remove('d-flex');
+			files[i].classList.add('d-none');
+			apply_filter = true; 
+		}else{
+			//display all if no filter added 
+			files[i].classList.remove('filter');
+			files[i].classList.add('d-flex');
+			files[i].classList.remove('d-none');
+			apply_filter = false;
+		}
+
+		//filter user and state check
+		let user_badge = su ? files[i].getElementsByClassName('badge')[0].textContent : null; //only if super-user
+		let status_svg = files[i].getElementsByTagName('svg')[0].classList; //classlist containing "default,working,done"
+
+		if(su && users.length > 0){
+			for(j in users){
+				// User filter === user from file row
+				if(users[j] === user_badge.trim().toUpperCase()){
+					if(status.length > 0){
+						for(k in status){
+							// Matched user also matches document status filter
+							if(status_svg.contains(status[k])){
+								files[i].classList.add('filter');
+								files[i].classList.add('d-flex');
+								files[i].classList.remove('d-none');
+								visible++;
+								break;			
+							}
+						}
+					}else{
+						// No query with status filter, only user
+						files[i].classList.add('filter');
+						files[i].classList.add('d-flex');
+						files[i].classList.remove('d-none');
+						visible++;
+						break;
+					}
+				}
+			}			
+		}else{
+			// Query with only status filter
+			if(status.length > 0){
+				for(j in status){
+					//if status matches
+					if(status_svg.contains(status[j])){
+						files[i].classList.add('filter');
+						files[i].classList.add('d-flex');
+						files[i].classList.remove('d-none');
+						visible++;			
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	//resize fileMenu
+	if(visible > 13){
+		$('#ulFile').css("height", "26em")
+	}else{
+		$('#ulFile').css("height", "");
+	}
+}
+
+
 // load and show a document
 async function load(file) {
 	showSpinner();
@@ -632,13 +791,15 @@ async function load(file) {
 		let path = (`${sezione}_${volume}_${tomo}_`);
 
 		// ADD data path here from file splitting
-		editMode = true;
+		toggleEdit();
 		$('#file').html(json.html);
 		$('#file').attr("status", status);
 		$('#file').attr('data-path', path);
 		setStatus(status);
 		$('#file').animate({ scrollTop: 0 }, 400);
 		$('#commandList').removeClass('d-none');
+		$('#fileList').val(''); // clear file input search
+		searchDocuments(); // repopulate file list
 		markFootnote(documentLocation, mark = true)
 		anchorGoto(documentLocation);
 		setupKWIC(documentLocation, false);
@@ -740,7 +901,6 @@ function hidePublished(x) {
 
 function hideUnpublished(x) {
 	if (x.checked) {
-		console.log("hideUNpub");
 		document.getElementById("unpubMetadata").setAttribute("hidden", true);
 		document.getElementById("pubMetadata").removeAttribute("hidden");
 	}
@@ -816,6 +976,7 @@ function downloadDoc(type) {
 // export all entities in the currently loaded document to the local disk
 function exportEntities(type) {
 	var t = kwic.compactEntities(type)
+	// compactCitation(type);
 	if (type == 'JSON') {
 		download('ent-' + currentFilename + '.json', t, "application/json")
 	} else {
@@ -1372,7 +1533,6 @@ async function saveAsXML(filename, content, styleName, options) {
 	var clonedNode = xmlDoc.importNode(content, true);
 	xmlDoc.appendChild(clonedNode);
 	$.get(styleName).then(async (xsl) => {
-		console.log(xsl);
 		var domparser = new DOMParser();
 		var doc = domparser.parseFromString('', 'text/xml')
 		var xsltProcessor = new XSLTProcessor();
@@ -1575,7 +1735,7 @@ async function checkMetadata(){
 	let user = splitFilename(currentFilename,'user');
 
 	let header = `Metadati dell'opera "${fileName}"`;
-	console.log(currentMetadata);
+
 	if(isEmptyObject(currentMetadata)){
 		//Passing empty object to tpl function and remove all {$} variables
 		let form = $('#metadataTpl').html();
