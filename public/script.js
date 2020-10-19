@@ -389,7 +389,7 @@ function setupKWIC(location, saveView) {
 		quotes = kwic.findQuotes('.quote', location);
 		bibref = kwic.findBibRef('.bibref', location);
 		list = kwic.organizeQuotes();
-
+		console.log(list);
 		var r0 = kwic.toHTMLref(
 			kwic.allReferences,
 			{
@@ -412,7 +412,7 @@ function setupKWIC(location, saveView) {
 		$('#categoryTab').append(`
 					<li class="nav-item ml-auto pointer">
 						<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
-							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span>
+							<span class="oi oi-cog" title="Apri le preferenze" aria-hidden="true"></span>
 							<span class="sr-only">Preferences</span>
 						</a>
 					</li>`)
@@ -432,6 +432,7 @@ function setupKWIC(location, saveView) {
 	} else {
 		mentions = kwic.findMentions('.mention', location);
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
+		console.log(list);
 		var c0 = kwic.toHTML(
 			kwic.allCategories,
 			{
@@ -453,7 +454,7 @@ function setupKWIC(location, saveView) {
 		$('#categoryTab').append(`
 					<li class="nav-item ml-auto pointer">
 						<a class="nav-link" id="help-tab" data-toggle="modal" data-target="#prefs">
-							<span class="oi oi-cog" title="Open the Preferences panel" aria-hidden="true"></span>
+							<span class="oi oi-cog" title="Apri le preferenze" aria-hidden="true"></span>
 							<span class="sr-only">Preferences</span>
 						</a>
 					</li>`)

@@ -860,7 +860,7 @@ var kwic = new (function () {
 			this.prop('entity','scraps',true)
 			this.prop('category', 'scraps', true)
 			this.prop('sort','',true)
-			this.prop('label','Scrapped mentions',true)
+			this.prop('label','Menzione scartata',true)
 			this.prop('wikidataId','',true)
 			this.prop('rs','',true)
 		},
@@ -868,7 +868,7 @@ var kwic = new (function () {
 			this.prop('entity','trash',true)
 			this.prop('category', 'trash', true)
 			this.prop('sort','',true)
-			this.prop('label','Trashed mentions',true)
+			this.prop('label','Menzione cestinata',true)
 			this.prop('wikidataId','',true)
 			this.prop('rs','',true)
 		},
@@ -929,6 +929,7 @@ var kwic = new (function () {
 		if (!options) options = {}         // fallback object for inizialization
 		var bibrefs = bibrefs || []
 		var prefix = "citation-" ;
+
 	
 		this.quotes = []
 		this.bibrefs = []
@@ -957,7 +958,7 @@ var kwic = new (function () {
 					this.quotes.push(quotes[i])
 					}
 				
-					this.label = options.label || label || quotes[0].id
+					this.label = options.label || label //|| quotes[0].id
 					break;
 			case 'bibref' :
 				var bibrefs = quotesOrbib || []   // fallback object for inizialization
@@ -973,7 +974,7 @@ var kwic = new (function () {
 					this.bibrefs.push(bibrefs[i])
 					}
 				
-				this.label = options.label || label || bibrefs[0].id
+				this.label = options.label || label //|| bibrefs[0].id
 				break;
 		}
 
@@ -997,7 +998,15 @@ var kwic = new (function () {
 			this.change('label',el, type)
 			this.label = el
 		}
+
+		// Reduce label.
+		let words = this.label.split(' ');
+		let reduce_words = words.slice(0,6);
+
+		if(words.length > 6) reduce_words.push('...');
 		
+		this.label = reduce_words.join(' ');
+		 
 		return this; 	
 	}
 
@@ -1095,7 +1104,7 @@ var kwic = new (function () {
 		if(this.node.getElementsByClassName('quote-text')[0])
 			this.inner = this.node.getElementsByClassName('quote-text')[0].innerHTML;
 		else 
-			this.inner = this.node.innerHTML;
+			this.inner = this.node.innerText;
 
 		this.id = this.node.id || getNewQuoteId(prefix) 
 		this.prop('id', this.id, false) ;
@@ -1103,6 +1112,7 @@ var kwic = new (function () {
 		this.prop('citation', options.citation || options.id || `${prefix}${lastQuoteId}`, false)
 		this.prop('footnoteRef', options.footnoteNum);
 		this.prop('footnoteText', options.footnoteText)
+		this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 
 		this.reference = dataset.reference || options.reference 	// person, place, thing, etc. 
@@ -1162,13 +1172,13 @@ var kwic = new (function () {
 			this.prop('citation','scraps',true)
 			this.prop('reference', 'scraps', true)
 			this.prop('sort','',true)
-			this.prop('label','Scrapped quote',true)
+			this.prop('label','Citazione scartata',true)
 		},
 		putToTrash: function() {
 			this.prop('citation','trash',true)
 			this.prop('reference', 'trash', true)
 			this.prop('sort','',true)
-			this.prop('label','Trashed quote',true)
+			this.prop('label','Citazione cestinata',true)
 		},
 		unwrap: function() {
 			//Double unwrap
@@ -1191,12 +1201,13 @@ var kwic = new (function () {
 			this.node = wrapBib(nodeOrRange,document.createElement('span'));			
 		}
 
-		this.inner = this.node.innerHTML;
+		this.inner = this.node.innerText;
 
 		this.id = this.node.id || getNewBibId(prefix) 
 		this.prop('id', this.id, false) ;
 		this.prop('reference', options.reference || "scraps", true)
 		this.prop('citation', options.citation || options.id || this.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "citation$1"), false)
+		this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 
 		this.reference = dataset.reference || options.reference 	// bibRef, quote
@@ -1257,13 +1268,13 @@ var kwic = new (function () {
 			this.prop('citation','scraps',true)
 			this.prop('reference', 'scraps', true)
 			this.prop('sort','',true)
-			this.prop('label','Scrapped bibref',true)
+			this.prop('label','Rif. bibliografico scartato',true)
 		},
 		putToTrash: function() {
 			this.prop('citation','trash',true)
 			this.prop('reference', 'trash', true)
 			this.prop('sort','',true)
-			this.prop('label','Trashed bibref',true)
+			this.prop('label','Rif. bibliografico cestinato',true)
 		},
 		unwrap: function() {
 			unwrap(this.node)
