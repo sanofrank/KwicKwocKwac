@@ -59,6 +59,8 @@ async function main() {
 	var a = window.getSelection() //returns a Selection object representing the range of text selected by the user or the current position of the caret.
 	a.collapse(nullSelection, 0) //collapses the current selection to a single point. The document is not modified.
 	kwic.setPrefs('loggedUser', 'Mario Rossi')  // fake login
+	$('#extendSel').prop('checked',false)
+	kwic.setPrefs('extend',false)
 
 	//Setting width and height of left and bottom panel, setting active class on current style and current sort
 	layoutSetup()
