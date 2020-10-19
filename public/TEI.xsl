@@ -12,9 +12,10 @@
 	<xsl:key name="persons" match="html:span[contains(@class, 'person')]/@about" use="." />
 	<xsl:key name="organizations" match="html:span[contains(@class, 'organization')]/@about" use="." />
 	<xsl:key name="places" match="html:span[contains(@class, 'place')]/@about" use="." />
-	<xsl:key name="bibref" match="html:span[contains(@class, 'bib')]/@about" use="." />
+	<xsl:key name="bibrefs" match="html:span[contains(@class, 'bibref')]/@about" use="." />
 	<xsl:key name="quotes" match="html:span[contains(@class, 'quote')]/@about" use="." />
 	<xsl:key name="innerStrings" match="html:span[contains(@class, 'mention')]/text()" use="." />
+	<xsl:key name="innerBibrefs" match="html:span[contains(@class, 'bibref')]/text()" use="." />
 
 	<xsl:template match="/">
 		<tei:TEI xmlns="http://www.tei-c.org/ns/1.0">
@@ -90,11 +91,11 @@
 						</tei:listPlace>
 						<tei:listBibl>
 							<xsl:for-each
-								select="//html:span[contains(@class, 'bib')]/@about[generate-id() = generate-id(key('bibref', .)[1])]">
+								select="//html:span[contains(@class, 'bibref')]/@about[generate-id() = generate-id(key('bibrefs', .)[1])]">
 								<tei:bibl xml:id="{current()}">
 									<xsl:variable name="label" select="//html:span[@data-label and @about = current()]/@data-label" />
 									<xsl:apply-templates
-										select="//html:span[@about = current() and text()[generate-id() = generate-id(key('innerStrings', .)[1])]]"
+										select="//html:span[@about = current() and text()[generate-id() = generate-id(key('innerBibrefs', .)[1])]]"
 										mode="inner">
 										<xsl:with-param name="label" select="$label" />
 									</xsl:apply-templates>
@@ -424,8 +425,11 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="html:span[contains(@class, 'bib')]">
-		<tei:bibl xml:id="{@id}" sameAs="#{@about}">
+	<xsl:template match="html:span[contains(@class, 'bibref')]">
+		<xsl:variable name="count"> <!--count variable generating document order ID-->
+    		<xsl:number/>
+		</xsl:variable>
+		<tei:bibl xml:id="bibref-{$count}" sameAs="#{@about}">
 			<xsl:apply-templates />
 		</tei:bibl>
 	</xsl:template>
@@ -539,6 +543,15 @@
 		  </xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+		<xsl:template match="html:span[contains(@class, 'bibref')]" mode="inner">
+		<xsl:param name="label"/>
+		<xsl:choose>
+		  <xsl:when test="./text() = $label">
+				<xsl:value-of select="." />
+		  </xsl:when>
+		</xsl:choose>
+	</xsl:template>
+
 
 	<xsl:template match="html:span" mode="wiki">
 		<tei:idno type="Wikidata">https://www.wikidata.org/wiki/<xsl:value-of select="./@data-wikidata-id" /></tei:idno>
