@@ -32,7 +32,7 @@
 		"label":  "Citazioni",
 		"sort": 2,
 		"entity": "quote",
-		"markAll": true,
+		"markAll": false,
 		"style": "background-image: radial-gradient(#f0fde7 30%, #cfff82 100%); border-radius: 4px;"
     },
 	"scraps": {

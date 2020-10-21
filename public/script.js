@@ -427,7 +427,7 @@ function setupKWIC(location, saveView) {
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
 		//$('#markAll').prop('disabled',true)
-		document.getElementById('markAll-label').style.display = "none";
+		//document.getElementById('markAll-label').style.display = "none";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
@@ -469,7 +469,7 @@ function setupKWIC(location, saveView) {
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
 		//$('#markAll').prop('disabled',false);
-		document.getElementById('markAll-label').style.display = "";
+		//document.getElementById('markAll-label').style.display = "";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 	}
@@ -947,10 +947,12 @@ function goto(id) {
 }
 
 // download the currently loaded document to the local disk
-function downloadDoc(type) {
+async function downloadDoc(type) {
 	var publicationTpl = `Converted into {$type} by "{$software}" on {$date} from the original source at "{$src}". `;
+	let title = splitFilename(currentFilename,"work");
+	
 	var options = {
-		title: splitFilename(currentFilename,"work"),
+		title,
 		publication: publicationTpl.tpl({
 			type: type.toUpperCase(),
 			software: softwareName,
@@ -961,14 +963,21 @@ function downloadDoc(type) {
 	if (type == 'html') {
 		download(currentFilename, $('#file').html(), "text/html", options)
 	} else if (type == 'tei') {
-		let id = splitFilename(currentFilename,'objId')
+		let objId = splitFilename(currentFilename,'objId')
 
-		if(!id || id==='undefined'){
+		if(!objId || objId==='undefined'){
 			if (confirm('Sei sicuro di voler esportare il file in TEI senza aver aggiunto i Metadati?')) {
-				saveAsXML(currentFilename, $('#file')[0], '/TEI.xsl', options)
+				saveAsXML(title, $('#file')[0], '/TEI.xsl', options)
 			  }
 		}else{
-			saveAsXML(currentFilename, $('#file')[0], '/TEI.xsl', options)
+			//Get id for filename.xml 
+			//TODO change the parameter to get all metadata and pass it through saveAsXML and then getMetadata
+			//Too many server call
+			let response = await fetch('/api/check_metadata?objId='+objId);
+			let id = await response.text();
+
+			let filename = `${id}_${title}`;
+			saveAsXML(filename, $('#file')[0], '/TEI.xsl', options)
 		}
 	} else {
 		alert('Download as ' + type + ' not implemented yet')

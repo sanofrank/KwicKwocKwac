@@ -1018,12 +1018,26 @@ var kwic = new (function () {
 			this.label = quoteOrbib.label || this.label
 			this.sort = quoteOrbib.sort || this.sort
 		}
+		console.log(type);
 		switch(type) {
 			case 'quote' :
 				this.quotes.push(quoteOrbib)
 				break;
 			case 'bibref' :
 				this.bibrefs.push(quoteOrbib)
+				break;
+			case 'trash-quote' :
+				this.quote.push(quoteOrbib)	
+				break;
+			case 'scraps-quote' :
+				this.quote.push(quoteOrbib)		
+				break;
+			case 'trash-bibref' :
+				this.bibrefs.push(quoteOrbib)	
+				break;
+			case 'scraps-bibref' :
+				this.bibrefs.push(quoteOrbib)		
+				break;
 		}
 	},
 	// place all quotes oor bibref of a different citation into this one.
@@ -1379,15 +1393,16 @@ var kwic = new (function () {
 		var p = $(selector,location)
 		lastBibId = getLargestId(p.get()) +1 
 		for (i=0; i<p.length; i++){
+
 			var classes = Array.from(p[i].classList).filter( (j) => this.referenceList[j] !== undefined )
 			var b = new this.BibRef(p[i], {
 				reference: classes.length>0 ? classes[classes.length-1] : '',
 				position: i
-			})
+			})		
+			console.log(b)	;
 			this.allBibRef[b.id] = b
-		
 		}
-
+		console.log(this.allBibRef);
 		return this.allBibRef;
 	}
 	
@@ -1423,24 +1438,38 @@ var kwic = new (function () {
 		var bibrefs = this.allBibRef;
 		var citations = this.allCitations;
 		var references = this.allReferences;
-
+		
 		for (var i in quotes) {
 			var quote = quotes[i];
 			if(!citations[quote.citation]) {
 				citations[quote.citation] = new this.Citation([quote], {}, "quote")
 			} else {
-				citations[quote.citation].append(quote, quote.reference , true)
+				switch(quote.reference) {
+					case 'bibref':
+						citations[quote.citation].append(quote, quote.reference , true);
+						break;
+					default:
+						let trash_scrap = quote.reference.concat('-quote');
+						citations[quote.citation].append(quote, trash_scrap , true);
+					}
+				}
 			}
-		}
 
 		for (var i in bibrefs) {
 			var bibref = bibrefs[i]
 			if(!citations[bibref.citation]){
 				citations[bibref.citation] = new this.Citation([bibref], {}, "bibref")
 			} else {
-				citations[bibref.citation].append(bibref, bibref.reference , true)
+				switch(bibref.reference) {
+					case 'bibref':
+						citations[bibref.citation].append(bibref, bibref.reference , true);
+						break;
+					default:
+						let trash_scrap = bibref.reference.concat('-bibref');
+						citations[bibref.citation].append(bibref, trash_scrap , true);
+					}
+				}
 			}
-		}
 
 		for (var i in citations) {
 			var citation = citations[i];
@@ -1590,6 +1619,7 @@ var kwic = new (function () {
 				source.putToScraps()
 			} else if (sourceData.level == 'citation' && targetData.level == 'trash') {
 				var source = this.allCitations[sourceData.id]
+				console.log(source);
 				source.putToTrash()
 			} else if (sourceData.level == 'quote' && targetData.level == 'citation') {
 				var source = this.allQuotes[sourceData.id]
@@ -1689,6 +1719,7 @@ var kwic = new (function () {
 	// creates a reference from a text selection which behave differently if it's a quote, a bib ref
 	// or a footnote. 
 	this.doActionReference = function(key, alt, shift) {
+		let context = $(documentLocation)[0]
 		let ret = false;
 		for (var i in this.referenceList) {
 			if (this.referenceList[i].letter == key){
@@ -1700,7 +1731,12 @@ var kwic = new (function () {
 					if(selection.footnoteNode){
 						range = selection.range;
 					} else {
-						range = selection.sel.getRangeAt(0);
+						if (xor(shift, this.prefs.markAll && ref.markAll)) { //if just one of them is true, but not both.
+							console.log(selection.sel.toString());
+							range = searchAll(context, selection.sel.toString())
+						}else{
+							range = [selection.sel.getRangeAt(0)];
+						}
 					}
 					if(ref.action == 'wrap-quote') {
 						var footnote,q;
@@ -1727,12 +1763,15 @@ var kwic = new (function () {
 						}
 					}
 					if(ref.action == 'wrap-bib'){
-						var b;
-
-						b = new this.BibRef(range,{
-							reference: ref.entity,
-						})
-						console.log(b);
+						//Search for every range
+						for(let i in range){
+							var b;
+							console.log(range,range[i]);
+							b = new this.BibRef(range[i],{
+								reference: ref.entity,
+							})
+							console.log(b);
+						}
 					}
 					ret = true;
 				}

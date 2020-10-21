@@ -3,6 +3,7 @@ const Metadata = require('../model/Metadata');
 const fs = require('fs');
 const { metadataValidation } = require('../validation')
 
+//Restituisce l'id dell'opera
 router.get('/check_metadata', async (req,res) => {
     const objId = req.query.objId;
 
@@ -10,8 +11,8 @@ router.get('/check_metadata', async (req,res) => {
 
     await Metadata.findOne({_id: objId}, function(err, metadata){
         if(err) return res.status(404).send("ID dell'opera non valido")
-        
-        return res.send(metadata);
+
+        return res.send(metadata.ident);
     })
 });
 
