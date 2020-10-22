@@ -3,24 +3,28 @@ const mongoose = require('mongoose');
 const metadataSchema = new mongoose.Schema({
     ident: {
         type: String,
-        required: true,
+        //required: true,
+        default: '0_0_0_000',
         min: 9,
         max: 9
     },
     title: {
         type: String,
-        required: true,
+        //required: true,
+        default: '',
         min: 6,
         max: 255
     },
     author: {
         type: String,
-        required: true,
+        //required: true,
+        default: '',
         min: 6
     },
     roleList: {
         type: Array,
-        required: ["role"],
+        //required: ["role"],
+        default: ["ruolo"],
         properties: {
             role: {
                 type: String,
@@ -31,13 +35,15 @@ const metadataSchema = new mongoose.Schema({
     },
     curator: {
         type: String,
-        required: true,
+        //required: true,
+        default: '',
         max: 255,
         min: 6
     },
     doctypeList: {
         type: Array,
-        required: ["doctype"],
+        //required: ["doctype"],
+        default: [""],
         properties: {
             doctype: {
                 type: String,
@@ -48,7 +54,8 @@ const metadataSchema = new mongoose.Schema({
     },
     doctopicList: {
         type: Array,
-        required: ["topic"],
+        //required: ["topic"],
+        default: [""],
         properties: {
             topic: {
                 type: String,
@@ -59,10 +66,12 @@ const metadataSchema = new mongoose.Schema({
     },
     docstatus: {
         type: String,
-        required: true
+        default: '',
+        //required: true
     },
     provenance: {
         type: Array,
+        //default: [],
         default: undefined,
         properties: {
             provenanceStatement: {
@@ -72,7 +81,8 @@ const metadataSchema = new mongoose.Schema({
     },
     abstract: {
         type: String,
-        required: true,
+        //required: true,
+        default: '',
         min: 10,
         max: 1024
     },

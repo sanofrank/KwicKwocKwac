@@ -16,6 +16,46 @@ router.get('/check_metadata', async (req,res) => {
     })
 });
 
+router.post('/save_abstract', async (req,res) => {
+
+    let response = {};
+
+    const dir = 'public/files';
+
+    let file = req.body.file;
+    let currPath = `${dir}/${file}`
+
+    const metadata = new Metadata ({
+        abstract: req.body.abstract,
+        eventPlace: '',
+        eventDate: '',
+        additionalNotes: ''
+    });
+
+    const savedMetadata = await metadata.save(function(err,data){
+        if(err) return res.status(400).send(err);
+
+        let id = metadata._id;
+
+        let split = file.split('_');
+        let newFilename = `${split[0]}_${split[1]}_${split[2]}_${split[3]}_${split[4]}_${split[5]}_${id}`
+        let newPath = `${dir}/${newFilename}`
+
+        fs.rename(currPath, newPath, function(err) {
+            if (err) {
+            console.log(err)
+            } else {
+            console.log("Successfully renamed the directory.")
+            }
+        })
+        
+        response.msg = "Abstract salvato correttamente"
+        response.fileName = newFilename;
+
+        return res.send(response);
+    });
+})
+
 router.post('/update_metadata', async (req,res) => {
     
     const {error} = metadataValidation(req.body);
