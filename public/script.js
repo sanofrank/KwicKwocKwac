@@ -65,14 +65,6 @@ async function main() {
 	//Setting width and height of left and bottom panel, setting active class on current style and current sort
 	layoutSetup()
 
-	//Onload authentication
-	const loginOptions = {
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		credentials: 'include'
-	};
-
 	fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 	fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
 	fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No reference loaded'));
@@ -81,6 +73,7 @@ async function main() {
 	basicCallbacks()
 	editCallbacks(editMode)
 	editSetup(editMode)
+	
 }
 
 function basicCallbacks() {
@@ -562,6 +555,10 @@ function docList(elements) {
 		}
 	}
 
+	//superuser upload edit
+	if(!elements.su){
+		$('#user-upload').remove(); //remove user upload choice
+	}
 }
 
 function categoriesList(list) {
@@ -644,6 +641,7 @@ function setLayout(type, value) {
 			.addClass("h-{$iv}".tpl(iv))
 	}
 }
+
 
 /* ------------------------------------------------------------------------------ */
 /*                                                                                */
@@ -777,7 +775,7 @@ async function load(file) {
 		// ADD data path here from file splitting
 		toggleEdit();
 		$('#file').html(json.html);
-		let format = await formattingDoc(documentLocation);
+		formattingDoc(documentLocation);
 		$('#file').attr("status", status);
 		$('#file').attr('data-path', path);
 		setStatus(status);
@@ -1040,6 +1038,9 @@ async function uploadDoc(dataHTML,dataDOCX) {
 
 	let requestOptions;
 
+	// User name
+	let user = $('#userUpload') ? $('#userUpload').val() : '';
+	console.log(user)
 	// Unique sez_vol_tom path
 	let sez = $('#sezNumber').val();
 	let vol = $('#volNumber').val();
@@ -1067,7 +1068,8 @@ async function uploadDoc(dataHTML,dataDOCX) {
 
 	if(format_radio === 'docx'){
 		// append data info
-		dataDOCX.append('type', format_radio)
+		dataDOCX.append('type', format_radio);
+		dataDOCX.append('user',user)
 		dataDOCX.append("sez", sez);
 		dataDOCX.append("vol", vol);
 		dataDOCX.append("tom", tom);
@@ -1082,6 +1084,7 @@ async function uploadDoc(dataHTML,dataDOCX) {
 		let files = {};
 
 		files.type = format_radio;
+		files.user = user;
 		files.sez = sez;
 		files.vol = vol;
 		files.tom = tom;

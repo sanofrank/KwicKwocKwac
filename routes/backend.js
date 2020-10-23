@@ -103,9 +103,15 @@ router.post('/upload', async (req,res) => {
         if(!token) res.status(400).send("No token provided");
 
         const verified = jwt.verify(token,process.env.TOKEN_SECRET);
-        const username = verified.username;
+        let username = '';
 
-        const type = req.body.type;
+        if(req.body.user !== ''){
+            username = req.body.user;
+        }else{
+            username = verified.username;
+        }
+
+        const type = req.body.type; 
         const sez = req.body.sez;
         const vol = req.body.vol;
         const tom = req.body.tom;
