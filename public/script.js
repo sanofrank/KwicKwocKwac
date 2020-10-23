@@ -342,6 +342,9 @@ function searchDocuments(){
 	  }
 	}
 
+	//Document Counter 
+	$('#documentCounter').text(visible)
+
 	//resize fileMenu
 	if(visible > 13){
 		$('#ulFile').css("height", "26em")
@@ -505,7 +508,7 @@ function docList(elements) {
 		</div>
 		<hr>
 		<div class="d-inline-flex">
-			<h6>Documenti</h6>
+			<h6>Documenti: <span id="documentCounter" class ="pl-1"></span></h6>
 		</div>
 	`
 	//<span class="oi oi-trash flex-shrink-1" title="delete files" aria-hidden="true"></span>		
@@ -554,6 +557,9 @@ function docList(elements) {
 			$('#ulFile').append(menuItemTpl.tpl(elements.list[i]))
 		}
 	}
+
+	//Document Counter 
+	$('#documentCounter').text(elements.list.length)
 
 	//superuser upload edit
 	if(!elements.su){
@@ -742,8 +748,12 @@ function applyFilter() {
 		}
 	}
 
+	//Document Counter 
+	let count = $('#ulFile a').not(".d-none").length
+	$('#documentCounter').text(count)
+
 	//resize fileMenu
-	if(visible > 13){
+	if(count > 13){
 		$('#ulFile').css("height", "26em")
 	}else{
 		$('#ulFile').css("height", "");
