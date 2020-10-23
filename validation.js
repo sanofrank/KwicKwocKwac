@@ -96,6 +96,11 @@ const metadataValidation = (data) => {
                 'string.max': `Il numero del documento deve contenere esattamente 3 caratteri.`,
                 'string.empty': `Il numero del documento è obbligatorio.`
             }),
+        title: Joi.string()
+            .required()
+            .messages({
+                'string.empty': `Il titolo del documento è obbligatorio.`
+            }),
         author: Joi.string()
             .min(6)
             .required()

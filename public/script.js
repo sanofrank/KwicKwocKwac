@@ -1507,10 +1507,9 @@ async function formattingDoc(location){
 	if(child.firstElementChild.tagName === 'EM'){
 		if(!child.classList.contains('no-abstract')){
 			let abstract = child.innerText;
-			$('#abstract')[0].innerText = abstract;
 
 			if(window.confirm(`È stata rilevata l'introduzione:\n${abstract}\nSi desidera spostarla all'interno dell'abstract dei metadati?`)){
-				let abstract = child.innerText;
+				//Add abstract to metadata field
 				$('#abstract')[0].innerText = abstract;
 
 				let data = {
@@ -1525,16 +1524,18 @@ async function formattingDoc(location){
 					},
 					body: JSON.stringify(data)
 				}
-
+				//Save only abstract without other options
 				let metadata = await fetch('/api/save_abstract',requestOptions);
 				let json = await metadata.json();
 				currentFilename = json.fileName;
-
+				//Remove abstract from file and save document
 				file.removeChild(child);
 				saveDoc()
-
+				//Reload doclist
 				let update = await fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
-
+				//Change save button behaviour 
+				$('#save-metadata').text('Aggiorna');
+				$('#save-metadata').attr('onclick','saveMetadata(true)')
 			}else{
 				child.classList.add('no-abstract')
 			}
@@ -1801,6 +1802,7 @@ async function checkMetadata(){
 		//Append new empty form
 		$('#add-metadata').append(newForm);
 		$('#add-metadata #addMetadata-sub').text(header);
+		$('#add-metadata #work-title').val(fileName);
 		$('#add-metadata #curator').val(user);
 	}else{
 		//Extract ident
@@ -1864,7 +1866,6 @@ async function saveMetadata(update = false) {
 	let objId = ""
 	if(update) objId = splitFilename(currentFilename,"objId");
 
-	let title = splitFilename(currentFilename, "work")
 	let file = currentFilename;
 	let n = $('#ident').val();
 	let ident = $('div#file').attr('data-path') + n
@@ -1877,6 +1878,7 @@ async function saveMetadata(update = false) {
 		role.push(r)
 	})
 
+	let title = $('#work-title').val();
 	let curator = $('#curator').val();
 	let abstract = $('#abstract').val();
 	let doctype = $('select.doctype').map((_, el) => el.value).get();
