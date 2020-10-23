@@ -107,7 +107,8 @@ const metadataValidation = (data) => {
             Joi.string()
             .required()
             .messages({
-                'string.empty': `Il ruolo dell'autore è obbligatorio.`
+                'string.empty': `Il ruolo dell'autore è obbligatorio.`,
+                'string.base' : 'Il ruolo deve essere una stringa'
             })
         ),
         curator: Joi.string()

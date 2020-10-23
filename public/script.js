@@ -73,24 +73,6 @@ async function main() {
 		credentials: 'include'
 	};
 
-	// const response = await fetch('/api/verify', loginOptions);
-	// const json = await response.json();
-	// const aut = json.editmode;
-
-	// console.log(aut);
-
-	// if (aut) {
-	// 	$('#Login').modal('hide'); //close modal
-
-	// 	//remove modal attributes
-	// 	$('#edit-mode').removeAttr('data-toggle');
-	// 	$('#edit-mode').removeAttr('data-target');
-
-	// 	$("#edit-mode").attr("onclick", "toggleEdit()"); //togleEdit() insted of login()
-
-	// 	toggleEdit();
-	// }
-
 	fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 	fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
 	fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No reference loaded'));
@@ -427,7 +409,7 @@ function setupKWIC(location, saveView) {
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
 		//$('#markAll').prop('disabled',true)
-		document.getElementById('markAll-label').style.display = "none";
+		//document.getElementById('markAll-label').style.display = "none";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
@@ -469,7 +451,7 @@ function setupKWIC(location, saveView) {
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
 		//$('#markAll').prop('disabled',false);
-		document.getElementById('markAll-label').style.display = "";
+		//document.getElementById('markAll-label').style.display = "";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 	}
@@ -781,7 +763,7 @@ async function load(file) {
 
 		currentFilename = file;
 		currentMetadata = json.metadata;
-
+		console.log(json.metadata)
 		checkMetadata();
 
 		split = file.split('_');
@@ -795,6 +777,7 @@ async function load(file) {
 		// ADD data path here from file splitting
 		toggleEdit();
 		$('#file').html(json.html);
+		let format = await formattingDoc(documentLocation);
 		$('#file').attr("status", status);
 		$('#file').attr('data-path', path);
 		setStatus(status);
@@ -804,6 +787,7 @@ async function load(file) {
 		searchDocuments(); // repopulate file list
 		markFootnote(documentLocation, mark = true)
 		anchorGoto(documentLocation);
+
 		setupKWIC(documentLocation, false);
 	}
 	hideSpinner();
@@ -947,10 +931,12 @@ function goto(id) {
 }
 
 // download the currently loaded document to the local disk
-function downloadDoc(type) {
+async function downloadDoc(type) {
 	var publicationTpl = `Converted into {$type} by "{$software}" on {$date} from the original source at "{$src}". `;
+	let title = splitFilename(currentFilename,"work");
+	
 	var options = {
-		title: splitFilename(currentFilename,"work"),
+		title,
 		publication: publicationTpl.tpl({
 			type: type.toUpperCase(),
 			software: softwareName,
@@ -961,14 +947,21 @@ function downloadDoc(type) {
 	if (type == 'html') {
 		download(currentFilename, $('#file').html(), "text/html", options)
 	} else if (type == 'tei') {
-		let id = splitFilename(currentFilename,'objId')
+		let objId = splitFilename(currentFilename,'objId')
 
-		if(!id || id==='undefined'){
+		if(!objId || objId==='undefined'){
 			if (confirm('Sei sicuro di voler esportare il file in TEI senza aver aggiunto i Metadati?')) {
-				saveAsXML(currentFilename, $('#file')[0], '/TEI.xsl', options)
+				saveAsXML(title, $('#file')[0], '/TEI.xsl', options)
 			  }
 		}else{
-			saveAsXML(currentFilename, $('#file')[0], '/TEI.xsl', options)
+			//Get id for filename.xml 
+			//TODO change the parameter to get all metadata and pass it through saveAsXML and then getMetadata
+			//Too many server call
+			let response = await fetch('/api/check_metadata?objId='+objId);
+			let id = await response.text();
+
+			let filename = `${id}_${title}`;
+			saveAsXML(filename, $('#file')[0], '/TEI.xsl', options)
 		}
 	} else {
 		alert('Download as ' + type + ' not implemented yet')
@@ -1488,6 +1481,54 @@ function validate(t) {
 /*                                UTILITIES                                       */
 /*                                                                                */
 /* ------------------------------------------------------------------------------ */
+
+// Formatting document adding style elements
+async function formattingDoc(location){
+	
+	//Format abstract
+	let file = $(location)[0];
+	let child = file.childNodes[1];
+
+	if(!child || !child.firstElementChild) return null;
+
+	if(child.firstElementChild.tagName === 'EM'){
+		if(!child.classList.contains('no-abstract')){
+			let abstract = child.innerText;
+			$('#abstract')[0].innerText = abstract;
+
+			if(window.confirm(`È stata rilevata l'introduzione:\n${abstract}\nSi desidera spostarla all'interno dell'abstract dei metadati?`)){
+				let abstract = child.innerText;
+				$('#abstract')[0].innerText = abstract;
+
+				let data = {
+					file : currentFilename,
+					abstract
+				}
+
+				const requestOptions = {
+					method: 'POST',
+					headers: {
+						'Content-Type' : 'application/json'
+					},
+					body: JSON.stringify(data)
+				}
+
+				let metadata = await fetch('/api/save_abstract',requestOptions);
+				let json = await metadata.json();
+				currentFilename = json.fileName;
+
+				file.removeChild(child);
+				saveDoc()
+
+				let update = await fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+
+			}else{
+				child.classList.add('no-abstract')
+			}
+		}
+	}
+
+}
 
 // Changes href animation scrolling
 function anchorGoto(location){

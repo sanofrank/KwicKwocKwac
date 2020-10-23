@@ -54,16 +54,20 @@ var kwic = new (function () {
 	// If one or both of them belong to an existing mention, no worries since the existing mention will be removed anyway. 
 	function compatibleExtremes(range, mention) {
 		if (range.startContainer.parentElement == range.endContainer.parentElement) return true //Meaning that if the selection is plain, untouched and it's in the same node.
-		
+		console.log(range.startContainer.parentElement,range.endContainer.parentElement)
 		const formatters = ['B','STRONG','I','EM','MARK','SMALL','DEL','INS']
 
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
 		console.log('start __ end',start,end,end.classList.contains('bibref'));
-		if (mention && (start.classList.contains('mention')))
+		if (start.classList.contains('mention'))
 			start = start.parentElement // will remove it anyway
-		if (mention && (end.classList.contains('mention')))
+		if (end.classList.contains('mention'))
 			end = end.parentElement // will remove it anyway
+		// if (mention && (start.classList.contains('mention')))
+		// 	start = start.parentElement // will remove it anyway
+		// if (mention && (end.classList.contains('mention')))
+		// 	end = end.parentElement // will remove it anyway
 		if (start.classList.contains('quote-text'))
 			start = start.parentElement.parentElement // will remove it anyway
 		if (end.classList.contains('quote-text'))
@@ -189,9 +193,9 @@ var kwic = new (function () {
 		}
 		
 		//Unwrap any bibref tag or quote tag
-		if (range.startContainer.parentElement.classList.contains('bibref') || range.startContainer.parentElement.classList.contains('quote-text')) 
+		if (range.startContainer.parentElement.classList.contains('bibref') || range.startContainer.parentElement.classList.contains('quote-text') || range.startContainer.parentElement.classList.contains('mention')) 
 			unwrap(range.startContainer.parentElement)
-		if (range.endContainer.parentElement.classList.contains('bibref') || range.endContainer.parentElement.classList.contains('quote-text')) 
+		if (range.endContainer.parentElement.classList.contains('bibref') || range.endContainer.parentElement.classList.contains('quote-text') || range.startContainer.parentElement.classList.contains('mention')) 
 			unwrap(range.endContainer.parentElement)
 		
 		range.setStart(r.sc, r.so)
@@ -228,6 +232,11 @@ var kwic = new (function () {
 			unwrap(range.startContainer.parentElement)
 		if (range.endContainer.parentElement.classList.contains('quote')) 
 			unwrap(range.endContainer.parentElement)
+		if (range.startContainer.parentElement.classList.contains('mention')) 
+			unwrap(range.startContainer.parentElement)
+		if (range.endContainer.parentElement.classList.contains('mention')) 
+			unwrap(range.endContainer.parentElement)
+			
 		//Unwrap quote-text two times deeper
 		if (range.startContainer.parentElement.classList.contains('quote-text')){
 			let parent = range.startContainer.parentElement;
@@ -490,7 +499,7 @@ var kwic = new (function () {
 		var ret = []
 		var atn = context.allTextNodes()
 		var all = allMatches(text, context.textContent)
-		
+
 		var pos = 0; 
 		var index  = 0
 		for (var i=0; i<all.length; i++) {
@@ -511,6 +520,7 @@ var kwic = new (function () {
 			
 			ret.push(r)
 		}
+		console.log(ret);
 		return ret
 	}
 
@@ -1018,12 +1028,26 @@ var kwic = new (function () {
 			this.label = quoteOrbib.label || this.label
 			this.sort = quoteOrbib.sort || this.sort
 		}
+		console.log(type);
 		switch(type) {
 			case 'quote' :
 				this.quotes.push(quoteOrbib)
 				break;
 			case 'bibref' :
 				this.bibrefs.push(quoteOrbib)
+				break;
+			case 'trash-quote' :
+				this.quote.push(quoteOrbib)	
+				break;
+			case 'scraps-quote' :
+				this.quote.push(quoteOrbib)		
+				break;
+			case 'trash-bibref' :
+				this.bibrefs.push(quoteOrbib)	
+				break;
+			case 'scraps-bibref' :
+				this.bibrefs.push(quoteOrbib)		
+				break;
 		}
 	},
 	// place all quotes oor bibref of a different citation into this one.
@@ -1091,7 +1115,7 @@ var kwic = new (function () {
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "quote-" ;
 		var mention = false;
-
+		
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
 		} else {
@@ -1197,6 +1221,7 @@ var kwic = new (function () {
 			this.node = nodeOrRange	
 		} else {
 			if (!compatibleExtremesRef(nodeOrRange,mention)) return {}
+			console.log('compatible');
 			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
 			this.node = wrapBib(nodeOrRange,document.createElement('span'));			
 		}
@@ -1379,15 +1404,15 @@ var kwic = new (function () {
 		var p = $(selector,location)
 		lastBibId = getLargestId(p.get()) +1 
 		for (i=0; i<p.length; i++){
+
 			var classes = Array.from(p[i].classList).filter( (j) => this.referenceList[j] !== undefined )
 			var b = new this.BibRef(p[i], {
 				reference: classes.length>0 ? classes[classes.length-1] : '',
 				position: i
-			})
+			})		
+			console.log(b)	;
 			this.allBibRef[b.id] = b
-		
 		}
-
 		return this.allBibRef;
 	}
 	
@@ -1423,24 +1448,38 @@ var kwic = new (function () {
 		var bibrefs = this.allBibRef;
 		var citations = this.allCitations;
 		var references = this.allReferences;
-
+		
 		for (var i in quotes) {
 			var quote = quotes[i];
 			if(!citations[quote.citation]) {
 				citations[quote.citation] = new this.Citation([quote], {}, "quote")
 			} else {
-				citations[quote.citation].append(quote, quote.reference , true)
+				switch(quote.reference) {
+					case 'bibref':
+						citations[quote.citation].append(quote, quote.reference , true);
+						break;
+					default:
+						let trash_scrap = quote.reference.concat('-quote');
+						citations[quote.citation].append(quote, trash_scrap , true);
+					}
+				}
 			}
-		}
 
 		for (var i in bibrefs) {
 			var bibref = bibrefs[i]
 			if(!citations[bibref.citation]){
 				citations[bibref.citation] = new this.Citation([bibref], {}, "bibref")
 			} else {
-				citations[bibref.citation].append(bibref, bibref.reference , true)
+				switch(bibref.reference) {
+					case 'bibref':
+						citations[bibref.citation].append(bibref, bibref.reference , true);
+						break;
+					default:
+						let trash_scrap = bibref.reference.concat('-bibref');
+						citations[bibref.citation].append(bibref, trash_scrap , true);
+					}
+				}
 			}
-		}
 
 		for (var i in citations) {
 			var citation = citations[i];
@@ -1590,6 +1629,7 @@ var kwic = new (function () {
 				source.putToScraps()
 			} else if (sourceData.level == 'citation' && targetData.level == 'trash') {
 				var source = this.allCitations[sourceData.id]
+				console.log(source);
 				source.putToTrash()
 			} else if (sourceData.level == 'quote' && targetData.level == 'citation') {
 				var source = this.allQuotes[sourceData.id]
@@ -1689,6 +1729,7 @@ var kwic = new (function () {
 	// creates a reference from a text selection which behave differently if it's a quote, a bib ref
 	// or a footnote. 
 	this.doActionReference = function(key, alt, shift) {
+		let context = $(documentLocation)[0]
 		let ret = false;
 		for (var i in this.referenceList) {
 			if (this.referenceList[i].letter == key){
@@ -1698,9 +1739,19 @@ var kwic = new (function () {
 					console.log("SELECTION",selection);
 					var range;
 					if(selection.footnoteNode){
+						console.log('FOOTNODE');
 						range = selection.range;
 					} else {
-						range = selection.sel.getRangeAt(0);
+						if (xor(shift, this.prefs.markAll && ref.markAll)) { //if just one of them is true, but not both.
+							range = searchAll(context, selection.sel.toString())
+							console.log(range);
+							if(range.length === 0){
+								console.log('emptyrange')
+								range = [selection.sel.getRangeAt(0)];
+							}
+						}else{
+							range = [selection.sel.getRangeAt(0)];
+						}
 					}
 					if(ref.action == 'wrap-quote') {
 						var footnote,q;
@@ -1716,23 +1767,26 @@ var kwic = new (function () {
 								footnoteText: footnote.footnoteText
 							})
 						}else{
-							q = new this.Quote(range, {
+							q = new this.Quote(range[0], {
 								reference: ref.entity,
 							})
 						} 
-						console.log(q)
+
 						if(q.id){
 							this.allQuotes[q.id] = q;
 							console.log(this.allQuotes);
 						}
 					}
 					if(ref.action == 'wrap-bib'){
-						var b;
+						//Search for every range
+						for(let i in range){
+							var b;
 
-						b = new this.BibRef(range,{
-							reference: ref.entity,
-						})
-						console.log(b);
+							b = new this.BibRef(range[i],{
+								reference: ref.entity,
+							})
+							console.log(b);
+						}
 					}
 					ret = true;
 				}
