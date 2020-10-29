@@ -105,11 +105,12 @@ router.post('/upload', async (req,res) => {
         const verified = jwt.verify(token,process.env.TOKEN_SECRET);
         let username = '';
 
-        if(req.body.user !== ''){
+        if(req.body.user == '') return res.status(400).send('Compilare il nome')
+        if(req.body.user != 'undefined'){
             username = req.body.user;
         }else{
             username = verified.username;
-        }
+        } 
 
         const type = req.body.type; 
         const sez = req.body.sez;
@@ -129,7 +130,7 @@ router.post('/upload', async (req,res) => {
             }
 
             for(i in files){
-                let opera = filenames[i];
+                let opera = filenames[i].replace(/_+/g,' ');
 
                 let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
                 let path = `${dir}/${fileName}`;
