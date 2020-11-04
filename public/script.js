@@ -286,6 +286,7 @@ function dragDocStart(event) {
 	let val = tg.querySelector('input[name="doc-checkbox"]').getAttribute('value');
 	
 	let data = JSON.stringify(val)
+	e.dataTransfer.setDragImage(tg,0,0); //(customImage,x.cursor,y.cursor)
 	e.dataTransfer.setData('text/plain',data);
 }
 

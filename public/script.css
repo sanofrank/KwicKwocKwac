@@ -230,6 +230,10 @@ h1 {
 	background-color: #cccccc;
 }
 
+.draggable{
+	width: 50%;
+}
+
 .dragOver {
 	background-color: #ffff00;
 }
