@@ -297,7 +297,7 @@ router.post('/save' , async (req,res) => {
     }
 })
 
-router.post('/delete', (req,res) => {
+router.post('/delete', async (req,res) => {
     
     let path;
     const filenames = req.body;
@@ -307,13 +307,23 @@ router.post('/delete', (req,res) => {
     }
 
     for(filename of filenames){
-
         path = `${dir}/${filename}`
 
         if(filename !== ""){
             if(!fs.existsSync(path)){
                 return res.status(400).send(`${filename} non è presente nella cartella dei file`)
             }else{
+                let split = filename.split("_");
+                const objId = split[6];
+
+                if(objId && objId !== 'undefined'){
+                    await Metadata.deleteOne({_id: objId}, (err) => {
+                        if(err){
+                            return res.status(400).send('Metadati non trovati');
+                        }
+                    })
+                }
+
                 rimraf(path, (err,data) => {
                     if(err){
                         return res.status(400).send(`Erorre nell'eliminazione del file ${filename}`)
