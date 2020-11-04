@@ -1,16 +1,16 @@
 const router = require('express').Router();
 const fs = require('fs');
+const rimraf = require('rimraf');
 const fgc = require('file-get-contents');
 const mkDir = require('make-dir');
 const mammoth = require('mammoth');
+//const mammoth_style = require('mammoth-style');
 const jwt = require('jsonwebtoken');
 const Metadata = require('../model/Metadata');
 
 const dir = 'public/files';
 const src = /src=(["|\'])(?!http)(?!#footnote)/g;
 const href = /href=(["|\'])(?!http)(?!#footnote)/g;
-
-
 
 router.get('/list', async (req, res) => {
     try {
@@ -295,6 +295,36 @@ router.post('/save' , async (req,res) => {
     }catch(err){
         res.status(400).send(err)
     }
+})
+
+router.post('/delete', (req,res) => {
+    
+    let path;
+    const filenames = req.body;
+    
+    if(filenames.length <= 0){
+        return res.status(400).send('Non ci sono file selezionati da eliminare.')
+    }
+
+    for(filename of filenames){
+
+        path = `${dir}/${filename}`
+
+        if(filename !== ""){
+            if(!fs.existsSync(path)){
+                return res.status(400).send(`${filename} non è presente nella cartella dei file`)
+            }else{
+                rimraf(path, (err,data) => {
+                    if(err){
+                        return res.status(400).send(`Erorre nell'eliminazione del file ${filename}`)
+                    }
+                });
+            }
+        }
+    }
+    
+    return res.send('File eliminati correttamente')
+    
 })
 
 router.post('/change' , (req,res) => {

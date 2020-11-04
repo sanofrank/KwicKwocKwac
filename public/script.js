@@ -36,7 +36,7 @@ var trashShown;		                     // whether the trash pane is currently sho
 var editMode;                           // whether the user can add or modify mentions in the document shown
 var apply_filter = false;                // whether filter have been applyied on search documents
 var referenceMode;             			 // whether the reference panel is shown
-var currentMetadata = {};					// the metadata of the current loaded file
+var currentMetadata = {};				 // the metadata of the current loaded file
 const spinner = document.getElementById("spinner");
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
@@ -485,6 +485,10 @@ function docList(elements) {
 	if(!elements.su) $('#file-filter')[0].innerHTML = `
 		<div class="d-flex">
 			<h6 class="w-100">Filtri di ricerca</h6>
+			<div class="flex-shrink-1">
+			<small>Elimina i documenti selezionati <span id="checked-doc"></span></small>
+			<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" onclick="deleteDocuments()"></span>
+		</div>
 		</div>
 		<div class="d-flex">
 			<div id="state-filter"class="w-100 p-2">
@@ -523,10 +527,12 @@ function docList(elements) {
 		<div class="flex-grow-1 pr-3 fileLabel">
 		{$label}
 		</div>
+		<input class="document-checkbox" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
+		<label for="doc-checkbox"></label>
 		</a>`
 	var menuItemTplSu =
 		`			
-			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" onclick='event.stopImmediatePropagation();load("{$url}")'>
 			<svg height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 			</svg>
@@ -535,10 +541,13 @@ function docList(elements) {
 			</div>
 			<div>
 			<span class="badge  border border-primary rounded text-primary">{$user}</span>
+			<input class="document-checkbox" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
+			<label for="doc-checkbox"></label>
 			</div>
 			</a>
 		`		
-		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}"/>
+
+		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}">
 
 	//resize fileMenu
 	if(elements.list.length > 13){
@@ -565,6 +574,9 @@ function docList(elements) {
 	if(!elements.su){
 		$('#user-upload').remove(); //remove user upload choice
 	}
+	
+	//update checked document
+	updateCheckedDoc();
 }
 
 function categoriesList(list) {
@@ -763,6 +775,7 @@ function applyFilter() {
 
 // load and show a document
 async function load(file) {
+	
 	showSpinner();
 	let response = await fetch('/api/load?file=' + file);
 	if (!response.ok) alert('Non ho potuto caricare il file ' + file);
@@ -1380,6 +1393,51 @@ function fileParams() {
 		if(format_radio === "docx") $('#docFile').prop('accept', ".docx")
 
 		$('#docFile').prop('disabled', false)
+	}
+}
+
+// Update checked document number
+function updateCheckedDoc() {
+
+	let checked = 0;
+
+	let checkbox = $('#ulFile input[name="doc-checkbox"]:checked');
+	checked = checkbox.length;
+
+	$('#checked-doc').text(checked);
+}
+
+// Delete documents
+
+async function deleteDocuments() {
+	
+	let checkboxes = $('#ulFile input[name="doc-checkbox"]:checked');
+	let val = [];
+
+	for(checkbox of checkboxes){
+		val.push(checkbox.getAttribute('value'))
+	}
+
+	if(val.length <= 0){
+		return null
+	}
+
+	if(confirm(`Sicuro di voler eliminare i file selezionati?`)){
+		const deleteOptions = {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json'
+			},
+			body: JSON.stringify(val)
+		}
+		
+		const response = await fetch('/api/delete',deleteOptions);
+		const text = await response.text();
+		alert(text);
+		
+		location.reload();
+	}else{
+		return null
 	}
 }
 
