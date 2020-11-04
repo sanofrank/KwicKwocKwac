@@ -283,10 +283,8 @@ function drop(event) {
 function dragDocStart(event) {
 	var e = event.originalEvent || event //drag
 	var tg = e.target;
-	console.log(tg);
 	let val = tg.querySelector('input[name="doc-checkbox"]').getAttribute('value');
-	console.log(val);
-
+	
 	let data = JSON.stringify(val)
 	e.dataTransfer.setData('text/plain',data);
 }
@@ -533,7 +531,7 @@ function docList(elements) {
 			<h6 class="w-100">Filtri di ricerca</h6>
 			<div class="flex-shrink-1">
 			<small>Elimina i documenti selezionati <span id="checked-doc"></span></small>
-			<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" onclick="deleteDocuments(value)"></span>
+			<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" ondragover="dragDocOver(event)" ondragleave="dragDocLeave(event)" ondrop="dropDoc(event)" onclick="deleteDocuments(value)"></span>
 		</div>
 		</div>
 		<div class="d-flex">
