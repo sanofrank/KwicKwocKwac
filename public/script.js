@@ -78,7 +78,7 @@ async function main() {
 
 function basicCallbacks() {
 	$('#save').click(saveDoc)
-	$('#entityFile').change(uploadEntityFile);
+	$('#entityFiles').change(uploadEntityFile);
 	$('.fileParams').change(fileParams);
 	$('input[name="inlineRadioOptions"]').change(emptyUpload);
 	$('#docFile').change(uploadFileSetup);
@@ -91,6 +91,8 @@ function basicCallbacks() {
 	//$('#user-filter').keyup(() => $('#apply-filter').prop('disabled',false)) //enable apply filter button on inserted text in user input
 	$(document).on('click', '#file-filter', e => e.stopPropagation()); //prevent closing dropdown-menu on click
 	$(document).on('click', expandableSelector, treeClick)
+	$(document).on('dragstart', '#ulFile .dropdown-item', dragDocStart);
+	$(document).on('drop', '#trash-filter', dropDoc);
 }
 
 function editCallbacks(editMode) {
@@ -218,6 +220,7 @@ function hideSpinner() {
 
 // Callbacks for draggable elements
 function dragstart(event) {
+	console.log(event);
 	var e = event.originalEvent || event //drag
 	var tg = e.target.dataset.id ? e.target : e.target.parentElement
 	var data = JSON.stringify(tg.dataset)
@@ -275,6 +278,49 @@ function drop(event) {
 	setupKWIC(documentLocation, true)
 	return true;
 }
+
+//Callbacks for draggable doclist items
+function dragDocStart(event) {
+	var e = event.originalEvent || event //drag
+	var tg = e.target;
+	console.log(tg);
+	let val = tg.querySelector('input[name="doc-checkbox"]').getAttribute('value');
+	console.log(val);
+
+	let data = JSON.stringify(val)
+	e.dataTransfer.setData('text/plain',data);
+}
+
+function dragDocOver(event) {
+	event.stopPropagation();
+	event.preventDefault();
+	var tg = event.target.parentElement;
+
+	$(tg).addClass('dragOver');
+};
+
+function dragDocLeave(event){
+	event.stopPropagation();
+	event.preventDefault();
+	var tg = event.target.parentElement;
+
+	$(tg).removeClass('dragOver');
+}
+
+function dropDoc(event) {
+	event.stopPropagation();
+	event.preventDefault();
+
+	let e = event.originalEvent || event
+	var tg = event.target.parentElement;
+
+	let source = JSON.parse(e.dataTransfer.getData("text/plain")) //getData from dragstart
+	
+	$(tg).removeClass('dragOver');
+	deleteDocuments(source);
+}
+
+
 
 function dblclick(e) {
 	e.preventDefault();
@@ -487,7 +533,7 @@ function docList(elements) {
 			<h6 class="w-100">Filtri di ricerca</h6>
 			<div class="flex-shrink-1">
 			<small>Elimina i documenti selezionati <span id="checked-doc"></span></small>
-			<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" onclick="deleteDocuments()"></span>
+			<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" onclick="deleteDocuments(value)"></span>
 		</div>
 		</div>
 		<div class="d-flex">
@@ -521,7 +567,7 @@ function docList(elements) {
 	if($('#ulFile').children()) $('#ulFile')[0].innerHTML = '' 
 
 	var menuItemTpl =
-		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick='load("{$url}")'>
 		<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 		<div class="flex-grow-1 pr-3 fileLabel">
@@ -532,7 +578,7 @@ function docList(elements) {
 		</a>`
 	var menuItemTplSu =
 		`			
-			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" onclick='event.stopImmediatePropagation();load("{$url}")'>
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" draggable="true" onclick='load("{$url}")'>
 			<svg height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 			</svg>
@@ -1317,12 +1363,15 @@ function wikidataChoose(entity, uri) {
 function uploadEntityFile(evt) {
 	var entityListTpl = `Found {$count} entities such as {$example}`
 	var f = evt.target.files[0];
+	console.log(f);
 	if (f.type.match('json|text')) {
 		var reader = new FileReader();
 		reader.onloadend = function (e) {
 			var d = e.target.result
+			console.log(d);
 			if (f.type.match('json')) {
 				entityList = JSON.parse(d)
+				console.log(entityList);
 			} else {
 				entityList = []
 				var data = d.split('\n')
@@ -1409,18 +1458,25 @@ function updateCheckedDoc() {
 
 // Delete documents
 
-async function deleteDocuments() {
+async function deleteDocuments(value = null) {
 	
-	let checkboxes = $('#ulFile input[name="doc-checkbox"]:checked');
 	let val = [];
 
-	for(checkbox of checkboxes){
-		val.push(checkbox.getAttribute('value'))
-	}
+	if(value == null){
 
+		let checkboxes = $('#ulFile input[name="doc-checkbox"]:checked');
+
+		for(checkbox of checkboxes){
+			val.push(checkbox.getAttribute('value'))
+			}
+
+		}else{
+			val.push(value);
+		}
+	
 	if(val.length <= 0){
-		return null
-	}
+		return null			
+		}
 
 	if(confirm(`Sicuro di voler eliminare i file selezionati?`)){
 		const deleteOptions = {
