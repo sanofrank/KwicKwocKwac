@@ -65,6 +65,10 @@ router.get('/list', async (req, res) => {
 
 router.get('/load', async (req, res) => {
     try {
+        
+        const token = req.cookies.auth_token;
+        if(!token) return res.status(400).send("Non è possibile visualizzare il documento perché la tua sessione è scaduta.\nSe desideri, puoi salvare le ultime modifiche apportate e ricaricare la pagina per riaccedere alla piattaforma.");
+
         var json = {
             "metadata" : {},
             "html" : ""
@@ -100,7 +104,7 @@ router.get('/load', async (req, res) => {
 router.post('/upload', async (req,res) => {
     try{
         const token = req.cookies.auth_token;
-        if(!token) res.status(400).send("No token provided");
+        if(!token) return res.status(400).send(`Non è possibile caricare il documento perché la tua sessione è scaduta.\nSe desideri puoi salvare le ultime modifiche apportate e ricaricare la pagina per riaccedere alla piattaforma.`);
 
         const verified = jwt.verify(token,process.env.TOKEN_SECRET);
         let username = '';
@@ -299,6 +303,9 @@ router.post('/save' , async (req,res) => {
 
 router.post('/delete', async (req,res) => {
     
+    const token = req.cookies.auth_token;
+    if(!token) return res.status(400).send(`Non è possibile eliminare i documenti perché la tua sessione è scaduta.\nSe desideri puoi salvare le ultime modifiche apportate e ricaricare la pagina per riaccedere alla piattaforma.`);
+
     let path;
     const filenames = req.body;
     

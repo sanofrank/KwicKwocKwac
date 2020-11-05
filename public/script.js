@@ -823,7 +823,10 @@ async function load(file) {
 	
 	showSpinner();
 	let response = await fetch('/api/load?file=' + file);
-	if (!response.ok) alert('Non ho potuto caricare il file ' + file);
+	if (!response.ok){
+		let text = await response.text();
+		alert(text);
+	} 
 	else {
 		let json = await response.json();
 
@@ -1489,8 +1492,9 @@ async function deleteDocuments(value = null) {
 		const response = await fetch('/api/delete',deleteOptions);
 		const text = await response.text();
 		alert(text);
-		
-		location.reload();
+		if(response.ok){
+			location.reload();
+		}
 	}else{
 		return null
 	}
