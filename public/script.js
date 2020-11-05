@@ -856,6 +856,7 @@ async function load(file) {
 		searchDocuments(); // repopulate file list
 		markFootnote(documentLocation, mark = true)
 		anchorGoto(documentLocation);
+		showFileName(currentFilename);
 
 		setupKWIC(documentLocation, false);
 	}
@@ -1673,6 +1674,26 @@ function anchorGoto(location){
 			
 		})
 	});
+}
+
+// Show current file name on navbar
+function showFileName(fileName) {
+
+	let sez = splitFilename(fileName,'section');
+	let vol = splitFilename(fileName,'volume');
+	let tom = splitFilename(fileName,'tome');
+	let work = splitFilename(fileName,'work');
+
+	let newTitle = `S${sez} V${vol} T${tom} "${work}"`;
+
+	$('#fileNameNav span').prop('title',newTitle);
+
+	if(work.length > 23){
+		work = work.substring(0,23).concat('...');
+		newTitle = `S${sez} V${vol} T${tom} "${work}"`
+	} 
+	
+	$('#fileNameNav span').text(newTitle);
 }
 
 // Mark curator note and author note
