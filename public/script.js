@@ -146,6 +146,14 @@ function editSetup(editMode) {
 		$(document).on('click', '.popoverHide', function () {
 			$('.popoverToggle').popover('hide');
 		})
+		$(document).on('click', function (e) {
+			$('.popoverToggle').each(function () {
+				// hide any open popovers when the anywhere else in the body is clicked
+				if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+					$(this).popover('hide');
+				}
+			});
+		});		
 
 		// $('.popoverToggle-mentions').popover({
 		// 	container: 'body',
