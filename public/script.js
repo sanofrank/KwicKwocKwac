@@ -1472,7 +1472,7 @@ function updateCheckedDoc() {
 async function deleteDocuments(value = null) {
 	
 	let val = [];
-	console.log(value);
+
 	if(value == null){
 
 		let checkboxes = $('#ulFile input[name="doc-checkbox"]:checked');
@@ -1480,7 +1480,6 @@ async function deleteDocuments(value = null) {
 		for(checkbox of checkboxes){
 			val.push(checkbox.getAttribute('value'))
 			}
-			console.log(val);
 		}else{
 			val.push(value);
 		}
