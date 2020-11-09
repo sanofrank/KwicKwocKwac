@@ -540,7 +540,7 @@ function docList(elements) {
 			<h6 class="w-100">Filtri di ricerca</h6>
 			<div class="flex-shrink-1">
 			<small>Elimina i documenti selezionati <span id="checked-doc"></span></small>
-			<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" ondragover="dragDocOver(event)" ondragleave="dragDocLeave(event)" ondrop="dropDoc(event)" onclick="deleteDocuments(value)"></span>
+			<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" ondragover="dragDocOver(event)" ondragleave="dragDocLeave(event)" ondrop="dropDoc(event)" onclick="deleteDocuments()"></span>
 		</div>
 		</div>
 		<div class="d-flex">
@@ -1472,7 +1472,7 @@ function updateCheckedDoc() {
 async function deleteDocuments(value = null) {
 	
 	let val = [];
-
+	console.log(value);
 	if(value == null){
 
 		let checkboxes = $('#ulFile input[name="doc-checkbox"]:checked');
@@ -1480,7 +1480,7 @@ async function deleteDocuments(value = null) {
 		for(checkbox of checkboxes){
 			val.push(checkbox.getAttribute('value'))
 			}
-
+			console.log(val);
 		}else{
 			val.push(value);
 		}

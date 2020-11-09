@@ -635,6 +635,7 @@ var kwic = new (function () {
 		var label = ""
 		var sort = ""
 		var wikidataId = ""
+		var treccaniId = ""
 		this.id = mentions[0].entity
 		this.position = Number.MAX_VALUE
 		var inners = []
@@ -645,6 +646,7 @@ var kwic = new (function () {
 			label = mentions[i].label || label
 			sort = mentions[i].sort || sort
 			wikidataId = mentions[i].wikidataId || wikidataId
+			treccaniId = mentions[i].treccaniId || treccaniId
 			inners.push(mentions[i].inner)
 			this.position = Math.min(this.position, mentions[i].position)
 			this.mentions.push(mentions[i])
@@ -654,6 +656,7 @@ var kwic = new (function () {
 		this.label = options.label || label
 		this.sort = options.sort || sort
 		this.wikidataId = options.wikidataId || wikidataId
+		this.treccaniId = options.treccaniId || treccaniId
 		
 		if (!this.label) {
 			var inn = {}
@@ -681,6 +684,7 @@ var kwic = new (function () {
 				this.label = mention.label || this.label
 				this.sort = mention.sort || this.sort
 				this.wikidataId = mention.wikidataId || this.wikidataId
+				this.treccaniId = mention.treccaniId || this.treccaniId
 			}
 			this.mentions.push(mention)
 		},
@@ -690,6 +694,7 @@ var kwic = new (function () {
 				this.mentions[i].prop('entity',target.id, true)
 				this.mentions[i].prop('sort','', true)
 				this.mentions[i].prop('wikidataId','', true)
+				this.mentions[i].prop('treccaniId','', true)
 				this.mentions[i].prop('label','', true)
 				target.mentions.push(this.mentions[i])
 			}
@@ -751,6 +756,7 @@ var kwic = new (function () {
 		this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 		this.prop('wikidataId', options.wikidataId, options.force) ;
+		this.prop('treccaniId', options.treccaniId, options.force) ;
 
 		this.category = dataset.category || options.category 	// person, place, thing, etc. 
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
@@ -759,6 +765,7 @@ var kwic = new (function () {
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
 		if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
+		if (dataset.treccaniId) this.treccaniId = dataset.treccaniId // this is the Treccani Id associated to the entity this mention belongs to
 		if (dataset.rs) this.rs = `rs-active ${options.category}` // this is the value used for displaying if the mention is a referenceString
 	}
 	this.Mention.prototype = {
@@ -864,6 +871,7 @@ var kwic = new (function () {
 			this.prop('sort','',force)
 			this.prop('label','',force)
 			this.prop('wikidataId','',force)
+			this.prop('treccaniId','',force)
 			this.prop('rs','',force)
 		},
 		putToScraps: function() {
@@ -872,6 +880,7 @@ var kwic = new (function () {
 			this.prop('sort','',true)
 			this.prop('label','Menzione scartata',true)
 			this.prop('wikidataId','',true)
+			this.prop('treccaniId','',true)
 			this.prop('rs','',true)
 		},
 		putToTrash: function() {
@@ -880,6 +889,7 @@ var kwic = new (function () {
 			this.prop('sort','',true)
 			this.prop('label','Menzione cestinata',true)
 			this.prop('wikidataId','',true)
+			this.prop('treccaniId','',true)
 			this.prop('rs','',true)
 		},
 		unwrap: function() {
@@ -1805,6 +1815,7 @@ var kwic = new (function () {
 				sort: this.allEntities[i].sort,
 				category: this.allEntities[i].category,
 				wikidataId: this.allEntities[i].wikidataId,
+				treccaniId: this.allEntities[i].treccaniId,
 				count: this.allEntities[i].mentions.length,
 				variants: []
 			}
@@ -1823,6 +1834,7 @@ var kwic = new (function () {
 			sort: 'sort',
 			category: 'category',
 			wikidataId: 'wikidataId',
+			treccaniId: 'treccaniId',
 			count: 'count',
 			variants: ['variants']
 		})
@@ -1859,6 +1871,7 @@ var kwic = new (function () {
 			m0.prop('sort',entityListItem.sort)
 			m0.prop('label',entityListItem.label)
 			m0.prop('wikidataId',entityListItem.wikidataId)
+			m0.prop('treccaniId',entityListItem.treccaniId)
 		}
 	}
 	

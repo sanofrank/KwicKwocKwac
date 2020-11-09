@@ -1033,7 +1033,7 @@
 					<form>
 						<div class="row">
 							<label for="labelData-{$id}" class="col-4 small p-1">Etichetta: </label>
-							<input type="text" name="labelData" class="form-control form-control-sm col-8"
+							<input type="text" name="labelData" class="form-control form-control-sm col-8 mb-1"
 								id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)"
 								value="{$label}">
 						</div>
@@ -1056,7 +1056,7 @@
 						<div class="row">
 							<label for="wikiData-{$id}" class="col-4 small p-1">Wikidata ID: </label>
 							<div class="col-8 p-0">
-								<div class="input-group mb-2">
+								<div class="input-group mb-1">
 									<input type="text" name="wikiData-{$id}"
 										class="form-control form-control-sm flex-grow-1" id="wikiData-{$id}"
 										onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}">
@@ -1068,6 +1068,22 @@
 									</div>
 								</div>
 							</div>
+						</div>
+						<div class="row">
+							<label for="treccani-{$id}" class="col-4 small p-1">Treccani ID: </label>
+							<div class="col-8 p-0">
+							<div class="input-group mb-2">
+								<input type="text" name="treccani-{$id}"
+									class="form-control form-control-sm" id="treccani-{$id}"
+									onchange="changeValue('treccani','{$id}', this.value)" value="{$treccaniId}">
+								<div class="input-group-append small">
+									<div class="input-group-text">
+										<span class="oi oi-plus" id="addTreccaniId"
+											data-label="{$label}" data-id="{$id}"></span>
+									</div>
+								</div>
+							</div>																
+						</div>
 						</div>
 					</form>
 				</div>
