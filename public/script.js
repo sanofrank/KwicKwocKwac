@@ -1335,6 +1335,7 @@ function popoverMention() {
 
 }
 
+//Treccani request https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&requestid=P854&entity=Q171834&property=P1986&callback=
 // wikidata matching entities have arrived and are shown in the popover
 function showWikidataEntity(element) {
 	var infoTpl = `
@@ -1347,7 +1348,7 @@ function showWikidataEntity(element) {
 		$.get("https://www.wikidata.org/w/api.php?action=wbgetentities&origin=*&format=json&props=sitelinks&sitefilter=itwiki&ids=" + e.wikidataId).
 			then((data) => {
 				var lang = 'it'
-				var title = encodeURI(data.entities[e.wikidataId].sitelinks[lang + 'wiki'].title)
+				var title = encodeURI(data.entities[e.wikidataId].sitelinks[lang + 'wiki'].title)	
 				$.get("https://it.wikipedia.org/w/api.php?format=json&action=query&origin=*&prop=extracts&exintro&explaintext&redirects=1&titles=" + title)
 					.then((data) => {
 						var keys = Object.keys(data.query.pages)
@@ -1366,9 +1367,39 @@ function showWikidataEntity(element) {
 }
 
 // user has chosen a specific entity from the list of matching entities from wikidata
-function wikidataChoose(entity, uri) {
+async function wikidataChoose(entity, uri) {
+	const treccaniProp = 'P1986'
+
 	$('.popoverToggle').popover('hide')
 	changeValue('wikidataId', entity, uri)
+	
+	//Check for Treccani ID here
+	const value = await getPropWikidata(uri,treccaniProp);
+	changeValue('treccaniId', entity, value)
+}
+
+//Check if the Wikidata item has a Treccani - Dizionario bibliografico ID
+async function getPropWikidata(value,prop) {
+	
+	if(!value || !prop) return null;
+
+	const response = await fetch(`https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=${prop}&entity=${value}&origin=*`)
+	
+	if(!response.ok){
+		const text = response.text();
+		return alert(text);
+	}
+
+	const json = await response.json();
+
+	if(!jQuery.isEmptyObject(json.claims)){		
+
+		const value = json.claims[prop][0].mainsnak.datavalue.value;
+		return value;
+
+	}else{
+		return alert('Non è stata trovata una voce Treccani')
+	}
 }
 
 // Load a file containing entities and show the five most important ones. Allow importing of said entities.

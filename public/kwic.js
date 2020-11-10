@@ -712,7 +712,7 @@ var kwic = new (function () {
 				if (!done) this.mentions[0].prop(field, value)
 		},
 		// assign this entity to a different category. 
-		switchTo: function(category,force,type) {
+		switchTo: function(category,force, type) {
 				for (var i=0; i<this.mentions.length; i++) {
 					this.mentions[i].prop('category', category,force)
 				}
