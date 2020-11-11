@@ -705,8 +705,15 @@ var kwic = new (function () {
 			var done = false
 				for (var i=0; i<this.mentions.length; i++) {
 					if (this.mentions[i][field]) {
-						this.mentions[i].prop(field, value,true)
-						done = true
+						if(field == "label"){ // Reset wikidata and treccani if label changed
+							this.mentions[i].prop(field,value,true)
+							this.mentions[i].prop('wikidataId','',true)
+							this.mentions[i].prop('treccaniId','',true)
+							done = true
+						}else{
+							this.mentions[i].prop(field, value,true)
+							done = true
+						}
 					}
 				}			
 				if (!done) this.mentions[0].prop(field, value)

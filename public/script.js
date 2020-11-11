@@ -1393,12 +1393,8 @@ async function getPropWikidata(value,prop) {
 	const json = await response.json();
 
 	if(!jQuery.isEmptyObject(json.claims)){		
-
 		const value = json.claims[prop][0].mainsnak.datavalue.value;
 		return value;
-
-	}else{
-		return alert('Non è stata trovata una voce Treccani')
 	}
 }
 
@@ -1406,15 +1402,12 @@ async function getPropWikidata(value,prop) {
 function uploadEntityFile(evt) {
 	var entityListTpl = `Found {$count} entities such as {$example}`
 	var f = evt.target.files[0];
-	console.log(f);
 	if (f.type.match('json|text')) {
 		var reader = new FileReader();
 		reader.onloadend = function (e) {
 			var d = e.target.result
-			console.log(d);
 			if (f.type.match('json')) {
 				entityList = JSON.parse(d)
-				console.log(entityList);
 			} else {
 				entityList = []
 				var data = d.split('\n')
