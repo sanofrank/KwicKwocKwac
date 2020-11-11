@@ -38,6 +38,19 @@
 			content: '-';
 		}
 
+		.cardButton {
+			cursor: pointer;
+			background-color: whitesmoke;
+		}
+
+		.cardButton:hover {
+			background-color: #DAE0E4;
+		}
+
+		input.treccaniInput:disabled {
+			background-color: white;
+		  }
+
 
 		/* Effect for GoTo function  */
 		.animate {

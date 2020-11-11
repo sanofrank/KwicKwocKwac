@@ -1313,8 +1313,8 @@ function openTreccani(value){
 function popoverWiki() {
 	// http://jsfiddle.net/wormmd/sb7bx5e4/
 	var popoverTpl = `
-				<li class="wikidataItem mb-1 bg-light">
-					<span class="wikidataDesc" onclick="wikidataChoose('{$entity}','{$id}')"<b>{$label}</b>:
+				<li class="wikidataItem mb-1 bg-light" onclick="wikidataChoose('{$entity}','{$id}')">
+					<span class="wikidataDesc"<b>{$label}</b>:
 					{$description} <br>
 					<a class="wikidataLink" href="{$concepturi}" target="_blank">{$concepturi}</a>
 				</li>

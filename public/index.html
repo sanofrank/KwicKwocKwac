@@ -1045,7 +1045,7 @@
 										class="form-control form-control-sm flex-grow-1" id="sortData-{$id}"
 										onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
 									<div class="input-group-append small">
-										<div class="input-group-text">
+										<div class="input-group-text cardButton">
 											<span class="oi oi-loop-circular"
 												onclick="invertValue('{$id}','{$type}','#sortData-{$id}')"></span>
 										</div>
@@ -1061,7 +1061,7 @@
 										class="form-control form-control-sm flex-grow-1" id="wikiData-{$id}"
 										onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}">
 									<div class="input-group-append small">
-										<div class="input-group-text">											
+										<div class="input-group-text cardButton">											
 											<span class="oi oi-magnifying-glass popoverToggle" id="popoverToggle-{$id}"
 												data-label="{$label}" data-id="{$id}"></span>
 										</div>
@@ -1074,10 +1074,10 @@
 							<div class="col-8 p-0">
 							<div class="input-group mb-2">
 								<input type="text" name="treccani-{$id}"
-									class="form-control form-control-sm flex-grow-1" id="treccani-{$id}"
-									onchange="changeValue('treccaniId','{$id}', this.value)" value="{$treccaniId}">
+									class="form-control form-control-sm flex-grow-1 treccaniInput" id="treccani-{$id}"
+									onchange="changeValue('treccaniId','{$id}', this.value)" value="{$treccaniId}" disabled>
 								<div class="input-group-append small">
-									<div class="input-group-text">
+									<div class="input-group-text cardButton">
 										<span class="oi oi-external-link" id="addTreccaniId"
 											data-label="{$label}" data-id="{$id}" onclick="openTreccani('{$treccaniId}')"></span>
 									</div>
