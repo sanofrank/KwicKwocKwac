@@ -1300,6 +1300,15 @@ function invertValue(id, type, place) {
 	setupKWIC(documentLocation, true)
 }
 
+function openTreccani(value){
+
+	if(!value) return null
+
+	if(value !== "{$treccaniId}"){
+		window.open(`https://www.treccani.it/enciclopedia/${value}_(Dizionario-Biografico)`);
+	}
+}
+
 // show the popover where the searched items from wikidata are shown
 function popoverWiki() {
 	// http://jsfiddle.net/wormmd/sb7bx5e4/
