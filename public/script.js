@@ -1340,10 +1340,6 @@ function popoverWiki() {
 	return `<div id='{$tmpId}' class='loading spinner scroll-col'></div>`.tpl({ tmpId: tmpId })
 }
 
-function popoverMention() {
-
-}
-
 //Treccani request https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&requestid=P854&entity=Q171834&property=P1986&callback=
 // wikidata matching entities have arrived and are shown in the popover
 function showWikidataEntity(element) {
