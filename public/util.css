@@ -49,8 +49,18 @@
 
 		input.cardInput:disabled {
 			background-color: white;
-		  }
+			border: white;
+			color: black;
+		}
 
+		a.treccani:hover{
+			cursor: pointer;
+		}
+
+		a.treccaniLink:hover{
+			color: #03ade0;
+			text-decoration: underline;
+		}
 
 		/* Effect for GoTo function  */
 		.animate {

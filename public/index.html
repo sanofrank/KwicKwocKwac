@@ -1033,9 +1033,25 @@
 					<form>
 						<div class="row">
 							<label for="labelData-{$id}" class="col-4 small p-1">Etichetta: </label>
-							<input type="text" name="labelData" class="form-control form-control-sm col-8 mb-1"
+							<div class="col-8 p-0">
+								<div class="input-group mb-1">
+									<input type="text" name="labelData" class="form-control form-control-sm "
 								id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)"
 								value="{$label}">
+								<div class="input-group-append small" >
+								<div class="input-group-text cardButton" title="Cerca su Wikidata" aria-hidden="true">											
+									<span class="oi oi-magnifying-glass popoverToggle" id="popoverToggle-{$id}"
+										data-label="{$label}" data-id="{$id}"></span>
+								</div>
+								</div>
+							</div>
+							</div>
+							<!-- 
+							<div class="input-group-append small">
+								<label for="labelData-{$id}" class="col-4 small p-1">Etichetta: </label>
+							<input type="text" name="labelData" class="form-control form-control-sm col-8 mb-1"
+								id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)"
+								value="{$label}"> -->
 						</div>
 						<div class="row">
 							<label for="sortData-{$id}" class="col-4 small p-1">Ordina valore: </label>
@@ -1058,14 +1074,14 @@
 							<div class="col-8 p-0">
 								<div class="input-group mb-1">
 									<input type="text" name="wikiData-{$id}"
-										class="form-control form-control-sm flex-grow-1 cardInput" id="wikiData-{$id}"
+										class="flex-grow-1 cardInput" id="wikiData-{$id}"
 										onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}" disabled>
-									<div class="input-group-append small">
+									<!-- <div class="input-group-append small">
 										<div class="input-group-text cardButton">											
 											<span class="oi oi-magnifying-glass popoverToggle" id="popoverToggle-{$id}"
 												data-label="{$label}" data-id="{$id}"></span>
 										</div>
-									</div>
+									</div> -->
 								</div>
 							</div>
 						</div>
@@ -1073,15 +1089,20 @@
 							<label for="treccani-{$id}" class="col-4 small p-1">Treccani ID: </label>
 							<div class="col-8 p-0">
 							<div class="input-group mb-2">
-								<input type="text" name="treccani-{$id}"
+								<a name="treccani-{$id}"
+								class=" flex-grow-1 cardInput {$treccaniLink} treccani" id="treccani-{$id}"
+								onchange="changeValue('treccaniId','{$id}',this.value)" onclick="openTreccani(this.innerText)" target="_blank" placeholder="{$placeholderTreccani}">
+								{$treccaniId} {$placeholderTreccani}
+								</a>
+								<!-- <input type="text" name="treccani-{$id}"
 									class="form-control form-control-sm flex-grow-1 cardInput" id="treccani-{$id}"
-									onchange="changeValue('treccaniId','{$id}', this.value)" value="{$treccaniId}" disabled>
-								<div class="input-group-append small">
+									onchange="changeValue('treccaniId','{$id}', this.value)" onclick="openTreccani(this.value)" value="{$treccaniId}" placeholder="{$placeholderTreccani}" disabled> -->
+								<!-- <div class="input-group-append small">
 									<div class="input-group-text cardButton" onclick="openTreccani('{$treccaniId}')">
-										<span class="oi oi-external-link"
+										<span class="oi oi-external-link popoverTreccani" id="popoverTreccani-{$id}"
 											data-label="{$label}" data-id="{$id}"></span>
 									</div>
-								</div>
+								</div> -->
 							</div>																
 						</div>
 						</div>

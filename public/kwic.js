@@ -1524,8 +1524,20 @@ var kwic = new (function () {
 			for (var j=0; j<cat.entities.length; j++) {
 				var ent = {...cat.entities[j]}
 				ent.content = ""
-				ent.count = ent.mentions.length
-				ent.check = ent.wikidataId ? 'oi-check' : ''
+				ent.count = ent.mentions.length				
+				if(ent.wikidataId){
+					ent.check = 'oi-check'
+					if(ent.treccaniId){ //Controlla se è presente anche il treccani Id
+						ent.placeholderTreccani = ''
+						ent.treccaniLink = 'treccaniLink' //treccani link class activate
+					}else{
+						ent.treccaniLink = 'popoverTreccani' //treccani link class activate
+						ent.placeholderTreccani = 'Non rilevato' //treccani non presente all'interno dei Wikidata
+					}
+				}else{
+					ent.check = ''
+					ent.placeholderTreccani = ''
+				}
 				if (tpl.mentions) {
 					for (var k=0; k<ent.mentions.length; k++) {
 						var mention = {...ent.mentions[k]} ;

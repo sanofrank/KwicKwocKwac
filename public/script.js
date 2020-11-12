@@ -125,6 +125,22 @@ function editCallbacks(editMode) {
 
 function editSetup(editMode) {
 	if (editMode) {
+
+		let popoverTreccani = `
+					<div class="d-flex">
+						<span class="text-info">Dizionario Biografico degli italiani</span>
+						<span class="button ml-auto p-1 pointer popoverHide flex-shrink-1">&times;</span>
+					</div>`
+					  
+		$('.popoverTreccani').popover({
+			container: 'body',
+			placement: 'bottom',
+			title: popoverTreccani,
+			html: true,
+			content: `Su Wikidata non è ancora presente un Treccani ID per questa entità`, //${kwic.allEntities[entity].label}
+			trigger: 'click'
+		})
+
 		// popovers appear when searching wikidata for a term matching the entity
 		var popoverTitle = `
                 	<span class="text-info">Corrispondenze con Wikidata</span>
@@ -145,9 +161,16 @@ function editSetup(editMode) {
 		})
 		$(document).on('click', '.popoverHide', function () {
 			$('.popoverToggle').popover('hide');
+			$('.popoverTreccani').popover('hide');
 		})
 		$(document).on('click', function (e) {
 			$('.popoverToggle').each(function () {
+				// hide any open popovers when the anywhere else in the body is clicked
+				if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+					$(this).popover('hide');
+				}
+			});
+			$('.popoverTreccani').each(function () {
 				// hide any open popovers when the anywhere else in the body is clicked
 				if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
 					$(this).popover('hide');
@@ -465,7 +488,7 @@ function setupKWIC(location, saveView) {
 	} else {
 		mentions = kwic.findMentions('.mention', location);
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
-		console.log(list);
+		//console.log(list);
 		var c0 = kwic.toHTML(
 			kwic.allCategories,
 			{
@@ -480,6 +503,7 @@ function setupKWIC(location, saveView) {
 				categories: $('#categoryTpl1').html(),
 			}
 		);
+		console.log(list);
 		$('#categoryTab').html(c0)
 		$('#categoryPane').html(c1)
 		$('#categoryTab .nav-link').first().addClass('active')
@@ -1302,7 +1326,7 @@ function invertValue(id, type, place) {
 
 function openTreccani(value){
 
-	if(!value) return null
+	if(!value || value == "Non rilevato") return null
 
 	if(value !== "{$treccaniId}"){
 		window.open(`https://www.treccani.it/enciclopedia/${value}_(Dizionario-Biografico)`);
@@ -1380,7 +1404,12 @@ async function wikidataChoose(entity, uri) {
 	
 	//Check for Treccani ID here
 	const value = await getPropWikidata(uri,treccaniProp);
-	changeValue('treccaniId', entity, value)
+	if(!value){
+		changeValue('treccaniId', entity, '')
+		$('#'+entity+' .popoverTreccani').popover('toggle')
+	}else{
+		changeValue('treccaniId', entity, value)
+	}
 }
 
 //Check if the Wikidata item has a Treccani - Dizionario bibliografico ID
@@ -1400,6 +1429,8 @@ async function getPropWikidata(value,prop) {
 	if(!jQuery.isEmptyObject(json.claims)){		
 		const value = json.claims[prop][0].mainsnak.datavalue.value;
 		return value;
+	}else{
+		return null
 	}
 }
 
