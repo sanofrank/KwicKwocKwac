@@ -886,7 +886,7 @@
 					<span class="badge badge-primary em3">{$count}</span>
 					<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu"
 						role="button" aria-expanded="false" aria-controls="{$id}-menu">
-						<span class="oi oi-plus"></span>
+						<span class="oi oi-info"></span>
 					</span>
 				</span>
 			</a>
@@ -1013,17 +1013,28 @@
 	<template id="entityTpl">
 		<li class="entityContainer draggable dropPoint" id="{$id}" data-level="entity" data-id="{$id}">
 			<a href="#"
-				class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded bg-light w-100 treeExpand">
-				<span class="entityLabel">{$label}</span>
-				<span class="d-inline-flex flex-nowrap mr-0">
-					<span class="badge badge-light em3"><span class="oi {$check} text-success"></span></span>
+				class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded hoverTreeExpand bg-light w-100 treeExpand">
+				<div>
 					<span class="badge badge-primary em3">{$count}</span>
-					<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu"
+					<span class="entityLabel">{$label}</span>
+				</div>
+				<span class="d-inline-flex flex-nowrap mr-0">
+					{$check}	
+					<span onmouseover="overTreeExpand(this)" onmouseout="offTreeExpand(this)">
+						<button type="button" class="btn btn-secondary btn-sm py-0 px-3 editOnly infoButton" 
+								onclick="toggleInfo(event,'#{$id}-menu')"
+							 style="font-size: small;">
+							<span class="oi oi-info"></span>
+						</button>			
+					</span>	
+					<!-- 
+						data-toggle="collapse"  data-target="#{$id}-menu" aria-expanded="false" aria-controls="{$id}-menu"
+						<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu"
 						role="button" aria-expanded="false" aria-controls="{$id}-menu">
-						<span class="oi oi-plus"></span>
+						<span class="oi oi-info"></span> -->
 					</span>
 				</span>
-			</a>
+			</a>	
 			<div class="collapse card entityCard" id="{$id}-menu">
 				<h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button"
 					aria-expanded="false" aria-controls="{$id}-menu">
@@ -1038,10 +1049,10 @@
 									<input type="text" name="labelData" class="form-control form-control-sm "
 								id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)"
 								value="{$label}">
-								<div class="input-group-append small" >
+								<div class="input-group-append small popoverToggle" id="popoverToggle-{$id}" 
+									data-label="{$label}" data-id="{$id}">
 								<div class="input-group-text cardButton" title="Cerca su Wikidata" aria-hidden="true">											
-									<span class="oi oi-magnifying-glass popoverToggle" id="popoverToggle-{$id}"
-										data-label="{$label}" data-id="{$id}"></span>
+									<span class="oi oi-magnifying-glass"></span>
 								</div>
 								</div>
 							</div>
@@ -1061,9 +1072,8 @@
 										class="form-control form-control-sm flex-grow-1" id="sortData-{$id}"
 										onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
 									<div class="input-group-append small">
-										<div class="input-group-text cardButton">
-											<span class="oi oi-loop-circular"
-												onclick="invertValue('{$id}','{$type}','#sortData-{$id}')"></span>
+										<div class="input-group-text cardButton" onclick="invertValue('{$id}','{$type}','#sortData-{$id}')">
+											<span class="oi oi-loop-circular"></span>
 										</div>
 									</div>
 								</div>
@@ -1088,9 +1098,9 @@
 						<div class="row">
 							<label for="treccani-{$id}" class="col-4 small p-1">Treccani ID: </label>
 							<div class="col-8 p-0">
-							<div class="input-group mb-2">
+							<div class="input-group">
 								<a name="treccani-{$id}"
-								class=" flex-grow-1 cardInput {$treccaniLink} treccani" id="treccani-{$id}"
+								class=" cardInput {$treccaniLink} treccani" id="treccani-{$id}"
 								onchange="changeValue('treccaniId','{$id}',this.value)" onclick="openTreccani(this.innerText)" target="_blank" placeholder="{$placeholderTreccani}">
 								{$treccaniId} {$placeholderTreccani}
 								</a>

@@ -368,7 +368,11 @@ function dblclick(e) {
 // callback for entity tree in left pane
 function treeClick(e, callback) {
 	// https://stackoverflow.com/questions/5636375/how-to-create-a-collapsing-tree-table-in-html-css-js
+	e.stopPropagation();
+	e.preventDefault();
+
 	var parent = $(e.originalEvent.target).closest('.treeExpand')[0].parentElement;
+
 	var classList = parent.classList;
 	if (classList.contains("open")) {
 		classList.remove('open');
@@ -383,6 +387,35 @@ function treeClick(e, callback) {
 	}
 }
 
+function toggleInfo(e,target) {
+	e.stopPropagation();
+	//e.preventDefault();
+
+	$(target).collapse({
+		toggle: false
+	})
+
+	if($(target).hasClass('show')){
+		$(target).collapse('hide')
+	}else{
+		$(target).collapse('show')
+	}
+}
+
+//Toggle bg-light class
+function overTreeExpand(infoButton) {
+	let span = infoButton.parentElement
+	let anchor = span.parentElement
+
+	anchor.classList.remove('bg-light')
+}
+
+function offTreeExpand(infoButton) {
+	let span = infoButton.parentElement
+	let anchor = span.parentElement
+
+	anchor.classList.add('bg-light')
+}
 // Filter document search by character
 function searchDocuments(){
 	// Declare variables

@@ -1526,7 +1526,7 @@ var kwic = new (function () {
 				ent.content = ""
 				ent.count = ent.mentions.length				
 				if(ent.wikidataId){
-					ent.check = 'oi-check'
+					ent.check = '<span class="badge badge-light"><span class="oi oi-check text-success align-middle"></span></span>'
 					if(ent.treccaniId){ //Controlla se è presente anche il treccani Id
 						ent.placeholderTreccani = ''
 						ent.treccaniLink = 'treccaniLink' //treccani link class activate

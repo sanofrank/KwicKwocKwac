@@ -62,6 +62,10 @@
 			text-decoration: underline;
 		}
 
+		.hoverTreeExpand {
+			background-color: #f8f9fa;
+			}
+
 		/* Effect for GoTo function  */
 		.animate {
 			animation-name: bgcolor ;
