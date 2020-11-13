@@ -879,7 +879,29 @@
 	</template>
 	<template id="citationTpl">
 		<li class="citationContainer draggable dropPoint" id="citation-{$id}" data-level="citation" data-id="{$id}">
-			<a href="#"
+				<a href="#"
+					class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded hoverTreeExpand bg-light w-100 treeExpand">
+					<div>
+						<span class="badge badge-primary em3">{$count}</span>
+						<span class="citationLabel">{$label}</span>
+					</div>
+					<span class="d-inline-flex flex-nowrap mr-0">
+						<span onmouseover="overTreeExpand(this)" onmouseout="offTreeExpand(this)">
+							<button type="button" class="btn btn-secondary btn-sm py-0 px-3 editOnly infoButton" 
+									onclick="toggleInfo(event,'#{$id}-menu')"
+								 style="font-size: small;">
+								<span class="oi oi-info"></span>
+							</button>			
+						</span>	
+						<!-- 
+							data-toggle="collapse"  data-target="#{$id}-menu" aria-expanded="false" aria-controls="{$id}-menu"
+							<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu"
+							role="button" aria-expanded="false" aria-controls="{$id}-menu">
+							<span class="oi oi-info"></span> -->
+						</span>
+					</span>
+				</a>
+			<!-- <a href="#"
 				class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded bg-light w-100 treeExpand">
 				<span class="citationLabel">{$label}</span>
 				<span class="d-inline-flex flex-nowrap mr-0">
@@ -889,7 +911,7 @@
 						<span class="oi oi-info"></span>
 					</span>
 				</span>
-			</a>
+			</a> -->
 			<div class="collapse card citationCard" id="{$id}-menu">
 				<h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button"
 					aria-expanded="false" aria-controls="{$id}-menu">

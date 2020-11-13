@@ -586,7 +586,8 @@ function setCurrentView(view) {
 		$('#categoryPane .active').animate({ scrollTop: view.scroll }, 10)
 		view.openEls.forEach(function (i) { $('#' + i).addClass('open') })
 		view.openCards.forEach(function (i) { $('#' + i).addClass('show') })
-		
+		view.openEls_cit.forEach(function (i) { $('#' + i).addClass('open') })
+		view.openCards_cit.forEach(function (i) { $('#' + i).addClass('show') })	
 	}
 }
 

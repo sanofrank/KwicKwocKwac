@@ -152,10 +152,11 @@ router.post('/upload', async (req,res) => {
                 }
 
                 let docFile = files[i].data;
-                
+
                 const result = await mammoth.convertToHtml({buffer: docFile});
                 content = await result.value;
-
+                console.log(typeof content)
+                
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath,content, (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
