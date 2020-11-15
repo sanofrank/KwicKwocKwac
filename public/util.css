@@ -66,6 +66,18 @@
 			background-color: #f8f9fa;
 			}
 
+		.trashbinPopover {
+			background-color: #017BFE;
+		}
+
+		.trashbinPopover .popover-body{
+			color: white
+		}
+
+		.trashbinPopover .arrow:after {
+			border-top-color: #017BFE;
+		}
+
 		/* Effect for GoTo function  */
 		.animate {
 			animation-name: bgcolor ;

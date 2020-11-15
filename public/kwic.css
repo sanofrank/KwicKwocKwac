@@ -68,6 +68,14 @@
     border: 1px outset red;
 }
 
+.showStyles .mention.trash {
+    border: none !important;
+}
+
+.showStyles .mention.scraps {
+    border: none !important;
+}
+
 .rs-active {
     background-color: yellow;
 }

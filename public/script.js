@@ -43,6 +43,7 @@ var expandableSelector = '.treeExpand'   // selector for expandable items in the
 var draggableSelector = '.draggable'    // selector for elements that can be dragged in the left pane
 var referencingString = '.dblclick'
 var droppableSelector = '.dropPoint'    // selector for elements that can receive dreaggable elements in thee left pane
+var trashbin = '.popoverTrash'
 
 $(document).ready(main);
 
@@ -108,6 +109,7 @@ function editCallbacks(editMode) {
 		$(document).on('dragleave', droppableSelector, dragleave)     // drag event
 		$(document).on('drop', droppableSelector, drop)          // drag event
 		$(document).on('dblclick', referencingString, dblclick)  // doubleclick event
+		$(document).on('dblclick', trashbin, emptyTrash) // fire empty trash
 		//$(document).on("click", "#metadata-toggle", uploadMetadata);
 	} else {
 		$(document).off('keydown', documentLocation, onkeydown)    // keyboard event
@@ -120,11 +122,23 @@ function editCallbacks(editMode) {
 		$(document).off('dragleave', droppableSelector, dragleave)    // drag event
 		$(document).off('drop', droppableSelector, drop)		   // drag event
 		$(document).off('dblclick', referencingString, dblclick)  // doubleclick event
+		$(document).off('dblclick', trashbin, emptyTrash) // fire empty trash
 	}
 }
 
 function editSetup(editMode) {
 	if (editMode) {
+		console.log('ENABLE')
+	
+		//$('.popoverTrash').popover('enable')
+			$('.popoverTrash').popover({
+				container: 'body',
+				placement: 'top',
+				template : `<div class="popover trashbinPopover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>`,
+				//html: true,
+				content: 'Clicca due volte per svuotare il cestino',
+				trigger: 'hover'
+			})
 
 		let popoverTreccani = `
 					<div class="d-flex">
@@ -178,14 +192,6 @@ function editSetup(editMode) {
 			});
 		});		
 
-		// $('.popoverToggle-mentions').popover({
-		// 	container: 'body',
-		// 	placement: 'right',
-		// 	html: true,
-		// 	title: `<span class="text-info">{$label}</span>`,
-		// 	content: popoverMention
-		// })
-
 		// allow drag & drop
 		$(draggableSelector).attr('draggable', 'true')
 		$(".rs").addClass('dblclick')
@@ -199,6 +205,8 @@ function editSetup(editMode) {
 		// disallow drag & drop
 		$(draggableSelector).removeAttr('draggable')
 		$(".rs").removeClass('dblclick')
+
+		$('.popoverTrash').popover('dispose')
 
 		//hide elements that need to appear only when in edit Mode
 		$('.editOnly').addClass('d-none')

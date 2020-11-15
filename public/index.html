@@ -170,12 +170,10 @@
 										<a class="nav-link" id="info-tab" data-toggle="tab" href="#infoPane" role="tab"
 											aria-controls="infoPane" aria-selected="false">Info</a>
 									</li>
-									<li class="nav-item ml-auto pointer dropPoint" data-level="trash" data-id="trash">
-										<a class="nav-link" id="trash-realtab" data-toggle="tab"
-											data-target="#trash-realpane">
-											<span class="oi oi-trash" title="Cestino" aria-hidden="true"></span>
-											<span class="sr-only">Cestino</span>
-										</a>
+									<li class="nav-item ml-auto pointer dropPoint popoverTrash" 
+									 data-level="trash" data-id="trash">
+										<a class="nav-link" id="trash-realtab" data-toggle="tab" href="#trash-realpane"
+											data-target="#trash-realpane">Cestino</a>
 									</li>
 								</ul>
 								<div class="tab-content d-flex flex-column h-100" id="otherPanes" data-level="scraps"
@@ -189,7 +187,7 @@
 										role="tabpanel" aria-labelledby="info-tab">
 										<h1>Info</h1>
 									</div>
-									<div class="tab-pane ug-border ug-border-notop dropPoint h-100" id="trash-realpane"
+									<div class="tab-pane scroll-col ug-border ug-border-notop dropPoint h-100" id="trash-realpane"
 										role="tabpanel" aria-labelledby="trash-tab" data-level="trash" data-id="trash">
 										<ul></ul>
 									</div>
@@ -217,23 +215,31 @@
 									aria-label="References" style="display:none">
 								</div>
 								<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
+									<div class="h6">
+										Opzioni di marcatura
+									</div>
 									<label class="small" title="Premenre ALT inverte la funzione">
-										Estendi selezione a parola intera (ALT o ⌥)
+										Estendi selezione a parola intera <!--(ALT o ⌥)-->
 										<span class="switch">
 											<input id="extendSel" type="checkbox" checked onchange="prefs('extend', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
-									<label id="markAll-label"class="small" title="Premere SHIFT inverte la funzione">
-										Evidenzia tutte le istanze (⇧)
+									<label id="markAll-label"class="small " title="Premere SHIFT inverte la funzione">
+										Evidenzia tutte le istanze <!--(⇧)-->
 										<span class="switch">
 											<input id="markAll" type="checkbox" checked onchange="prefs('markAll', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
-									<label class="small" title="Cambia lo stato di marcatura da: Da avviare, In corso e Terminata">
+								</div>
+								<div class=" col-3 btn-group-toggle">
+									<div class="h6">
 										Stato della marcatura
-									</label>
+									</div>								
+									<!-- <label class="small" title="Cambia lo stato di marcatura da: Da avviare, In corso e Terminata">
+										
+									</label> -->
 									<button id="status" type="button" class="btn btn-primary btn-sm" 
 											onclick="changeStatus()"></button>
 								</div>
