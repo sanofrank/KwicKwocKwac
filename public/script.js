@@ -568,10 +568,17 @@ function setupKWIC(location, saveView) {
 						</a>
 					</li>`)
 		$('#scraps-realpane').html("")
+		console.log($('#scraps-tab').html())
+		let tmpScraps = $('#scraps-tab').text();
+		let scrapsNum = tmpScraps.match(/\d/g) ? tmpScraps.match(/\d/g) : '0'
+		$('#scraps-realtab').text(`Scarti (${scrapsNum})`)
 		$('#scraps-realpane').html($('#scraps-pane').html())
 		$('#scraps-tab').remove()
 		$('#scraps-pane').remove()
 		$('#trash-realpane').html("")
+		let tmpTrash = $('#trash-tab').text();
+		let trashNum = tmpTrash.match(/\d/g) ? tmpTrash.match(/\d/g) : '0'
+		$('#trash-realtab').text(`Cestino (${trashNum})`)
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
