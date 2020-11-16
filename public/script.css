@@ -60,7 +60,7 @@ body,
   overflow-x: hidden; 
   /*height: 100%;  used h-100 class instead*/
 }
-#title {
+#title, #subtitle{
 	width: 90%;
 	margin: 0, auto; 
 }
@@ -81,16 +81,22 @@ body,
 	text-align: justify;  
 }
 h1 {
-		padding: 1.5em;
+		padding: 1.5em 1.5em 0 1.5em;
 		background-color: #e9ecef;
 		border-radius: .3rem;
 		font-size: 180%; 
-		margin: 1em auto; 
+		/*margin: 1em auto; */
 }
 h2 {
 		padding-top: 1.5em;
 		padding-bottom: 0.5em;
 		font-size: 130%; 
+		margin: 1em auto; 
+}
+.jumbotron h6 {
+		padding: 0 1.5em 1.5em 1.5em;
+		background-color: #e9ecef;
+		border-radius: .3rem;
 		margin: 1em auto; 
 }
 blockquote {
@@ -274,7 +280,41 @@ h1 {
 		max-width: 100%; 
 	}
 
-/*Loading spinner css*/
+	#spinner {
+		position:fixed;
+		width:100%;
+		left:0;right:0;top:0;bottom:0;
+		background-color: rgba(255,255,255,0.3);
+		z-index:9999;
+		display:none;
+	}
+	
+	@-webkit-keyframes spin {
+		from {-webkit-transform:rotate(0deg);}
+		to {-webkit-transform:rotate(360deg);}
+	}
+	
+	@keyframes spin {
+		from {transform:rotate(0deg);}
+		to {transform:rotate(360deg);}
+	}
+	
+	#spinner::after {
+		content:'';
+		display:block;
+		position:absolute;
+		left:48%;top:40%;
+		width:80px;height:80px;
+		border-style:solid;
+		border-color: #017BFE;
+		border-top-color:transparent;
+		border-width: 8px;
+		border-radius:50%;
+		-webkit-animation: spin .8s linear infinite;
+		animation: spin .8s linear infinite;
+	}
+
+/* Loading spinner css
 	#spinner{
 		visibility: hidden;
 		width: 80px;
@@ -284,12 +324,9 @@ h1 {
 		border: 2px solid #f3f3f3;
 		border-top:3px solid #017BFE;
 		border-radius: 100%;
-	  
+
 		position: absolute;
-		top:0;
-		bottom:0;
-		left:0;
-		right: 0;
+		padding: 0;
 		margin: auto;
 	  }
 	  
@@ -304,7 +341,7 @@ h1 {
 	  #spinner.show {
 		visibility: visible;
 		animation: spin 1s infinite linear;
-	  }
+	  } */
 
 .bi{	
 	color: #017BFE;

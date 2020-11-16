@@ -21,7 +21,7 @@ router.post('/logout', async (req, res) => {
 router.post('/change_password', async (req,res) => {
 
     const token = req.cookies.auth_token;
-    if(!token) res.status(400).send("No token provided");
+    if(!token) return res.status(400).send("Non è possibile cambiare password perché la tua sessione è scaduta.\nSe desideri puoi salvare le ultime modifiche apportate e ricaricare la pagina per riaccedere alla piattaforma.");
 
     const verified = jwt.verify(token,process.env.TOKEN_SECRET);
     const objID = verified.id;

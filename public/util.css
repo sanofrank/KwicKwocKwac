@@ -30,14 +30,55 @@
 			top: .2em;
 		}
 
-		ul.tree li > a:not(:last-child):before {
+		ul.tree li > a:not(:last-child):before {		
+			font-size: small;
 			content: '+';
 		}
 
 		ul.tree li.open > a:not(:last-child):before {
+			font-size: small;
 			content: '-';
 		}
 
+		.cardButton {
+			cursor: pointer;
+			background-color: whitesmoke;
+		}
+
+		.cardButton:hover {
+			background-color: #DAE0E4;
+		}
+
+		input.cardInput:disabled {
+			background-color: white;
+			border: white;
+			color: black;
+		}
+
+		a.treccani:hover{
+			cursor: pointer;
+		}
+
+		a.treccaniLink:hover{
+			color: #03ade0;
+			text-decoration: underline;
+		}
+
+		.hoverTreeExpand {
+			background-color: #f8f9fa;
+			}
+
+		.trashbinPopover {
+			background-color: #017BFE;
+		}
+
+		.trashbinPopover .popover-body{
+			color: white
+		}
+
+		.trashbinPopover .arrow:after {
+			border-top-color: #017BFE;
+		}
 
 		/* Effect for GoTo function  */
 		.animate {

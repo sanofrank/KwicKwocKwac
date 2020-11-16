@@ -1,16 +1,16 @@
 const router = require('express').Router();
 const fs = require('fs');
+const rimraf = require('rimraf');
 const fgc = require('file-get-contents');
 const mkDir = require('make-dir');
 const mammoth = require('mammoth');
+//const mammoth_style = require('mammoth-style');
 const jwt = require('jsonwebtoken');
 const Metadata = require('../model/Metadata');
 
 const dir = 'public/files';
 const src = /src=(["|\'])(?!http)(?!#footnote)/g;
 const href = /href=(["|\'])(?!http)(?!#footnote)/g;
-
-
 
 router.get('/list', async (req, res) => {
     try {
@@ -65,6 +65,10 @@ router.get('/list', async (req, res) => {
 
 router.get('/load', async (req, res) => {
     try {
+        
+        const token = req.cookies.auth_token;
+        if(!token) return res.status(400).send("Non è possibile visualizzare il documento perché la tua sessione è scaduta.\nSe desideri, puoi salvare le ultime modifiche apportate e ricaricare la pagina per riaccedere alla piattaforma.");
+
         var json = {
             "metadata" : {},
             "html" : ""
@@ -100,12 +104,19 @@ router.get('/load', async (req, res) => {
 router.post('/upload', async (req,res) => {
     try{
         const token = req.cookies.auth_token;
-        if(!token) res.status(400).send("No token provided");
+        if(!token) return res.status(400).send(`Non è possibile caricare il documento perché la tua sessione è scaduta.\nSe desideri puoi salvare le ultime modifiche apportate e ricaricare la pagina per riaccedere alla piattaforma.`);
 
         const verified = jwt.verify(token,process.env.TOKEN_SECRET);
-        const username = verified.username;
+        let username = '';
 
-        const type = req.body.type;
+        if(req.body.user == '') return res.status(400).send('Compilare il nome')
+        if(req.body.user != 'undefined'){
+            username = req.body.user;
+        }else{
+            username = verified.username;
+        } 
+
+        const type = req.body.type; 
         const sez = req.body.sez;
         const vol = req.body.vol;
         const tom = req.body.tom;
@@ -123,7 +134,7 @@ router.post('/upload', async (req,res) => {
             }
 
             for(i in files){
-                let opera = filenames[i];
+                let opera = filenames[i].replace(/_+/g,' ');
 
                 let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
                 let path = `${dir}/${fileName}`;
@@ -141,10 +152,11 @@ router.post('/upload', async (req,res) => {
                 }
 
                 let docFile = files[i].data;
-                
+
                 const result = await mammoth.convertToHtml({buffer: docFile});
                 content = await result.value;
-
+                console.log(typeof content)
+                
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath,content, (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
@@ -288,6 +300,49 @@ router.post('/save' , async (req,res) => {
     }catch(err){
         res.status(400).send(err)
     }
+})
+
+router.post('/delete', async (req,res) => {
+    
+    const token = req.cookies.auth_token;
+    if(!token) return res.status(400).send(`Non è possibile eliminare i documenti perché la tua sessione è scaduta.\nSe desideri puoi salvare le ultime modifiche apportate e ricaricare la pagina per riaccedere alla piattaforma.`);
+
+    let path;
+    const filenames = req.body;
+    
+    if(filenames.length <= 0){
+        return res.status(400).send('Non ci sono file selezionati da eliminare.')
+    }
+
+    for(filename of filenames){
+        path = `${dir}/${filename}`
+
+        if(filename !== ""){
+            if(!fs.existsSync(path)){
+                return res.status(400).send(`${filename} non è presente nella cartella dei file`)
+            }else{
+                let split = filename.split("_");
+                const objId = split[6];
+
+                if(objId && objId !== 'undefined'){
+                    await Metadata.deleteOne({_id: objId}, (err) => {
+                        if(err){
+                            return res.status(400).send('Metadati non trovati');
+                        }
+                    })
+                }
+
+                rimraf(path, (err,data) => {
+                    if(err){
+                        return res.status(400).send(`Erorre nell'eliminazione del file ${filename}`)
+                    }
+                });
+            }
+        }
+    }
+    
+    return res.send('File eliminati correttamente')
+    
 })
 
 router.post('/change' , (req,res) => {

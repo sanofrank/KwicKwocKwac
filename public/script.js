@@ -36,13 +36,15 @@ var trashShown;		                     // whether the trash pane is currently sho
 var editMode;                           // whether the user can add or modify mentions in the document shown
 var apply_filter = false;                // whether filter have been applyied on search documents
 var referenceMode;             			 // whether the reference panel is shown
-var currentMetadata = {};					// the metadata of the current loaded file
+var currentMetadata = {};				 // the metadata of the current loaded file
+var loadedDocument;
 const spinner = document.getElementById("spinner");
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
 var draggableSelector = '.draggable'    // selector for elements that can be dragged in the left pane
 var referencingString = '.dblclick'
 var droppableSelector = '.dropPoint'    // selector for elements that can receive dreaggable elements in thee left pane
+var trashbin = '.popoverTrash'
 
 $(document).ready(main);
 
@@ -53,6 +55,7 @@ $(document).ready(main);
 /* ------------------------------------------------------------------------------ */
 
 async function main() {
+	loadedDocument = false;
 	editMode = false;
 	nullSelection = $('#file')[0]
 	/* Place the caret at the beginning of the #file element. */
@@ -65,14 +68,6 @@ async function main() {
 	//Setting width and height of left and bottom panel, setting active class on current style and current sort
 	layoutSetup()
 
-	//Onload authentication
-	const loginOptions = {
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		credentials: 'include'
-	};
-
 	fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 	fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
 	fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No reference loaded'));
@@ -81,11 +76,12 @@ async function main() {
 	basicCallbacks()
 	editCallbacks(editMode)
 	editSetup(editMode)
+	loadedDocumentSetup(loadedDocument)
 }
 
 function basicCallbacks() {
 	$('#save').click(saveDoc)
-	$('#entityFile').change(uploadEntityFile);
+	$('#entityFiles').change(uploadEntityFile);
 	$('.fileParams').change(fileParams);
 	$('input[name="inlineRadioOptions"]').change(emptyUpload);
 	$('#docFile').change(uploadFileSetup);
@@ -98,6 +94,8 @@ function basicCallbacks() {
 	//$('#user-filter').keyup(() => $('#apply-filter').prop('disabled',false)) //enable apply filter button on inserted text in user input
 	$(document).on('click', '#file-filter', e => e.stopPropagation()); //prevent closing dropdown-menu on click
 	$(document).on('click', expandableSelector, treeClick)
+	$(document).on('dragstart', '#ulFile .dropdown-item', dragDocStart);
+	$(document).on('drop', '#trash-filter', dropDoc);
 }
 
 function editCallbacks(editMode) {
@@ -113,6 +111,7 @@ function editCallbacks(editMode) {
 		$(document).on('dragleave', droppableSelector, dragleave)     // drag event
 		$(document).on('drop', droppableSelector, drop)          // drag event
 		$(document).on('dblclick', referencingString, dblclick)  // doubleclick event
+		$(document).on('dblclick', trashbin, emptyTrash) // fire empty trash
 		//$(document).on("click", "#metadata-toggle", uploadMetadata);
 	} else {
 		$(document).off('keydown', documentLocation, onkeydown)    // keyboard event
@@ -125,11 +124,37 @@ function editCallbacks(editMode) {
 		$(document).off('dragleave', droppableSelector, dragleave)    // drag event
 		$(document).off('drop', droppableSelector, drop)		   // drag event
 		$(document).off('dblclick', referencingString, dblclick)  // doubleclick event
+		$(document).off('dblclick', trashbin, emptyTrash) // fire empty trash
 	}
 }
 
 function editSetup(editMode) {
 	if (editMode) {
+			//$('.popoverTrash').popover('enable')
+			$('.popoverTrash').popover({
+				container: 'body',
+				placement: 'top',
+				template : `<div class="popover trashbinPopover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>`,
+				//html: true,
+				content: 'Clicca due volte per svuotare il cestino',
+				trigger: 'hover'
+			})
+
+		let popoverTreccani = `
+					<div class="d-flex">
+						<span class="text-info">Dizionario Biografico degli italiani</span>
+						<span class="button ml-auto p-1 pointer popoverHide flex-shrink-1">&times;</span>
+					</div>`
+					  
+		$('.popoverTreccani').popover({
+			container: 'body',
+			placement: 'bottom',
+			title: popoverTreccani,
+			html: true,
+			content: `Su Wikidata non è ancora presente un Treccani ID per questa entità`, //${kwic.allEntities[entity].label}
+			trigger: 'click'
+		})
+
 		// popovers appear when searching wikidata for a term matching the entity
 		var popoverTitle = `
                 	<span class="text-info">Corrispondenze con Wikidata</span>
@@ -150,15 +175,22 @@ function editSetup(editMode) {
 		})
 		$(document).on('click', '.popoverHide', function () {
 			$('.popoverToggle').popover('hide');
+			$('.popoverTreccani').popover('hide');
 		})
-
-		// $('.popoverToggle-mentions').popover({
-		// 	container: 'body',
-		// 	placement: 'right',
-		// 	html: true,
-		// 	title: `<span class="text-info">{$label}</span>`,
-		// 	content: popoverMention
-		// })
+		$(document).on('click', function (e) {
+			$('.popoverToggle').each(function () {
+				// hide any open popovers when the anywhere else in the body is clicked
+				if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+					$(this).popover('hide');
+				}
+			});
+			$('.popoverTreccani').each(function () {
+				// hide any open popovers when the anywhere else in the body is clicked
+				if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+					$(this).popover('hide');
+				}
+			});
+		});		
 
 		// allow drag & drop
 		$(draggableSelector).attr('draggable', 'true')
@@ -174,10 +206,21 @@ function editSetup(editMode) {
 		$(draggableSelector).removeAttr('draggable')
 		$(".rs").removeClass('dblclick')
 
+		$('.popoverTrash').popover('dispose')
+
 		//hide elements that need to appear only when in edit Mode
 		$('.editOnly').addClass('d-none')
 		$('#editButton').removeClass('bg-primary')
 		$('#file').removeClass('showStyles')
+	}
+}
+
+function loadedDocumentSetup(loadedDocument){
+	if(loadedDocument){
+		$('.loadedDocumentOnly').removeClass('d-none')
+	}else{
+		$('.loadedDocumentOnly').addClass('d-none')
+
 	}
 }
 
@@ -216,15 +259,18 @@ function onmouseup(event) {
 }
 
 function showSpinner() {
-	spinner.className = "show";
+	$('#spinner').show(0)
+	//spinner.className = "show";
 }
 
 function hideSpinner() {
-	spinner.className = spinner.className.replace("show", "");
+	$('#spinner').hide(0)
+	//spinner.className = spinner.className.replace("show", "");
 }
 
 // Callbacks for draggable elements
 function dragstart(event) {
+	console.log(event);
 	var e = event.originalEvent || event //drag
 	var tg = e.target.dataset.id ? e.target : e.target.parentElement
 	var data = JSON.stringify(tg.dataset)
@@ -283,6 +329,48 @@ function drop(event) {
 	return true;
 }
 
+//Callbacks for draggable doclist items
+function dragDocStart(event) {
+	var e = event.originalEvent || event //drag
+	var tg = e.target;
+	let val = tg.querySelector('input[name="doc-checkbox"]').getAttribute('value');
+	
+	let data = JSON.stringify(val)
+	e.dataTransfer.setDragImage(tg,0,0); //(customImage,x.cursor,y.cursor)
+	e.dataTransfer.setData('text/plain',data);
+}
+
+function dragDocOver(event) {
+	event.stopPropagation();
+	event.preventDefault();
+	var tg = event.target.parentElement;
+
+	$(tg).addClass('dragOver');
+};
+
+function dragDocLeave(event){
+	event.stopPropagation();
+	event.preventDefault();
+	var tg = event.target.parentElement;
+
+	$(tg).removeClass('dragOver');
+}
+
+function dropDoc(event) {
+	event.stopPropagation();
+	event.preventDefault();
+
+	let e = event.originalEvent || event
+	var tg = event.target.parentElement;
+
+	let source = JSON.parse(e.dataTransfer.getData("text/plain")) //getData from dragstart
+	
+	$(tg).removeClass('dragOver');
+	deleteDocuments(source);
+}
+
+
+
 function dblclick(e) {
 	e.preventDefault();
 	e.stopImmediatePropagation();
@@ -299,7 +387,11 @@ function dblclick(e) {
 // callback for entity tree in left pane
 function treeClick(e, callback) {
 	// https://stackoverflow.com/questions/5636375/how-to-create-a-collapsing-tree-table-in-html-css-js
+	e.stopPropagation();
+	e.preventDefault();
+
 	var parent = $(e.originalEvent.target).closest('.treeExpand')[0].parentElement;
+
 	var classList = parent.classList;
 	if (classList.contains("open")) {
 		classList.remove('open');
@@ -314,6 +406,35 @@ function treeClick(e, callback) {
 	}
 }
 
+function toggleInfo(e,target) {
+	e.stopPropagation();
+	//e.preventDefault();
+
+	$(target).collapse({
+		toggle: false
+	})
+
+	if($(target).hasClass('show')){
+		$(target).collapse('hide')
+	}else{
+		$(target).collapse('show')
+	}
+}
+
+//Toggle bg-light class
+function overTreeExpand(infoButton) {
+	let span = infoButton.parentElement
+	let anchor = span.parentElement
+
+	anchor.classList.remove('bg-light')
+}
+
+function offTreeExpand(infoButton) {
+	let span = infoButton.parentElement
+	let anchor = span.parentElement
+
+	anchor.classList.add('bg-light')
+}
 // Filter document search by character
 function searchDocuments(){
 	// Declare variables
@@ -348,6 +469,9 @@ function searchDocuments(){
 		  }
 	  }
 	}
+
+	//Document Counter 
+	$('#documentCounter').text(visible)
 
 	//resize fileMenu
 	if(visible > 13){
@@ -416,7 +540,7 @@ function setupKWIC(location, saveView) {
 	} else {
 		mentions = kwic.findMentions('.mention', location);
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
-		console.log(list);
+		//console.log(list);
 		var c0 = kwic.toHTML(
 			kwic.allCategories,
 			{
@@ -431,6 +555,7 @@ function setupKWIC(location, saveView) {
 				categories: $('#categoryTpl1').html(),
 			}
 		);
+		console.log(list);
 		$('#categoryTab').html(c0)
 		$('#categoryPane').html(c1)
 		$('#categoryTab .nav-link').first().addClass('active')
@@ -480,6 +605,8 @@ function setCurrentView(view) {
 		$('#categoryPane .active').animate({ scrollTop: view.scroll }, 10)
 		view.openEls.forEach(function (i) { $('#' + i).addClass('open') })
 		view.openCards.forEach(function (i) { $('#' + i).addClass('show') })
+		view.openEls_cit.forEach(function (i) { $('#' + i).addClass('open') })
+		view.openCards_cit.forEach(function (i) { $('#' + i).addClass('show') })	
 	}
 }
 
@@ -489,6 +616,10 @@ function docList(elements) {
 	if(!elements.su) $('#file-filter')[0].innerHTML = `
 		<div class="d-flex">
 			<h6 class="w-100">Filtri di ricerca</h6>
+			<div class="flex-shrink-1">
+			<small>Elimina i documenti selezionati <span id="checked-doc"></span></small>
+			<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" ondragover="dragDocOver(event)" ondragleave="dragDocLeave(event)" ondrop="dropDoc(event)" onclick="deleteDocuments()"></span>
+		</div>
 		</div>
 		<div class="d-flex">
 			<div id="state-filter"class="w-100 p-2">
@@ -512,7 +643,7 @@ function docList(elements) {
 		</div>
 		<hr>
 		<div class="d-inline-flex">
-			<h6>Documenti</h6>
+			<h6>Documenti: <span id="documentCounter" class ="pl-1"></span></h6>
 		</div>
 	`
 	//<span class="oi oi-trash flex-shrink-1" title="delete files" aria-hidden="true"></span>		
@@ -521,16 +652,18 @@ function docList(elements) {
 	if($('#ulFile').children()) $('#ulFile')[0].innerHTML = '' 
 
 	var menuItemTpl =
-		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick='load("{$url}")'>
 		<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 		<div class="flex-grow-1 pr-3 fileLabel">
 		{$label}
 		</div>
+		<input class="document-checkbox" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
+		<label for="doc-checkbox"></label>
 		</a>`
 	var menuItemTplSu =
 		`			
-			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" onclick='load("{$url}")'>
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" draggable="true" onclick='load("{$url}")'>
 			<svg height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 			</svg>
@@ -539,10 +672,13 @@ function docList(elements) {
 			</div>
 			<div>
 			<span class="badge  border border-primary rounded text-primary">{$user}</span>
+			<input class="document-checkbox" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
+			<label for="doc-checkbox"></label>
 			</div>
 			</a>
 		`		
-		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}"/>
+
+		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}">
 
 	//resize fileMenu
 	if(elements.list.length > 13){
@@ -562,6 +698,16 @@ function docList(elements) {
 		}
 	}
 
+	//Document Counter 
+	$('#documentCounter').text(elements.list.length)
+
+	//superuser upload edit
+	if(!elements.su){
+		$('#user-upload').remove(); //remove user upload choice
+	}
+	
+	//update checked document
+	updateCheckedDoc();
 }
 
 function categoriesList(list) {
@@ -644,6 +790,7 @@ function setLayout(type, value) {
 			.addClass("h-{$iv}".tpl(iv))
 	}
 }
+
 
 /* ------------------------------------------------------------------------------ */
 /*                                                                                */
@@ -744,8 +891,12 @@ function applyFilter() {
 		}
 	}
 
+	//Document Counter 
+	let count = $('#ulFile a').not(".d-none").length
+	$('#documentCounter').text(count)
+
 	//resize fileMenu
-	if(visible > 13){
+	if(count > 13){
 		$('#ulFile').css("height", "26em")
 	}else{
 		$('#ulFile').css("height", "");
@@ -755,10 +906,15 @@ function applyFilter() {
 
 // load and show a document
 async function load(file) {
+	
 	showSpinner();
 	let response = await fetch('/api/load?file=' + file);
-	if (!response.ok) alert('Non ho potuto caricare il file ' + file);
+	if (!response.ok){
+		let text = await response.text();
+		alert(text);
+	} 
 	else {
+		loadedDocument = true;
 		let json = await response.json();
 
 		currentFilename = file;
@@ -777,7 +933,7 @@ async function load(file) {
 		// ADD data path here from file splitting
 		toggleEdit();
 		$('#file').html(json.html);
-		let format = await formattingDoc(documentLocation);
+		formattingDoc(documentLocation);
 		$('#file').attr("status", status);
 		$('#file').attr('data-path', path);
 		setStatus(status);
@@ -787,7 +943,9 @@ async function load(file) {
 		searchDocuments(); // repopulate file list
 		markFootnote(documentLocation, mark = true)
 		anchorGoto(documentLocation);
+		showFileName(currentFilename);
 
+		loadedDocumentSetup(loadedDocument);
 		setupKWIC(documentLocation, false);
 	}
 	hideSpinner();
@@ -1040,6 +1198,9 @@ async function uploadDoc(dataHTML,dataDOCX) {
 
 	let requestOptions;
 
+	// User name
+	let user = $('#userUpload') ? $('#userUpload').val() : '';
+	console.log(user)
 	// Unique sez_vol_tom path
 	let sez = $('#sezNumber').val();
 	let vol = $('#volNumber').val();
@@ -1067,7 +1228,8 @@ async function uploadDoc(dataHTML,dataDOCX) {
 
 	if(format_radio === 'docx'){
 		// append data info
-		dataDOCX.append('type', format_radio)
+		dataDOCX.append('type', format_radio);
+		dataDOCX.append('user',user)
 		dataDOCX.append("sez", sez);
 		dataDOCX.append("vol", vol);
 		dataDOCX.append("tom", tom);
@@ -1082,6 +1244,7 @@ async function uploadDoc(dataHTML,dataDOCX) {
 		let files = {};
 
 		files.type = format_radio;
+		files.user = user;
 		files.sez = sez;
 		files.vol = vol;
 		files.tom = tom;
@@ -1216,12 +1379,21 @@ function invertValue(id, type, place) {
 	setupKWIC(documentLocation, true)
 }
 
+function openTreccani(value){
+
+	if(!value || value == "Non rilevato") return null
+
+	if(value !== "{$treccaniId}"){
+		window.open(`https://www.treccani.it/enciclopedia/${value}_(Dizionario-Biografico)`);
+	}
+}
+
 // show the popover where the searched items from wikidata are shown
 function popoverWiki() {
 	// http://jsfiddle.net/wormmd/sb7bx5e4/
 	var popoverTpl = `
-				<li class="wikidataItem mb-1 bg-light">
-					<span class="wikidataDesc" onclick="wikidataChoose('{$entity}','{$id}')"<b>{$label}</b>:
+				<li class="wikidataItem mb-1 bg-light" onclick="wikidataChoose('{$entity}','{$id}')">
+					<span class="wikidataDesc"<b>{$label}</b>:
 					{$description} <br>
 					<a class="wikidataLink" href="{$concepturi}" target="_blank">{$concepturi}</a>
 				</li>
@@ -1247,10 +1419,7 @@ function popoverWiki() {
 	return `<div id='{$tmpId}' class='loading spinner scroll-col'></div>`.tpl({ tmpId: tmpId })
 }
 
-function popoverMention() {
-
-}
-
+//Treccani request https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&requestid=P854&entity=Q171834&property=P1986&callback=
 // wikidata matching entities have arrived and are shown in the popover
 function showWikidataEntity(element) {
 	var infoTpl = `
@@ -1263,7 +1432,7 @@ function showWikidataEntity(element) {
 		$.get("https://www.wikidata.org/w/api.php?action=wbgetentities&origin=*&format=json&props=sitelinks&sitefilter=itwiki&ids=" + e.wikidataId).
 			then((data) => {
 				var lang = 'it'
-				var title = encodeURI(data.entities[e.wikidataId].sitelinks[lang + 'wiki'].title)
+				var title = encodeURI(data.entities[e.wikidataId].sitelinks[lang + 'wiki'].title)	
 				$.get("https://it.wikipedia.org/w/api.php?format=json&action=query&origin=*&prop=extracts&exintro&explaintext&redirects=1&titles=" + title)
 					.then((data) => {
 						var keys = Object.keys(data.query.pages)
@@ -1282,9 +1451,42 @@ function showWikidataEntity(element) {
 }
 
 // user has chosen a specific entity from the list of matching entities from wikidata
-function wikidataChoose(entity, uri) {
+async function wikidataChoose(entity, uri) {
+	const treccaniProp = 'P1986'
+
 	$('.popoverToggle').popover('hide')
 	changeValue('wikidataId', entity, uri)
+	
+	//Check for Treccani ID here
+	const value = await getPropWikidata(uri,treccaniProp);
+	if(!value){
+		changeValue('treccaniId', entity, '')
+		$('#'+entity+' .popoverTreccani').popover('toggle')
+	}else{
+		changeValue('treccaniId', entity, value)
+	}
+}
+
+//Check if the Wikidata item has a Treccani - Dizionario bibliografico ID
+async function getPropWikidata(value,prop) {
+	
+	if(!value || !prop) return null;
+
+	const response = await fetch(`https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=${prop}&entity=${value}&origin=*`)
+	
+	if(!response.ok){
+		const text = response.text();
+		return alert(text);
+	}
+
+	const json = await response.json();
+
+	if(!jQuery.isEmptyObject(json.claims)){		
+		const value = json.claims[prop][0].mainsnak.datavalue.value;
+		return value;
+	}else{
+		return null
+	}
 }
 
 // Load a file containing entities and show the five most important ones. Allow importing of said entities.
@@ -1367,6 +1569,58 @@ function fileParams() {
 		if(format_radio === "docx") $('#docFile').prop('accept', ".docx")
 
 		$('#docFile').prop('disabled', false)
+	}
+}
+
+// Update checked document number
+function updateCheckedDoc() {
+
+	let checked = 0;
+
+	let checkbox = $('#ulFile input[name="doc-checkbox"]:checked');
+	checked = checkbox.length;
+
+	$('#checked-doc').text(checked);
+}
+
+// Delete documents
+
+async function deleteDocuments(value = null) {
+	
+	let val = [];
+
+	if(value == null){
+
+		let checkboxes = $('#ulFile input[name="doc-checkbox"]:checked');
+
+		for(checkbox of checkboxes){
+			val.push(checkbox.getAttribute('value'))
+			}
+		}else{
+			val.push(value);
+		}
+	
+	if(val.length <= 0){
+		return null			
+		}
+
+	if(confirm(`Sicuro di voler eliminare i file selezionati?`)){
+		const deleteOptions = {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json'
+			},
+			body: JSON.stringify(val)
+		}
+		
+		const response = await fetch('/api/delete',deleteOptions);
+		const text = await response.text();
+		alert(text);
+		if(response.ok){
+			location.reload();
+		}
+	}else{
+		return null
 	}
 }
 
@@ -1494,10 +1748,9 @@ async function formattingDoc(location){
 	if(child.firstElementChild.tagName === 'EM'){
 		if(!child.classList.contains('no-abstract')){
 			let abstract = child.innerText;
-			$('#abstract')[0].innerText = abstract;
 
 			if(window.confirm(`È stata rilevata l'introduzione:\n${abstract}\nSi desidera spostarla all'interno dell'abstract dei metadati?`)){
-				let abstract = child.innerText;
+				//Add abstract to metadata field
 				$('#abstract')[0].innerText = abstract;
 
 				let data = {
@@ -1512,16 +1765,18 @@ async function formattingDoc(location){
 					},
 					body: JSON.stringify(data)
 				}
-
+				//Save only abstract without other options
 				let metadata = await fetch('/api/save_abstract',requestOptions);
 				let json = await metadata.json();
 				currentFilename = json.fileName;
-
+				//Remove abstract from file and save document
 				file.removeChild(child);
 				saveDoc()
-
+				//Reload doclist
 				let update = await fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
-
+				//Change save button behaviour 
+				$('#save-metadata').text('Aggiorna');
+				$('#save-metadata').attr('onclick','saveMetadata(true)')
 			}else{
 				child.classList.add('no-abstract')
 			}
@@ -1542,6 +1797,26 @@ function anchorGoto(location){
 			
 		})
 	});
+}
+
+// Show current file name on navbar
+function showFileName(fileName) {
+
+	let sez = splitFilename(fileName,'section');
+	let vol = splitFilename(fileName,'volume');
+	let tom = splitFilename(fileName,'tome');
+	let work = splitFilename(fileName,'work');
+
+	let newTitle = `S${sez} V${vol} T${tom} "${work}"`;
+
+	$('#fileNameNav span').prop('title',newTitle);
+
+	if(work.length > 23){
+		work = work.substring(0,23).concat('...');
+		newTitle = `S${sez} V${vol} T${tom} "${work}"`
+	} 
+	
+	$('#fileNameNav span').text(newTitle);
 }
 
 // Mark curator note and author note
@@ -1788,6 +2063,7 @@ async function checkMetadata(){
 		//Append new empty form
 		$('#add-metadata').append(newForm);
 		$('#add-metadata #addMetadata-sub').text(header);
+		$('#add-metadata #work-title').val(fileName);
 		$('#add-metadata #curator').val(user);
 	}else{
 		//Extract ident
@@ -1851,7 +2127,6 @@ async function saveMetadata(update = false) {
 	let objId = ""
 	if(update) objId = splitFilename(currentFilename,"objId");
 
-	let title = splitFilename(currentFilename, "work")
 	let file = currentFilename;
 	let n = $('#ident').val();
 	let ident = $('div#file').attr('data-path') + n
@@ -1864,6 +2139,7 @@ async function saveMetadata(update = false) {
 		role.push(r)
 	})
 
+	let title = $('#work-title').val();
 	let curator = $('#curator').val();
 	let abstract = $('#abstract').val();
 	let doctype = $('select.doctype').map((_, el) => el.value).get();

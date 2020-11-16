@@ -635,6 +635,7 @@ var kwic = new (function () {
 		var label = ""
 		var sort = ""
 		var wikidataId = ""
+		var treccaniId = ""
 		this.id = mentions[0].entity
 		this.position = Number.MAX_VALUE
 		var inners = []
@@ -645,6 +646,7 @@ var kwic = new (function () {
 			label = mentions[i].label || label
 			sort = mentions[i].sort || sort
 			wikidataId = mentions[i].wikidataId || wikidataId
+			treccaniId = mentions[i].treccaniId || treccaniId
 			inners.push(mentions[i].inner)
 			this.position = Math.min(this.position, mentions[i].position)
 			this.mentions.push(mentions[i])
@@ -654,6 +656,7 @@ var kwic = new (function () {
 		this.label = options.label || label
 		this.sort = options.sort || sort
 		this.wikidataId = options.wikidataId || wikidataId
+		this.treccaniId = options.treccaniId || treccaniId
 		
 		if (!this.label) {
 			var inn = {}
@@ -681,6 +684,7 @@ var kwic = new (function () {
 				this.label = mention.label || this.label
 				this.sort = mention.sort || this.sort
 				this.wikidataId = mention.wikidataId || this.wikidataId
+				this.treccaniId = mention.treccaniId || this.treccaniId
 			}
 			this.mentions.push(mention)
 		},
@@ -690,6 +694,7 @@ var kwic = new (function () {
 				this.mentions[i].prop('entity',target.id, true)
 				this.mentions[i].prop('sort','', true)
 				this.mentions[i].prop('wikidataId','', true)
+				this.mentions[i].prop('treccaniId','', true)
 				this.mentions[i].prop('label','', true)
 				target.mentions.push(this.mentions[i])
 			}
@@ -700,14 +705,21 @@ var kwic = new (function () {
 			var done = false
 				for (var i=0; i<this.mentions.length; i++) {
 					if (this.mentions[i][field]) {
-						this.mentions[i].prop(field, value,true)
-						done = true
+						if(field == "label"){ // Reset wikidata and treccani if label changed
+							this.mentions[i].prop(field,value,true)
+							this.mentions[i].prop('wikidataId','',true)
+							this.mentions[i].prop('treccaniId','',true)
+							done = true
+						}else{
+							this.mentions[i].prop(field, value,true)
+							done = true
+						}
 					}
 				}			
 				if (!done) this.mentions[0].prop(field, value)
 		},
 		// assign this entity to a different category. 
-		switchTo: function(category,force,type) {
+		switchTo: function(category,force, type) {
 				for (var i=0; i<this.mentions.length; i++) {
 					this.mentions[i].prop('category', category,force)
 				}
@@ -727,6 +739,7 @@ var kwic = new (function () {
 	// mentions are places in the document where entities are mentioned
 	// they end up as <span class="mention category">text</span>
 	this.Mention = function(nodeOrRange, options) {
+		console.log(nodeOrRange)
 		if (!options) options = {}         // fallback object for inizialization
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "mention-" ;
@@ -751,6 +764,7 @@ var kwic = new (function () {
 		this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 		this.prop('wikidataId', options.wikidataId, options.force) ;
+		this.prop('treccaniId', options.treccaniId, options.force) ;
 
 		this.category = dataset.category || options.category 	// person, place, thing, etc. 
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
@@ -759,6 +773,7 @@ var kwic = new (function () {
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
 		if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
+		if (dataset.treccaniId) this.treccaniId = dataset.treccaniId // this is the Treccani Id associated to the entity this mention belongs to
 		if (dataset.rs) this.rs = `rs-active ${options.category}` // this is the value used for displaying if the mention is a referenceString
 	}
 	this.Mention.prototype = {
@@ -864,6 +879,7 @@ var kwic = new (function () {
 			this.prop('sort','',force)
 			this.prop('label','',force)
 			this.prop('wikidataId','',force)
+			this.prop('treccaniId','',force)
 			this.prop('rs','',force)
 		},
 		putToScraps: function() {
@@ -872,6 +888,7 @@ var kwic = new (function () {
 			this.prop('sort','',true)
 			this.prop('label','Menzione scartata',true)
 			this.prop('wikidataId','',true)
+			this.prop('treccaniId','',true)
 			this.prop('rs','',true)
 		},
 		putToTrash: function() {
@@ -880,6 +897,7 @@ var kwic = new (function () {
 			this.prop('sort','',true)
 			this.prop('label','Menzione cestinata',true)
 			this.prop('wikidataId','',true)
+			this.prop('treccaniId','',true)
 			this.prop('rs','',true)
 		},
 		unwrap: function() {
@@ -1507,8 +1525,20 @@ var kwic = new (function () {
 			for (var j=0; j<cat.entities.length; j++) {
 				var ent = {...cat.entities[j]}
 				ent.content = ""
-				ent.count = ent.mentions.length
-				ent.check = ent.wikidataId ? 'oi-check' : ''
+				ent.count = ent.mentions.length				
+				if(ent.wikidataId){
+					ent.check = '<span class="badge badge-light"><span class="oi oi-check text-success align-middle"></span></span>'
+					if(ent.treccaniId){ //Controlla se è presente anche il treccani Id
+						ent.placeholderTreccani = ''
+						ent.treccaniLink = 'treccaniLink' //treccani link class activate
+					}else{
+						ent.treccaniLink = 'popoverTreccani' //treccani link class activate
+						ent.placeholderTreccani = 'Non rilevato' //treccani non presente all'interno dei Wikidata
+					}
+				}else{
+					ent.check = ''
+					ent.placeholderTreccani = ''
+				}
 				if (tpl.mentions) {
 					for (var k=0; k<ent.mentions.length; k++) {
 						var mention = {...ent.mentions[k]} ;
@@ -1805,6 +1835,7 @@ var kwic = new (function () {
 				sort: this.allEntities[i].sort,
 				category: this.allEntities[i].category,
 				wikidataId: this.allEntities[i].wikidataId,
+				treccaniId: this.allEntities[i].treccaniId,
 				count: this.allEntities[i].mentions.length,
 				variants: []
 			}
@@ -1823,6 +1854,7 @@ var kwic = new (function () {
 			sort: 'sort',
 			category: 'category',
 			wikidataId: 'wikidataId',
+			treccaniId: 'treccaniId',
 			count: 'count',
 			variants: ['variants']
 		})
@@ -1859,6 +1891,7 @@ var kwic = new (function () {
 			m0.prop('sort',entityListItem.sort)
 			m0.prop('label',entityListItem.label)
 			m0.prop('wikidataId',entityListItem.wikidataId)
+			m0.prop('treccaniId',entityListItem.treccaniId)
 		}
 	}
 	

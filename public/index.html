@@ -28,20 +28,17 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-link active nav-item"><span class="d-inline-block">
-						<span class="oi oi-magnifying-glass"></span>
-					</li>
 					<li class="nav-item dropdown active">
-						<input class="nav-link dropdown-toggle" type="text" id="fileList" data-toggle="dropdown" 
+						<input class="nav-link dropdown-toggle ml-3" type="text" id="fileList" data-toggle="dropdown" 
 							aria-haspopup="true" aria-expanded="false" onkeyup="searchDocuments()" placeholder="Cerca documenti">
 						<div id="fileMenu" class="dropdown-menu" aria-labelledby="fileList">
 							<div id="file-filter" class="dropdown-header pb-0">
 								<div class="d-flex">
 									<h6 class="w-100">Filtri di ricerca</h6>
-									<!--<div class="flex-shrink-1">
-										<small>Elimina i documenti selezionati</small>
-										<span id="trash-filter" class="oi oi-trash" title="delete files" aria-hidden="true" onclick="deleteDocuments()"></span>
-									</div>-->
+									<div class="flex-shrink-1">
+										<small>Elimina i documenti selezionati <span id="checked-doc"></span></small>
+										<span id="trash-filter" class="oi oi-trash" title="elimina i file" aria-hidden="true" ondragover="dragDocOver(event)" ondragleave="dragDocLeave(event)" ondrop="dropDoc(event)"onclick="deleteDocuments()"></span>
+									</div>
 								</div>
 									<input id="user-filter" class="form-control form-control-sm d-flex" type="text" placeholder="Utente, untente, ...">
 									<small>Inserire i nomi degli utenti separati da una virgola.</small>
@@ -67,7 +64,7 @@
 								</div>
 								<hr>
 								<div class="d-inline-flex">
-									<h6>Documenti</h6>
+									<h6>Documenti: <span id="documentCounter" class ="pl-1"></span></h6>
 								</div>
 							</div>
 							<ul class="list-group overflow-auto"id="ulFile">
@@ -95,22 +92,30 @@
 					</li>
 				</ul>
 				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active" id="fileNameNav">
+						<span class="nav-link" aria-hidden="true" title="Titolo file"></span>
+					</li>
+					<li class="nav-item active editOnly">
+						<span class="nav-link">
+							|
+						</span>
+					</li>
 					<li class="nav-item active editOnly" id="saveButton">
 						<a class="nav-link" href="#" role="button" onClick="saveDoc()"><span class="oi oi-folder"
 								title="Salva documento" aria-hidden="true"></span> <span>Salva documento</span></a>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-2 my-lg-0">
-					<li class="nav-item active" id="uploadButton">
-						<a class="nav-link editOnly" href="#" role="button" data-toggle="modal"
-							data-target="#FileUpload"><span class="oi oi-cloud-upload"
-								title="Carica documento in locale" aria-hidden="true"></span> <span
-								class="sr-only">Carica documento</span></a>
-					</li>
-					<li class="nav-item active" id="editButton">
+					<li class="nav-item active loadedDocumentOnly" id="editButton">
 						<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()"><span
 								class="oi oi-pencil" title="Passa alla modalità editing" aria-hidden="true"></span> <span
 								class="sr-only">Modifica documento</span></a>
+					</li>
+					<li class="nav-item active" id="uploadButton">
+						<a class="nav-link" href="#" role="button" data-toggle="modal"
+							data-target="#FileUpload"><span class="oi oi-cloud-upload"
+								title="Carica documento in locale" aria-hidden="true"></span> <span
+								class="sr-only">Carica documento</span></a>
 					</li>
 					<li class="nav-item dropdown active"> 
 						<a class="nav-link dropdown-toggle" href="#" id="user-options" data-toggle="dropdown" 
@@ -129,11 +134,11 @@
 									class="oi oi-book border-light rounded-circle"
 									title="Documentazione" aria-hidden="true"></span> <span class="sr-only">Documentazione</span></a>
 					</li>
-					<li class="nav-item active">
+					<!-- <li class="nav-item active">
 						<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span
 								class="oi oi-question-mark border-light rounded-circle"
 								title="Informazioni su KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">Informazioni</span></a>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 		</nav>
@@ -142,7 +147,7 @@
 				<div id="spinner"></div>
 				<div class="row h-100">
 					<div class="col-3 h-100 pr-1 fs-3 mt-2 disable-select" id="left">
-						<div class="row h-50 pb-5" id="topPane">
+						<div class="row h-50 pb-5 loadedDocumentOnly" id="topPane">
 							<div class="col-12 h-100 pr-0 mb-4">
 								<ul class="nav nav-tabs  mr-auto" id="categoryTab" role="tablist">
 								</ul>
@@ -150,7 +155,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="row h-50 pb-5" id="bottomPane">
+						<div class="row h-50 pb-5 loadedDocumentOnly" id="bottomPane">
 							<div class="col-12 h-100 pr-0 mb-0">
 								<ul class="nav nav-tabs" id="otherTab" role="tablist">
 									<li class="nav-item dropPoint" data-level="scraps" data-id="scraps">
@@ -162,12 +167,10 @@
 										<a class="nav-link" id="info-tab" data-toggle="tab" href="#infoPane" role="tab"
 											aria-controls="infoPane" aria-selected="false">Info</a>
 									</li>
-									<li class="nav-item ml-auto pointer dropPoint" data-level="trash" data-id="trash">
-										<a class="nav-link" id="trash-realtab" data-toggle="tab"
-											data-target="#trash-realpane">
-											<span class="oi oi-trash" title="Cestino" aria-hidden="true"></span>
-											<span class="sr-only">Cestino</span>
-										</a>
+									<li class="nav-item ml-auto pointer dropPoint popoverTrash" 
+									 data-level="trash" data-id="trash">
+										<a class="nav-link" id="trash-realtab" data-toggle="tab" href="#trash-realpane"
+											data-target="#trash-realpane">Cestino</a>
 									</li>
 								</ul>
 								<div class="tab-content d-flex flex-column h-100" id="otherPanes" data-level="scraps"
@@ -181,7 +184,7 @@
 										role="tabpanel" aria-labelledby="info-tab">
 										<h1>Info</h1>
 									</div>
-									<div class="tab-pane ug-border ug-border-notop dropPoint h-100" id="trash-realpane"
+									<div class="tab-pane scroll-col ug-border ug-border-notop dropPoint h-100" id="trash-realpane"
 										role="tabpanel" aria-labelledby="trash-tab" data-level="trash" data-id="trash">
 										<ul></ul>
 									</div>
@@ -209,23 +212,31 @@
 									aria-label="References" style="display:none">
 								</div>
 								<div class="btn-group-toggle my-2 my-lg-0 mx-3 ">
+									<div class="h6">
+										Opzioni di marcatura
+									</div>
 									<label class="small" title="Premenre ALT inverte la funzione">
-										Estendi selezione a parola intera (ALT o ⌥)
+										Estendi selezione a parola intera <!--(ALT o ⌥)-->
 										<span class="switch">
 											<input id="extendSel" type="checkbox" checked onchange="prefs('extend', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
-									<label id="markAll-label"class="small" title="Premere SHIFT inverte la funzione">
-										Evidenzia tutte le istanze (⇧)
+									<label id="markAll-label"class="small " title="Premere SHIFT inverte la funzione">
+										Evidenzia tutte le istanze <!--(⇧)-->
 										<span class="switch">
 											<input id="markAll" type="checkbox" checked onchange="prefs('markAll', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
-									<label class="small" title="Cambia lo stato di marcatura da: Da avviare, In corso e Terminata">
+								</div>
+								<div class=" col-3 btn-group-toggle">
+									<div class="h6">
 										Stato della marcatura
-									</label>
+									</div>								
+									<!-- <label class="small" title="Cambia lo stato di marcatura da: Da avviare, In corso e Terminata">
+										
+									</label> -->
 									<button id="status" type="button" class="btn btn-primary btn-sm" 
 											onclick="changeStatus()"></button>
 								</div>
@@ -238,8 +249,9 @@
 							</button>
 						</div>
 						<div id="file" status="default" data-path="default" class="h-100 scroll-col">
-							<div class="jumbotron" id="title">
-								<h1>Key Words In Context</h1>
+							<div class="jumbotron">
+								<h1 id="title">Key Words In Context</h1>
+								<h6 id="subtitle">Un programma per visualizzare e modificare documenti digitali.</h6>
 							</div>
 						</div>
 					</div>
@@ -596,6 +608,12 @@
 								<input type="number" id="tomNumber" name="tomNumber" min="1" max="2" required />						
 							</div>
 						</div>
+						<div id ="user-upload" class="fileParams pt-2 form-row">
+							<div class="col">
+								<label for="userUpload">Utente</label>
+								<input type="text" id="userUpload" name="userUpload" required />						
+							</div>
+						</div>
 						<div id="fileFormat" class="fileParams pt-2 form-row">
 							<div class="col">
 								<span>Formato documento:</span>
@@ -680,6 +698,12 @@
 							compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi:
 							<samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
 						<input type="text" class="form-control" id="ident" aria-describedby="id-metadata" value="{$ident}">
+					</div>
+					<div class="form-group">
+						<label for="work-title">Titolo dell'opera *</label>
+						<small style="margin-bottom: 10px;" class="form-text text-muted">Inserire il titolo da attribuire all'opera,
+						come valore di default è scelto il nome del documento salvato sulla piattaforma.</small>
+						<input type="text" class="form-control" id="work-title" aria-describedby="work-title-metadata" value="{$title}">
 					</div>
 					<div class="form-group role-group">
 						<label>Ruolo dell'autore *</label>
@@ -859,17 +883,39 @@
 	</template>
 	<template id="citationTpl">
 		<li class="citationContainer draggable dropPoint" id="citation-{$id}" data-level="citation" data-id="{$id}">
-			<a href="#"
+				<a href="#"
+					class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded hoverTreeExpand bg-light w-100 treeExpand">
+					<div>
+						<span class="badge badge-primary em3">{$count}</span>
+						<span class="citationLabel">{$label}</span>
+					</div>
+					<span class="d-inline-flex flex-nowrap mr-0">
+						<span onmouseover="overTreeExpand(this)" onmouseout="offTreeExpand(this)">
+							<button type="button" class="btn btn-secondary btn-sm py-0 px-3 editOnly infoButton" 
+									onclick="toggleInfo(event,'#{$id}-menu')" title="Dettagli su {$label}"
+								 style="font-size: small;">
+								<span class="oi oi-info"></span>
+							</button>			
+						</span>	
+						<!-- 
+							data-toggle="collapse"  data-target="#{$id}-menu" aria-expanded="false" aria-controls="{$id}-menu"
+							<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu"
+							role="button" aria-expanded="false" aria-controls="{$id}-menu">
+							<span class="oi oi-info"></span> -->
+						</span>
+					</span>
+				</a>
+			<!-- <a href="#"
 				class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded bg-light w-100 treeExpand">
 				<span class="citationLabel">{$label}</span>
 				<span class="d-inline-flex flex-nowrap mr-0">
 					<span class="badge badge-primary em3">{$count}</span>
 					<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu"
 						role="button" aria-expanded="false" aria-controls="{$id}-menu">
-						<span class="oi oi-plus"></span>
+						<span class="oi oi-info"></span>
 					</span>
 				</span>
-			</a>
+			</a> -->
 			<div class="collapse card citationCard" id="{$id}-menu">
 				<h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button"
 					aria-expanded="false" aria-controls="{$id}-menu">
@@ -993,17 +1039,28 @@
 	<template id="entityTpl">
 		<li class="entityContainer draggable dropPoint" id="{$id}" data-level="entity" data-id="{$id}">
 			<a href="#"
-				class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded bg-light w-100 treeExpand">
-				<span class="entityLabel">{$label}</span>
-				<span class="d-inline-flex flex-nowrap mr-0">
-					<span class="badge badge-light em3"><span class="oi {$check} text-success"></span></span>
+				class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded hoverTreeExpand bg-light w-100 treeExpand">
+				<div>
 					<span class="badge badge-primary em3">{$count}</span>
-					<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu"
+					<span class="entityLabel">{$label}</span>
+				</div>
+				<span class="d-inline-flex flex-nowrap mr-0">
+					{$check}	
+					<span onmouseover="overTreeExpand(this)" onmouseout="offTreeExpand(this)">
+						<button type="button" class="btn btn-secondary btn-sm py-0 px-3 editOnly infoButton" 
+								onclick="toggleInfo(event,'#{$id}-menu')" title="Dettagli su {$label}"
+							 style="font-size: small;">
+							<span class="oi oi-info"></span>
+						</button>			
+					</span>	
+					<!-- 
+						data-toggle="collapse"  data-target="#{$id}-menu" aria-expanded="false" aria-controls="{$id}-menu"
+						<span class="badge badge-secondary px-2 editOnly" data-toggle="collapse" data-target="#{$id}-menu"
 						role="button" aria-expanded="false" aria-controls="{$id}-menu">
-						<span class="oi oi-plus"></span>
+						<span class="oi oi-info"></span> -->
 					</span>
 				</span>
-			</a>
+			</a>	
 			<div class="collapse card entityCard" id="{$id}-menu">
 				<h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button"
 					aria-expanded="false" aria-controls="{$id}-menu">
@@ -1013,9 +1070,25 @@
 					<form>
 						<div class="row">
 							<label for="labelData-{$id}" class="col-4 small p-1">Etichetta: </label>
-							<input type="text" name="labelData" class="form-control form-control-sm col-8"
+							<div class="col-8 p-0">
+								<div class="input-group mb-1">
+									<input type="text" name="labelData" class="form-control form-control-sm "
 								id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)"
 								value="{$label}">
+								<div class="input-group-append small popoverToggle" id="popoverToggle-{$id}" 
+									data-label="{$label}" data-id="{$id}">
+								<div class="input-group-text cardButton" title="Cerca su Wikidata" aria-hidden="true">											
+									<span class="oi oi-magnifying-glass"></span>
+								</div>
+								</div>
+							</div>
+							</div>
+							<!-- 
+							<div class="input-group-append small">
+								<label for="labelData-{$id}" class="col-4 small p-1">Etichetta: </label>
+							<input type="text" name="labelData" class="form-control form-control-sm col-8 mb-1"
+								id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)"
+								value="{$label}"> -->
 						</div>
 						<div class="row">
 							<label for="sortData-{$id}" class="col-4 small p-1">Ordina valore: </label>
@@ -1025,9 +1098,8 @@
 										class="form-control form-control-sm flex-grow-1" id="sortData-{$id}"
 										onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
 									<div class="input-group-append small">
-										<div class="input-group-text">
-											<span class="oi oi-loop-circular"
-												onclick="invertValue('{$id}','{$type}','#sortData-{$id}')"></span>
+										<div class="input-group-text cardButton" onclick="invertValue('{$id}','{$type}','#sortData-{$id}')">
+											<span class="oi oi-loop-circular"></span>
 										</div>
 									</div>
 								</div>
@@ -1036,18 +1108,39 @@
 						<div class="row">
 							<label for="wikiData-{$id}" class="col-4 small p-1">Wikidata ID: </label>
 							<div class="col-8 p-0">
-								<div class="input-group mb-2">
+								<div class="input-group mb-1">
 									<input type="text" name="wikiData-{$id}"
-										class="form-control form-control-sm flex-grow-1" id="wikiData-{$id}"
-										onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}">
-									<div class="input-group-append small">
-										<div class="input-group-text">
+										class="flex-grow-1 cardInput" id="wikiData-{$id}"
+										onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}" disabled>
+									<!-- <div class="input-group-append small">
+										<div class="input-group-text cardButton">											
 											<span class="oi oi-magnifying-glass popoverToggle" id="popoverToggle-{$id}"
 												data-label="{$label}" data-id="{$id}"></span>
 										</div>
-									</div>
+									</div> -->
 								</div>
 							</div>
+						</div>
+						<div class="row">
+							<label for="treccani-{$id}" class="col-4 small p-1">Treccani ID: </label>
+							<div class="col-8 p-0">
+							<div class="input-group">
+								<a name="treccani-{$id}"
+								class=" cardInput {$treccaniLink} treccani" id="treccani-{$id}"
+								onchange="changeValue('treccaniId','{$id}',this.value)" onclick="openTreccani(this.innerText)" target="_blank" placeholder="{$placeholderTreccani}">
+								{$treccaniId} {$placeholderTreccani}
+								</a>
+								<!-- <input type="text" name="treccani-{$id}"
+									class="form-control form-control-sm flex-grow-1 cardInput" id="treccani-{$id}"
+									onchange="changeValue('treccaniId','{$id}', this.value)" onclick="openTreccani(this.value)" value="{$treccaniId}" placeholder="{$placeholderTreccani}" disabled> -->
+								<!-- <div class="input-group-append small">
+									<div class="input-group-text cardButton" onclick="openTreccani('{$treccaniId}')">
+										<span class="oi oi-external-link popoverTreccani" id="popoverTreccani-{$id}"
+											data-label="{$label}" data-id="{$id}"></span>
+									</div>
+								</div> -->
+							</div>																
+						</div>
 						</div>
 					</form>
 				</div>
