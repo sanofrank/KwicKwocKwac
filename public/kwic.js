@@ -739,6 +739,7 @@ var kwic = new (function () {
 	// mentions are places in the document where entities are mentioned
 	// they end up as <span class="mention category">text</span>
 	this.Mention = function(nodeOrRange, options) {
+		console.log(nodeOrRange)
 		if (!options) options = {}         // fallback object for inizialization
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "mention-" ;

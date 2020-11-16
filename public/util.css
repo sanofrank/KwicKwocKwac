@@ -30,11 +30,13 @@
 			top: .2em;
 		}
 
-		ul.tree li > a:not(:last-child):before {
+		ul.tree li > a:not(:last-child):before {		
+			font-size: small;
 			content: '+';
 		}
 
 		ul.tree li.open > a:not(:last-child):before {
+			font-size: small;
 			content: '-';
 		}
 
