@@ -28,11 +28,8 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-link active nav-item"><span class="d-inline-block">
-						<span class="oi oi-magnifying-glass"></span>
-					</li>
 					<li class="nav-item dropdown active">
-						<input class="nav-link dropdown-toggle" type="text" id="fileList" data-toggle="dropdown" 
+						<input class="nav-link dropdown-toggle ml-3" type="text" id="fileList" data-toggle="dropdown" 
 							aria-haspopup="true" aria-expanded="false" onkeyup="searchDocuments()" placeholder="Cerca documenti">
 						<div id="fileMenu" class="dropdown-menu" aria-labelledby="fileList">
 							<div id="file-filter" class="dropdown-header pb-0">
@@ -109,16 +106,16 @@
 					</li>
 				</ul>
 				<ul class="navbar-nav my-2 my-lg-0">
+					<li class="nav-item active loadedDocumentOnly" id="editButton">
+						<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()"><span
+								class="oi oi-pencil" title="Passa alla modalità editing" aria-hidden="true"></span> <span
+								class="sr-only">Modifica documento</span></a>
+					</li>
 					<li class="nav-item active" id="uploadButton">
 						<a class="nav-link" href="#" role="button" data-toggle="modal"
 							data-target="#FileUpload"><span class="oi oi-cloud-upload"
 								title="Carica documento in locale" aria-hidden="true"></span> <span
 								class="sr-only">Carica documento</span></a>
-					</li>
-					<li class="nav-item active" id="editButton">
-						<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()"><span
-								class="oi oi-pencil" title="Passa alla modalità editing" aria-hidden="true"></span> <span
-								class="sr-only">Modifica documento</span></a>
 					</li>
 					<li class="nav-item dropdown active"> 
 						<a class="nav-link dropdown-toggle" href="#" id="user-options" data-toggle="dropdown" 
@@ -137,11 +134,11 @@
 									class="oi oi-book border-light rounded-circle"
 									title="Documentazione" aria-hidden="true"></span> <span class="sr-only">Documentazione</span></a>
 					</li>
-					<li class="nav-item active">
+					<!-- <li class="nav-item active">
 						<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#about"><span
 								class="oi oi-question-mark border-light rounded-circle"
 								title="Informazioni su KWIC KWOC KWAC" aria-hidden="true"></span> <span class="sr-only">Informazioni</span></a>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 		</nav>
@@ -150,7 +147,7 @@
 				<div id="spinner"></div>
 				<div class="row h-100">
 					<div class="col-3 h-100 pr-1 fs-3 mt-2 disable-select" id="left">
-						<div class="row h-50 pb-5" id="topPane">
+						<div class="row h-50 pb-5 loadedDocumentOnly" id="topPane">
 							<div class="col-12 h-100 pr-0 mb-4">
 								<ul class="nav nav-tabs  mr-auto" id="categoryTab" role="tablist">
 								</ul>
@@ -158,7 +155,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="row h-50 pb-5" id="bottomPane">
+						<div class="row h-50 pb-5 loadedDocumentOnly" id="bottomPane">
 							<div class="col-12 h-100 pr-0 mb-0">
 								<ul class="nav nav-tabs" id="otherTab" role="tablist">
 									<li class="nav-item dropPoint" data-level="scraps" data-id="scraps">
@@ -252,8 +249,9 @@
 							</button>
 						</div>
 						<div id="file" status="default" data-path="default" class="h-100 scroll-col">
-							<div class="jumbotron" id="title">
-								<h1>Key Words In Context</h1>
+							<div class="jumbotron">
+								<h1 id="title">Key Words In Context</h1>
+								<h6 id="subtitle">Un programma per visualizzare e modificare documenti digitali.</h6>
 							</div>
 						</div>
 					</div>

@@ -37,6 +37,7 @@ var editMode;                           // whether the user can add or modify me
 var apply_filter = false;                // whether filter have been applyied on search documents
 var referenceMode;             			 // whether the reference panel is shown
 var currentMetadata = {};				 // the metadata of the current loaded file
+var loadedDocument;
 const spinner = document.getElementById("spinner");
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
@@ -54,6 +55,7 @@ $(document).ready(main);
 /* ------------------------------------------------------------------------------ */
 
 async function main() {
+	loadedDocument = false;
 	editMode = false;
 	nullSelection = $('#file')[0]
 	/* Place the caret at the beginning of the #file element. */
@@ -74,7 +76,7 @@ async function main() {
 	basicCallbacks()
 	editCallbacks(editMode)
 	editSetup(editMode)
-	
+	loadedDocumentSetup(loadedDocument)
 }
 
 function basicCallbacks() {
@@ -128,9 +130,7 @@ function editCallbacks(editMode) {
 
 function editSetup(editMode) {
 	if (editMode) {
-		console.log('ENABLE')
-	
-		//$('.popoverTrash').popover('enable')
+			//$('.popoverTrash').popover('enable')
 			$('.popoverTrash').popover({
 				container: 'body',
 				placement: 'top',
@@ -215,6 +215,15 @@ function editSetup(editMode) {
 	}
 }
 
+function loadedDocumentSetup(loadedDocument){
+	if(loadedDocument){
+		$('.loadedDocumentOnly').removeClass('d-none')
+	}else{
+		$('.loadedDocumentOnly').addClass('d-none')
+
+	}
+}
+
 function layoutSetup() {
 	setLayout('width', 4);
 	setLayout('height', 70);
@@ -250,11 +259,13 @@ function onmouseup(event) {
 }
 
 function showSpinner() {
-	spinner.className = "show";
+	$('#spinner').show(0)
+	//spinner.className = "show";
 }
 
 function hideSpinner() {
-	spinner.className = spinner.className.replace("show", "");
+	$('#spinner').hide(0)
+	//spinner.className = spinner.className.replace("show", "");
 }
 
 // Callbacks for draggable elements
@@ -903,6 +914,7 @@ async function load(file) {
 		alert(text);
 	} 
 	else {
+		loadedDocument = true;
 		let json = await response.json();
 
 		currentFilename = file;
@@ -933,6 +945,7 @@ async function load(file) {
 		anchorGoto(documentLocation);
 		showFileName(currentFilename);
 
+		loadedDocumentSetup(loadedDocument);
 		setupKWIC(documentLocation, false);
 	}
 	hideSpinner();
