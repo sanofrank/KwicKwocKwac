@@ -405,3 +405,22 @@ label .btn.done.active{
 	cursor: pointer;
 	color: #596267;
 }
+
+#ulFile .dropdown-item.selected{
+	background-color: #017bfe;
+	color: white;
+}
+
+#ulFile .dropdown-item.selected .badge{
+	background-color: white;
+}
+
+#ulFile .dropdown-item.selected path{
+	stroke: white;
+	stroke-width: 0.5px;
+	stroke-linejoin: round;
+}
+
+#trash-filter {
+	font-size: 130%;
+}

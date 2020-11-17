@@ -410,14 +410,18 @@ function toggleInfo(e,target) {
 	e.stopPropagation();
 	//e.preventDefault();
 
+	let parent = $(target)[0].parentElement;
+
 	$(target).collapse({
 		toggle: false
 	})
 
 	if($(target).hasClass('show')){
 		$(target).collapse('hide')
+		$('#infoPane').html("")
 	}else{
 		$(target).collapse('show')
+		showWikidataEntity(parent)
 	}
 }
 
@@ -568,7 +572,7 @@ function setupKWIC(location, saveView) {
 						</a>
 					</li>`)
 		$('#scraps-realpane').html("")
-		console.log($('#scraps-tab').html())
+		//Scraps num from scraps-tab tpl
 		let tmpScraps = $('#scraps-tab').text();
 		let scrapsNum = tmpScraps.match(/\d/g) ? tmpScraps.match(/\d/g) : '0'
 		$('#scraps-realtab').text(`Scarti (${scrapsNum})`)
@@ -576,6 +580,7 @@ function setupKWIC(location, saveView) {
 		$('#scraps-tab').remove()
 		$('#scraps-pane').remove()
 		$('#trash-realpane').html("")
+		//Trash num from Trash-tab tpl
 		let tmpTrash = $('#trash-tab').text();
 		let trashNum = tmpTrash.match(/\d/g) ? tmpTrash.match(/\d/g) : '0'
 		$('#trash-realtab').text(`Cestino (${trashNum})`)
@@ -659,7 +664,7 @@ function docList(elements) {
 	if($('#ulFile').children()) $('#ulFile')[0].innerHTML = '' 
 
 	var menuItemTpl =
-		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick='load("{$url}")'>
+		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick='load(this,"{$url}")'>
 		<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 		<div class="flex-grow-1 pr-3 fileLabel">
@@ -670,7 +675,7 @@ function docList(elements) {
 		</a>`
 	var menuItemTplSu =
 		`			
-			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" draggable="true" onclick='load("{$url}")'>
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" draggable="true" onclick='load(this,"{$url}")'>
 			<svg height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 			</svg>
@@ -912,7 +917,7 @@ function applyFilter() {
 
 
 // load and show a document
-async function load(file) {
+async function load(item,file) {
 	
 	showSpinner();
 	let response = await fetch('/api/load?file=' + file);
@@ -948,6 +953,8 @@ async function load(file) {
 		$('#commandList').removeClass('d-none');
 		$('#fileList').val(''); // clear file input search
 		searchDocuments(); // repopulate file list
+		$('#ulFile .selected').removeClass('selected');
+		$(item).addClass('selected');
 		markFootnote(documentLocation, mark = true)
 		anchorGoto(documentLocation);
 		showFileName(currentFilename);
