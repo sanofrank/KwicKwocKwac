@@ -80,6 +80,7 @@ async function main() {
 }
 
 function basicCallbacks() {
+	$('input[name="labelData"]').off()
 	$('#save').click(saveDoc)
 	$('#entityFiles').change(uploadEntityFile);
 	$('.fileParams').change(fileParams);
@@ -529,10 +530,18 @@ function setupKWIC(location, saveView) {
 						</a>
 					</li>`)
 		$('#scraps-realpane').html("")
+		//Scraps num from scraps-tab tpl
+		let tmpScraps = $('#scraps-tab').text();
+		let scrapsNum = tmpScraps.match(/\d/g) ? tmpScraps.match(/\d/g) : '0'
+		$('#scraps-realtab').text(`Scarti (${scrapsNum})`)
 		$('#scraps-realpane').html($('#scraps-pane').html())
 		$('#scraps-tab').remove()
 		$('#scraps-pane').remove()
 		$('#trash-realpane').html("")
+		//Trash num from Trash-tab tpl
+		let tmpTrash = $('#trash-tab').text();
+		let trashNum = tmpTrash.match(/\d/g) ? tmpTrash.match(/\d/g) : '0'
+		$('#trash-realtab').text(`Cestino (${trashNum})`)
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
@@ -1371,9 +1380,10 @@ async function changeStatus() {
 // user is changing label, sort or wikidata Id
 function changeValue(field, id, value) {
 	var pp;
-
+	console.log(field,id,value);
 	if (!referenceMode) {
 		pp = kwic.allEntities[id]
+		console.log(pp);
 	} else {
 		pp = kwic.allCitations[id]
 		var ref = pp.reference;

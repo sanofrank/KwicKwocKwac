@@ -703,20 +703,27 @@ var kwic = new (function () {
 		// change a property of this entity by changing the corresponding property of the first mention 
 		change: function(field,value, type) {
 			var done = false
+			console.log('change')
 				for (var i=0; i<this.mentions.length; i++) {
+					console.log(this.mentions[i],'for');
 					if (this.mentions[i][field]) {
 						if(field == "label"){ // Reset wikidata and treccani if label changed
 							this.mentions[i].prop(field,value,true)
 							this.mentions[i].prop('wikidataId','',true)
 							this.mentions[i].prop('treccaniId','',true)
+							console.log(this.mentions[i])
 							done = true
 						}else{
+							console.log(this.mentions[i],'else')
 							this.mentions[i].prop(field, value,true)
 							done = true
 						}
 					}
 				}			
-				if (!done) this.mentions[0].prop(field, value)
+				if (!done) {
+					console.log(this.mentions[0],'notDone')
+					this.mentions[0].prop(field, value)}
+
 		},
 		// assign this entity to a different category. 
 		switchTo: function(category,force, type) {
@@ -775,6 +782,7 @@ var kwic = new (function () {
 		if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
 		if (dataset.treccaniId) this.treccaniId = dataset.treccaniId // this is the Treccani Id associated to the entity this mention belongs to
 		if (dataset.rs) this.rs = `rs-active ${options.category}` // this is the value used for displaying if the mention is a referenceString
+		console.log(this.label+'MENTION');
 	}
 	this.Mention.prototype = {
 		// identify the text before and after the mention
@@ -857,10 +865,13 @@ var kwic = new (function () {
 					break;
 				default:
 					if (force || this.node.dataset[name]== undefined) {
+						console.log(name,value,force)
 						if (value) {
 							this.node.dataset[name] = value
+							this[name] = value // added for first round label
 						} else {
 							delete this.node.dataset[name]
+							delete this[name] // added for first round label
 						}
 					}
 					break;
