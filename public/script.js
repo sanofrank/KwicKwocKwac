@@ -95,6 +95,7 @@ function basicCallbacks() {
 	//$('#user-filter').keyup(() => $('#apply-filter').prop('disabled',false)) //enable apply filter button on inserted text in user input
 	$(document).on('click', '#file-filter', e => e.stopPropagation()); //prevent closing dropdown-menu on click
 	$(document).on('click', expandableSelector, treeClick)
+	$(document).on('dblclick', expandableSelector, treeClickAll)
 	$(document).on('dragstart', '#ulFile .dropdown-item', dragDocStart);
 	$(document).on('drop', '#trash-filter', dropDoc);
 }
@@ -412,6 +413,7 @@ function toggleInfo(e,target) {
 	//e.preventDefault();
 
 	let parent = $(target)[0].parentElement;
+	console.log(target,parent);
 
 	$(target).collapse({
 		toggle: false
@@ -424,6 +426,30 @@ function toggleInfo(e,target) {
 		$(target).collapse('show')
 		showWikidataEntity(parent)
 	}
+}
+
+function treeClickAll(e){
+	e.stopPropagation();
+	e.preventDefault();
+	
+	let originalClassList = e.originalEvent.target.classList; 
+	if(originalClassList.contains('oi-info') || originalClassList.contains('infoButton')){
+		return null;
+	}
+
+	//currentTarget the element that activates the event
+	let target = $(e.currentTarget).next('.entityCard')[0] ? "#"+$(e.currentTarget).next('.entityCard')[0].id : "#"+$(e.currentTarget).next('.citationCard')[0].id; //first entity card
+	let parent = $(e.currentTarget).closest('.treeExpand')[0].parentElement; 
+	let classList = parent.classList
+
+	if(!xor(classList.contains("open"),$(target).hasClass('show'))){
+		treeClick(e);
+		toggleInfo(e,target);
+		return true;
+	}
+
+	if(classList.contains("open")) return treeClick(e)
+	if($(target).hasClass('show')) return toggleInfo(e,target)
 }
 
 //Toggle bg-light class
