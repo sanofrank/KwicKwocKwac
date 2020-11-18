@@ -132,15 +132,15 @@ function editCallbacks(editMode) {
 
 function editSetup(editMode) {
 	if (editMode) {
-			//$('.popoverTrash').popover('enable')
-			$('.popoverTrash').popover({
-				container: 'body',
-				placement: 'top',
-				template : `<div class="popover trashbinPopover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>`,
-				//html: true,
-				content: 'Clicca due volte per svuotare il cestino',
-				trigger: 'hover'
-			})
+		//$('.popoverTrash').popover('enable')
+		$('.popoverTrash').popover({
+			container: 'body',
+			placement: 'top',
+			template : `<div class="popover trashbinPopover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>`,
+			//html: true,
+			content: 'Clicca due volte per svuotare il cestino',
+			trigger: 'hover'
+		})
 
 		let popoverTreccani = `
 					<div class="d-flex">
@@ -1258,31 +1258,38 @@ async function uploadDoc(dataHTML,dataDOCX) {
 	// Opera values
 	let operaName = document.querySelectorAll("[id^='operaName-']")
 
+	//Initialize filenames
+	dataDOCX.set('filenames', [])
+
 	// Get titles, if empty return error message
 	for(i in operaName){
 		if(operaName[i] instanceof HTMLElement){ // to avoid last loop for length element in operaName
 			let title = operaName[i].value
-		
+			
 			if(!title || title === ''){ 
 				msg.css('display','block');
 				msg.addClass('alert-danger').removeClass('alert-success');
 			
 				return msg.text('Tutte le opere devono avere un titolo.');
 			}
-	
-			if(format_radio === "docx" && dataDOCX) dataDOCX.append('filenames',operaName[i].value); //append to dataDOCX.filenames all the titles
-			if(format_radio === "html" && dataHTML) dataHTML[i].filename = title; // Change title in case of changes / opera[0] index
+			
+			if(operaName.length == 1){
+				dataDOCX.set('filenames',title)
+			}else{
+				if(format_radio === "docx" && dataDOCX) dataDOCX.append('filenames',title); //append to dataDOCX.filenames all the titles
+				if(format_radio === "html" && dataHTML) dataHTML[i].filename = title; // Change title in case of changes / opera[0] index
+			} 
 		}
 	};	
 
 	if(format_radio === 'docx'){
 		// append data info
-		dataDOCX.append('type', format_radio);
-		dataDOCX.append('user',user)
-		dataDOCX.append("sez", sez);
-		dataDOCX.append("vol", vol);
-		dataDOCX.append("tom", tom);
-
+		dataDOCX.set('type', format_radio);
+		dataDOCX.set('user',user)
+		dataDOCX.set("sez", sez);
+		dataDOCX.set("vol", vol);
+		dataDOCX.set("tom", tom);
+		console.log(dataDOCX);
 		requestOptions = {
 			method: 'POST',
 			body: dataDOCX

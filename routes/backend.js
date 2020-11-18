@@ -9,8 +9,9 @@ const jwt = require('jsonwebtoken');
 const Metadata = require('../model/Metadata');
 
 const dir = 'public/files';
-const src = /src=(["|\'])(?!http)(?!#footnote)/g;
-const href = /href=(["|\'])(?!http)(?!#footnote)/g;
+//clean only src and href without #footnote or #endnote
+const src = /src=(["|\'])(?!http)(?!#footnote)(?!#endnote)/g;
+const href = /href=(["|\'])(?!http)(?!#footnote)(?!#endnote)/g;
 
 router.get('/list', async (req, res) => {
     try {
@@ -80,6 +81,8 @@ router.get('/load', async (req, res) => {
         
         content = content.replace(src,`src=$1${files}${fileName}/`);
         content = content.replace(href,`href=$1${files}${fileName}/`);
+        // content = content.replace(srcEnd,`src=$1${files}${fileName}/`);
+        // content = content.replace(hrefEnd,`href=$1${files}${fileName}/`);
 
         json.html = content;
 
@@ -120,12 +123,13 @@ router.post('/upload', async (req,res) => {
         const sez = req.body.sez;
         const vol = req.body.vol;
         const tom = req.body.tom;
-
+        
         if(type === "docx"){
             if(!req.files)   return res.status(400).send('Scegliere almeno un documento da caricare')
 
             let filenames = req.body.filenames
             let files = req.files.file; 
+            let opera, fileName, path;
 
             //Convert files and filenames into array if only 1 element
             if(!files.length && typeof filenames == 'string'){
@@ -133,13 +137,27 @@ router.post('/upload', async (req,res) => {
                 filenames = [filenames];
             }
 
+            //Check if path already exist
+            for(i in filenames){
+                opera = filenames[i].replace(/_+/g,' ');
+
+                fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
+                path = `${dir}/${fileName}`;
+
+                if (opera !== ""){
+                    if(fs.existsSync(path)){
+                     //TODO remove file or ask to remove
+                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di rimuoverlo prima di ricaricarlo.`)  
+                    }
+                }
+            }
+
             for(i in files){
-                let opera = filenames[i].replace(/_+/g,' ');
+                opera = filenames[i].replace(/_+/g,' ');
 
-                let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
-                let path = `${dir}/${fileName}`;
+                fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
+                path = `${dir}/${fileName}`;
                 let htmlPath = `${path}/index.html`;
-
                 let content;
 
                 if (opera !== ""){
@@ -147,7 +165,7 @@ router.post('/upload', async (req,res) => {
                         await mkDir(path);
                     }else{
                      //TODO remove file or ask to remove
-                     return res.status(400).send('Il documento è già presente nella piattaforma, si prega di rimuoverlo prima di ricaricarlo.')
+                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di rimuoverlo prima di ricaricarlo.`)
                     }
                 }
 
@@ -155,7 +173,6 @@ router.post('/upload', async (req,res) => {
 
                 const result = await mammoth.convertToHtml({buffer: docFile});
                 content = await result.value;
-                console.log(typeof content)
                 
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath,content, (err) => {
