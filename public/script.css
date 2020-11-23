@@ -424,3 +424,12 @@ label .btn.done.active{
 #trash-filter {
 	font-size: 130%;
 }
+
+.checkbox-lg {
+	width: 1rem;
+	height: 1rem;
+}
+
+#moroNotes{
+	margin-top: 2.5em 
+}

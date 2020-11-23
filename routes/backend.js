@@ -4,15 +4,111 @@ const rimraf = require('rimraf');
 const fgc = require('file-get-contents');
 const mkDir = require('make-dir');
 const mammoth = require('mammoth');
-//const mammoth_style = require('mammoth-style');
+const cheerio = require('cheerio');
+const roman = require('romannumerals')
 const jwt = require('jsonwebtoken');
 const Metadata = require('../model/Metadata');
 
 const dir = 'public/files';
 //clean only src and href without #footnote or #endnote
-const src = /src=(["|\'])(?!http)(?!#footnote)(?!#endnote)/g;
-const href = /href=(["|\'])(?!http)(?!#footnote)(?!#endnote)/g;
+const src = /src=(["|\'])(?!http)(?!#footnote)(?!#endnote)(?!#moronote)(?!#curatornote)/g;
+const href = /href=(["|\'])(?!http)(?!#footnote)(?!#endnote)(?!#moronote)(?!#curatornote)/g;
 
+// the poor man's interpolation function for templates. ©FV
+String.prototype.tpl = function(o, removeAll) { 
+    var r = this ; 
+    for (var i in o) { 
+        r = r.replace(new RegExp("\\{\\$"+i+"\\}", 'g'),o[i]) 
+    } 
+    if (removeAll) {
+        r = r.replace(new RegExp("\\{\\$[^\}]+\\}", 'g'),"") 
+    }
+    return r 
+}
+
+//Organize footnotes in moronotes and curatornotes
+let organizeFootnotes = function ($) {
+        let moroNotes = [];
+        let curatorNotes = [];
+
+        // footnote search for moro notes
+        // data-alert attribute for first time alert display                
+        let tplMoroList = `
+            <ol id="moroNotes" type="I" data-alert="true">
+                {$list}
+            </ol>
+            `
+        let tplMoronote = `
+            <li id="moronote-{$index}" data-toggle="tooltip" data-placement="top" title="Nota di Aldo Moro">
+                {$content}
+            </li>
+            `
+
+        $("li[id^='footnote'], li[id^='endnote']").each(function(index) {
+            console.log(roman.toRoman(index + 1) + ": " + $(this).html());
+            let text = $(this).text();
+            let trim = text.trim();
+            let newLength;
+            
+            if(trim.charAt(0) === '[' && trim.charAt(trim.length - 3) === ']'){
+                newLength = moroNotes.length + 1
+                
+                //Change id
+                $(this).attr('id',`moronote-${newLength}`)
+                //Get ref
+                let note_ref = $(this).find('a[href^="#footnote-ref-"],a[href^="#endnote-ref-"]');
+                let ref_id = $(note_ref).attr('href');
+                $(note_ref).attr('href',`#moronote-ref-${newLength}`);
+
+                //Change ref
+                $(`${ref_id}`).attr('href',`#moronote-${newLength}`)
+                $(`${ref_id}`).text(`[${roman.toRoman(newLength)}]`)
+                $(`${ref_id}`).attr('id',`moronote-ref-${newLength}`)   
+            
+                moroNotes.push($(this).html());
+                $(this).remove()
+            }else{
+                newLength = curatorNotes.length + 1
+
+                //Change id
+                $(this).attr('id',`curatornote-${newLength}`)
+                //Get ref
+                let note_ref = $(this).find('a[href^="#footnote-ref-"],a[href^="#endnote-ref-"]');
+                let ref_id = $(note_ref).attr('href');
+                $(note_ref).attr('href',`#curatornote-ref-${newLength}`);
+
+                //Change ref
+                $(`${ref_id}`).attr('href',`#curatornote-${newLength}`)
+                $(`${ref_id}`).text(`[${newLength}]`)
+                $(`${ref_id}`).attr('id',`curatornote-ref-${newLength}`)   
+        
+                curatorNotes.push($(this).html())
+            }
+        })
+
+        //Create moronotes list
+        if(moroNotes.length > 0){
+            let moroNotes_li = "";
+            let moroNotes_ol = "";
+
+            for(i in moroNotes){
+                let index = parseInt(i)+1;
+                let moronote = tplMoronote.tpl({index: index, content: moroNotes[i]});                       
+                moroNotes_li = moroNotes_li.concat(moronote);                        
+            }
+
+            if(moroNotes_li.length > 0){
+                moroNotes_ol = tplMoroList.tpl({list: moroNotes_li});
+
+                $('body').append(moroNotes_ol);
+            }
+        }
+        
+        //Return body
+        return content = $('body').html();
+}
+
+// List all document from public/files
 router.get('/list', async (req, res) => {
     try {
         const token = req.cookies.auth_token;
@@ -64,6 +160,7 @@ router.get('/list', async (req, res) => {
     }
 });
 
+// Load document on the platform 
 router.get('/load', async (req, res) => {
     try {
         
@@ -104,7 +201,8 @@ router.get('/load', async (req, res) => {
     }
 });
 
-router.post('/upload', async (req,res) => {
+// Upload document
+router.post('/upload', async (req, res) => {
     try{
         const token = req.cookies.auth_token;
         if(!token) return res.status(400).send(`Non è possibile caricare il documento perché la tua sessione è scaduta.\nSe desideri puoi salvare le ultime modifiche apportate e ricaricare la pagina per riaccedere alla piattaforma.`);
@@ -147,7 +245,7 @@ router.post('/upload', async (req,res) => {
                 if (opera !== ""){
                     if(fs.existsSync(path)){
                      //TODO remove file or ask to remove
-                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di rimuoverlo prima di ricaricarlo.`)  
+                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`)  
                     }
                 }
             }
@@ -165,15 +263,22 @@ router.post('/upload', async (req,res) => {
                         await mkDir(path);
                     }else{
                      //TODO remove file or ask to remove
-                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di rimuoverlo prima di ricaricarlo.`)
+                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`)
                     }
                 }
 
                 let docFile = files[i].data;
 
-                const result = await mammoth.convertToHtml({buffer: docFile});
+                const result = await mammoth.convertToHtml({buffer: docFile});   
                 content = await result.value;
                 
+                const $ = cheerio.load(content)
+
+                //If has footnote or endnote
+                if($("li[id^='footnote'], li[id^='endnote']").length){
+                    content = organizeFootnotes($);
+                }
+                            
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath,content, (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
@@ -234,55 +339,9 @@ router.post('/upload', async (req,res) => {
     }catch(err){
         res.status(400).send(err);
     }
-
-    //     let opera = req.body.opera;
-    //     let sez = req.body.sez;
-    //     let vol = req.body.vol;
-    //     let tom = req.body.tom;
-    //     let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`
-
-    //     let path = `${dir}/${fileName}`;
-    //     let htmlPath = `${path}/index.html`;
-    //     let content;
-
-    //     if (opera !== ""){
-    //         if(!fs.existsSync(path)){
-    //             await mkDir(path);
-    //         }
-    //     }
-    //     //Conversione da DOCX a HTML
-    //     if(req.files && req.body.type.match('docx')){
-            
-    //         let docFile = req.files.file;
-            
-    //         const result = await mammoth.convertToHtml({buffer: docFile.data});
-    //         content = await result.value;
-
-    //     }else{
-            
-    //         let newPath = `files/${fileName}`;
-            
-    //         let out = req.body.content;
-    //         let regex = new RegExp(newPath,'g');
-
-    //         content = out.replace(regex,"");
-    //         content.replace(regex,"");
-    //     }
-
-    //     if(content!== "" && !content.includes("Key Words In Context")){
-    //         fs.writeFile(htmlPath,content, (err) => {
-    //             if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
-    //         });
-    //         return res.send(`File ${opera} salvato correttamente in ${htmlPath}`);
-    //     };
-
-    //     return res.send('File empty');
-
-    // }catch(err){
-    //     res.status(400).send(err);
-    // }
 });
 
+// Save document
 router.post('/save' , async (req,res) => {
     
     try{
@@ -319,6 +378,7 @@ router.post('/save' , async (req,res) => {
     }
 })
 
+// Delete document
 router.post('/delete', async (req,res) => {
     
     const token = req.cookies.auth_token;
@@ -362,6 +422,7 @@ router.post('/delete', async (req,res) => {
     
 })
 
+// Change status
 router.post('/change' , (req,res) => {
 
     let fileName = req.body.file;

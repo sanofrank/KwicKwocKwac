@@ -705,7 +705,7 @@ function docList(elements) {
 		<div class="flex-grow-1 pr-3 fileLabel">
 		{$label}
 		</div>
-		<input class="document-checkbox" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
+		<input class="document-checkbox checkbox-lg" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
 		<label for="doc-checkbox"></label>
 		</a>`
 	var menuItemTplSu =
@@ -719,7 +719,7 @@ function docList(elements) {
 			</div>
 			<div>
 			<span class="badge  border border-primary rounded text-primary">{$user}</span>
-			<input class="document-checkbox" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
+			<input class="document-checkbox checkbox-lg" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
 			<label for="doc-checkbox"></label>
 			</div>
 			</a>
@@ -1661,7 +1661,7 @@ async function deleteDocuments(value = null) {
 		return null			
 		}
 
-	if(confirm(`Sicuro di voler eliminare i file selezionati?`)){
+	if(confirm(`Sicuro di voler eliminare i file selezionati?\nRicordati prima di salvare le modifiche se hai un file aperto.`)){
 		const deleteOptions = {
 			method: 'POST',
 			headers: {
@@ -1879,19 +1879,33 @@ function showFileName(fileName) {
 // Mark curator note and author note
 function markFootnote(location, mark){
 
-	let markOptions = {
-		author: 'Aldo Moro',
-		markChar: '[',
-		node: 'li',
-		attribute: "id",
-		selector: 'footnote-',
-		exception: ''
-	};
+	// let markOptions = {
+	// 	author: 'Aldo Moro',
+	// 	markChar: '[',
+	// 	node: 'li',
+	// 	attribute: "id",
+	// 	selector: 'footnote-',
+	// 	exception: ''
+	// };
 
-	let authorNotes = kwic.markFootnote(location, markOptions);
-	if (authorNotes > 0) {
+	// let authorNotes = kwic.markFootnote(location, markOptions);
+	// if (authorNotes > 0) {
 
-		let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${authorNotes} note di ${markOptions.author}</p>`
+	// 	let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${authorNotes} note di ${markOptions.author}</p>`
+	// 	$('#footnote-alert').prepend(alert_footnote);
+	// 	$("#footnote-alert").fadeTo(3500, 500).slideUp(500, function () {
+	// 		$("#footnote-alert").slideUp(500, function(){
+	// 			$("#alert-count").remove();
+	// 		});
+	// 	});
+	// }
+
+	if($('#moroNotes').length && $('#moroNotes').attr('data-alert') == 'true'){
+		$('[data-toggle="tooltip"]').tooltip();
+		$('#moroNotes').attr('data-alert','false')
+		let moroNotes_length = $('#moroNotes').children().length
+
+		let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${moroNotes_length} note di Aldo Moro</p>`
 		$('#footnote-alert').prepend(alert_footnote);
 		$("#footnote-alert").fadeTo(3500, 500).slideUp(500, function () {
 			$("#footnote-alert").slideUp(500, function(){
@@ -1899,7 +1913,6 @@ function markFootnote(location, mark){
 			});
 		});
 	}
-
 }
 
 // look for an XSLT stylesheet and convert the document into XML according to this XSLT.
