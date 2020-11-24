@@ -80,6 +80,7 @@ async function main() {
 }
 
 function basicCallbacks() {
+	$('input[name="labelData"]').off()
 	$('#save').click(saveDoc)
 	$('#entityFiles').change(uploadEntityFile);
 	$('.fileParams').change(fileParams);
@@ -94,6 +95,7 @@ function basicCallbacks() {
 	//$('#user-filter').keyup(() => $('#apply-filter').prop('disabled',false)) //enable apply filter button on inserted text in user input
 	$(document).on('click', '#file-filter', e => e.stopPropagation()); //prevent closing dropdown-menu on click
 	$(document).on('click', expandableSelector, treeClick)
+	$(document).on('dblclick', expandableSelector, treeClickAll)
 	$(document).on('dragstart', '#ulFile .dropdown-item', dragDocStart);
 	$(document).on('drop', '#trash-filter', dropDoc);
 }
@@ -130,15 +132,15 @@ function editCallbacks(editMode) {
 
 function editSetup(editMode) {
 	if (editMode) {
-			//$('.popoverTrash').popover('enable')
-			$('.popoverTrash').popover({
-				container: 'body',
-				placement: 'top',
-				template : `<div class="popover trashbinPopover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>`,
-				//html: true,
-				content: 'Clicca due volte per svuotare il cestino',
-				trigger: 'hover'
-			})
+		//$('.popoverTrash').popover('enable')
+		$('.popoverTrash').popover({
+			container: 'body',
+			placement: 'top',
+			template : `<div class="popover trashbinPopover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>`,
+			//html: true,
+			content: 'Clicca due volte per svuotare il cestino',
+			trigger: 'hover'
+		})
 
 		let popoverTreccani = `
 					<div class="d-flex">
@@ -410,15 +412,44 @@ function toggleInfo(e,target) {
 	e.stopPropagation();
 	//e.preventDefault();
 
+	let parent = $(target)[0].parentElement;
+	console.log(target,parent);
+
 	$(target).collapse({
 		toggle: false
 	})
 
 	if($(target).hasClass('show')){
 		$(target).collapse('hide')
+		$('#infoPane').html("")
 	}else{
 		$(target).collapse('show')
+		showWikidataEntity(parent)
 	}
+}
+
+function treeClickAll(e){
+	e.stopPropagation();
+	e.preventDefault();
+	
+	let originalClassList = e.originalEvent.target.classList; 
+	if(originalClassList.contains('oi-info') || originalClassList.contains('infoButton')){
+		return null;
+	}
+
+	//currentTarget the element that activates the event
+	let target = $(e.currentTarget).next('.entityCard')[0] ? "#"+$(e.currentTarget).next('.entityCard')[0].id : "#"+$(e.currentTarget).next('.citationCard')[0].id; //first entity card
+	let parent = $(e.currentTarget).closest('.treeExpand')[0].parentElement; 
+	let classList = parent.classList
+
+	if(!xor(classList.contains("open"),$(target).hasClass('show'))){
+		treeClick(e);
+		toggleInfo(e,target);
+		return true;
+	}
+
+	if(classList.contains("open")) return treeClick(e)
+	if($(target).hasClass('show')) return toggleInfo(e,target)
 }
 
 //Toggle bg-light class
@@ -525,10 +556,18 @@ function setupKWIC(location, saveView) {
 						</a>
 					</li>`)
 		$('#scraps-realpane').html("")
+		//Scraps num from scraps-tab tpl
+		let tmpScraps = $('#scraps-tab').text();
+		let scrapsNum = tmpScraps.match(/\d/g) ? tmpScraps.match(/\d/g) : '0'
+		$('#scraps-realtab').text(`Scarti (${scrapsNum})`)
 		$('#scraps-realpane').html($('#scraps-pane').html())
 		$('#scraps-tab').remove()
 		$('#scraps-pane').remove()
 		$('#trash-realpane').html("")
+		//Trash num from Trash-tab tpl
+		let tmpTrash = $('#trash-tab').text();
+		let trashNum = tmpTrash.match(/\d/g) ? tmpTrash.match(/\d/g) : '0'
+		$('#trash-realtab').text(`Cestino (${trashNum})`)
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
@@ -568,7 +607,7 @@ function setupKWIC(location, saveView) {
 						</a>
 					</li>`)
 		$('#scraps-realpane').html("")
-		console.log($('#scraps-tab').html())
+		//Scraps num from scraps-tab tpl
 		let tmpScraps = $('#scraps-tab').text();
 		let scrapsNum = tmpScraps.match(/\d/g) ? tmpScraps.match(/\d/g) : '0'
 		$('#scraps-realtab').text(`Scarti (${scrapsNum})`)
@@ -576,6 +615,7 @@ function setupKWIC(location, saveView) {
 		$('#scraps-tab').remove()
 		$('#scraps-pane').remove()
 		$('#trash-realpane').html("")
+		//Trash num from Trash-tab tpl
 		let tmpTrash = $('#trash-tab').text();
 		let trashNum = tmpTrash.match(/\d/g) ? tmpTrash.match(/\d/g) : '0'
 		$('#trash-realtab').text(`Cestino (${trashNum})`)
@@ -659,18 +699,18 @@ function docList(elements) {
 	if($('#ulFile').children()) $('#ulFile')[0].innerHTML = '' 
 
 	var menuItemTpl =
-		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick='load("{$url}")'>
+		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick='load(this,"{$url}")'>
 		<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 		<div class="flex-grow-1 pr-3 fileLabel">
 		{$label}
 		</div>
-		<input class="document-checkbox" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
+		<input class="document-checkbox checkbox-lg" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
 		<label for="doc-checkbox"></label>
 		</a>`
 	var menuItemTplSu =
 		`			
-			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" draggable="true" onclick='load("{$url}")'>
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" draggable="true" onclick='load(this,"{$url}")'>
 			<svg height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 			</svg>
@@ -679,7 +719,7 @@ function docList(elements) {
 			</div>
 			<div>
 			<span class="badge  border border-primary rounded text-primary">{$user}</span>
-			<input class="document-checkbox" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
+			<input class="document-checkbox checkbox-lg" type="checkbox" name="doc-checkbox" onclick="event.stopPropagation();updateCheckedDoc()" value="{$url}">
 			<label for="doc-checkbox"></label>
 			</div>
 			</a>
@@ -912,7 +952,7 @@ function applyFilter() {
 
 
 // load and show a document
-async function load(file) {
+async function load(item,file) {
 	
 	showSpinner();
 	let response = await fetch('/api/load?file=' + file);
@@ -948,6 +988,8 @@ async function load(file) {
 		$('#commandList').removeClass('d-none');
 		$('#fileList').val(''); // clear file input search
 		searchDocuments(); // repopulate file list
+		$('#ulFile .selected').removeClass('selected');
+		$(item).addClass('selected');
 		markFootnote(documentLocation, mark = true)
 		anchorGoto(documentLocation);
 		showFileName(currentFilename);
@@ -1216,31 +1258,38 @@ async function uploadDoc(dataHTML,dataDOCX) {
 	// Opera values
 	let operaName = document.querySelectorAll("[id^='operaName-']")
 
+	//Initialize filenames
+	dataDOCX.set('filenames', [])
+
 	// Get titles, if empty return error message
 	for(i in operaName){
 		if(operaName[i] instanceof HTMLElement){ // to avoid last loop for length element in operaName
 			let title = operaName[i].value
-		
+			
 			if(!title || title === ''){ 
 				msg.css('display','block');
 				msg.addClass('alert-danger').removeClass('alert-success');
 			
 				return msg.text('Tutte le opere devono avere un titolo.');
 			}
-	
-			if(format_radio === "docx" && dataDOCX) dataDOCX.append('filenames',operaName[i].value); //append to dataDOCX.filenames all the titles
-			if(format_radio === "html" && dataHTML) dataHTML[i].filename = title; // Change title in case of changes / opera[0] index
+			
+			if(operaName.length == 1){
+				dataDOCX.set('filenames',title)
+			}else{
+				if(format_radio === "docx" && dataDOCX) dataDOCX.append('filenames',title); //append to dataDOCX.filenames all the titles
+				if(format_radio === "html" && dataHTML) dataHTML[i].filename = title; // Change title in case of changes / opera[0] index
+			} 
 		}
 	};	
 
 	if(format_radio === 'docx'){
 		// append data info
-		dataDOCX.append('type', format_radio);
-		dataDOCX.append('user',user)
-		dataDOCX.append("sez", sez);
-		dataDOCX.append("vol", vol);
-		dataDOCX.append("tom", tom);
-
+		dataDOCX.set('type', format_radio);
+		dataDOCX.set('user',user)
+		dataDOCX.set("sez", sez);
+		dataDOCX.set("vol", vol);
+		dataDOCX.set("tom", tom);
+		console.log(dataDOCX);
 		requestOptions = {
 			method: 'POST',
 			body: dataDOCX
@@ -1364,9 +1413,10 @@ async function changeStatus() {
 // user is changing label, sort or wikidata Id
 function changeValue(field, id, value) {
 	var pp;
-
+	console.log(field,id,value);
 	if (!referenceMode) {
 		pp = kwic.allEntities[id]
+		console.log(pp);
 	} else {
 		pp = kwic.allCitations[id]
 		var ref = pp.reference;
@@ -1611,7 +1661,7 @@ async function deleteDocuments(value = null) {
 		return null			
 		}
 
-	if(confirm(`Sicuro di voler eliminare i file selezionati?`)){
+	if(confirm(`Sicuro di voler eliminare i file selezionati?\nRicordati prima di salvare le modifiche se hai un file aperto.`)){
 		const deleteOptions = {
 			method: 'POST',
 			headers: {
@@ -1829,19 +1879,33 @@ function showFileName(fileName) {
 // Mark curator note and author note
 function markFootnote(location, mark){
 
-	let markOptions = {
-		author: 'Aldo Moro',
-		markChar: '[',
-		node: 'li',
-		attribute: "id",
-		selector: 'footnote-',
-		exception: ''
-	};
+	// let markOptions = {
+	// 	author: 'Aldo Moro',
+	// 	markChar: '[',
+	// 	node: 'li',
+	// 	attribute: "id",
+	// 	selector: 'footnote-',
+	// 	exception: ''
+	// };
 
-	let authorNotes = kwic.markFootnote(location, markOptions);
-	if (authorNotes > 0) {
+	// let authorNotes = kwic.markFootnote(location, markOptions);
+	// if (authorNotes > 0) {
 
-		let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${authorNotes} note di ${markOptions.author}</p>`
+	// 	let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${authorNotes} note di ${markOptions.author}</p>`
+	// 	$('#footnote-alert').prepend(alert_footnote);
+	// 	$("#footnote-alert").fadeTo(3500, 500).slideUp(500, function () {
+	// 		$("#footnote-alert").slideUp(500, function(){
+	// 			$("#alert-count").remove();
+	// 		});
+	// 	});
+	// }
+
+	if($('#moroNotes').length && $('#moroNotes').attr('data-alert') == 'true'){
+		$('[data-toggle="tooltip"]').tooltip();
+		$('#moroNotes').attr('data-alert','false')
+		let moroNotes_length = $('#moroNotes').children().length
+
+		let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${moroNotes_length} note di Aldo Moro</p>`
 		$('#footnote-alert').prepend(alert_footnote);
 		$("#footnote-alert").fadeTo(3500, 500).slideUp(500, function () {
 			$("#footnote-alert").slideUp(500, function(){
@@ -1849,7 +1913,6 @@ function markFootnote(location, mark){
 			});
 		});
 	}
-
 }
 
 // look for an XSLT stylesheet and convert the document into XML according to this XSLT.

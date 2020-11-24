@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 const listRoute = require('./routes/backend');
 const authRoute = require('./routes/authentication');
 const metadataRoute = require('./routes/metadata');
+const { resolveSoa } = require('dns');
 
 app.use(cookieParser());
 app.use(cors({
@@ -34,6 +35,10 @@ app.get('/index', verify, (req,res) => {
 
 app.get('/login', (req,res) =>{
     res.render("login.html");
+})
+
+app.get('/documentation', (req,res) => {
+    res.render("documentation.html")
 })
 
 app.get('/send_email', (req,res) =>{
