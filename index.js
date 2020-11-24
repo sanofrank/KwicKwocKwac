@@ -37,7 +37,7 @@ app.get('/login', (req,res) =>{
     res.render("login.html");
 })
 
-app.get('/documentation', (req,res) => {
+app.get('/documentazione', (req,res) => {
     res.render("documentation.html")
 })
 
