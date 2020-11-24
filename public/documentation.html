@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
         <link href="./doc.css" rel="stylesheet">
 
+        <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <title>Documentazione</title>
     </head>
@@ -79,10 +80,10 @@
                     <p>
                         KwicKwocKwac 1.0 (KwicKK) è un ambiente Web con l’obiettivo di fornire ai ricercatori uno
                         strumento semplice e intuitivo per arricchire il testo di documenti in formato digitale attraverso
-                        funzionalità di <mark>marcatura e metadatazione semi-automatiche</mark>. Le principali funzionalità offerte da KwicKK sono:
+                        funzionalità di <strong>marcatura e metadatazione semi-automatiche</strong>. Le principali funzionalità offerte da KwicKK sono:
                         <ol>
                             <li>
-                                <mark>Marcatura</mark> degli elementi presenti all’interno del testo del documento (menzioni a
+                                <strong>Marcatura</strong> degli elementi presenti all’interno del testo del documento (menzioni a
                                 persone, organizzazioni, luoghi, riferimenti bibliografici e citazioni);
                             </li>
                             <li>
@@ -90,15 +91,15 @@
                                 e note di Moro);
                             </li>
                             <li>
-                                <mark>Disambiguazione</mark> dei riferimenti generici alle entità a cui il documento si riferisce (es.
+                                <strong>Disambiguazione</strong> dei riferimenti generici alle entità a cui il documento si riferisce (es.
                                 termini come “Presidente del Consiglio”, “Papa”, etc.);
                             </li>
                             <li>
-                                <mark>Riconciliazione</mark> con i dati presenti su <a href="https://www.wikidata.org/wiki/Wikidata:Main_Page">Wikidata</a> 
+                                <strong>Riconciliazione</strong> con i dati presenti su <a href="https://www.wikidata.org/wiki/Wikidata:Main_Page">Wikidata</a> 
                                 per disambiguare le entità marcate e connetterle al Web seguendo il modello Linked Open Data (LOD);
                             </li>
                             <li>
-                                <mark>Metadatazione</mark> del documento (es. tematica del documento,
+                                <strong>Metadatazione</strong> del documento (es. tematica del documento,
                                 tipologia del documento, etc.);
                             </li>
                             <li>
@@ -113,7 +114,7 @@
                         La <a href="#fig1">Figura 1</a> mostra l’interfaccia principale dell’ambiente.
                     </p>
 
-                    <img src="" id="fig1" alt="Figura 1. L’interfaccia di KwicKK, divisa in cinque sezioni principali: A) barra di navigazione; B) barra degli strumenti; C) pannello delle
+                    <img src="images/interface.png" id="fig1" title="Figura 1. L’interfaccia di KwicKK, divisa in cinque sezioni principali: A) barra di navigazione; B) barra degli strumenti; C) pannello delle entità; D) testo del documento; E) utilità aggiuntive." alt="Figura 1. L’interfaccia di KwicKK, divisa in cinque sezioni principali: A) barra di navigazione; B) barra degli strumenti; C) pannello delle
                     entità; D) testo del documento; E) utilità aggiuntive." style="object-fit: cover">
                     
                     <p>
@@ -123,107 +124,102 @@
                                 una <mark><strong>barra di navigazione</strong></mark> (<a href="#fig2">Figura 2</a>), che presenta le seguenti funzionalità:
                                 <ol type="1">
                                     <li>
-                                            <mark>Cerca documenti</mark>: barra di ricerca che permette la ricerca filtrata e la 
+                                            <strong>Cerca documenti</strong>: barra di ricerca che permette la ricerca filtrata e la 
                                             selezione dei documenti caricati;
                                     </li>
                                     <li>
-                                            <mark>Operazioni</mark>: attivazione/disattivazione della visibilità della marcatura, aggiunta dei
+                                            <strong>Operazioni</strong>: attivazione/disattivazione della visibilità della marcatura, aggiunta dei
                                             metadati (vedi Inserimento dei metadati );
                                     </li>
                                     <li>
-                                            <mark>Salva documento</mark>: salvataggio del documento modificato;
+                                            <strong>Salva documento</strong>: salvataggio del documento modificato;
                                     </li>
                                     <li>
-                                            <mark>Carica documento</mark>: caricamento di uno o più documenti nell’ambiente di marcatura;
+                                            <strong>Modalità editing</strong>: l’attivazione/disattivazione della modalità editing (vedi la sezione <a href="#editingmode">Modalità editing</a>);
                                     </li>
                                     <li>
-                                            <mark>Modalità editing</mark>: l’attivazione/disattivazione della modalità editing (vedi la sezione <a href="#editingmode">Modalità editing</a>);
+                                            <strong>Carica documento</strong>: caricamento di uno o più documenti nell’ambiente di marcatura;
                                     </li>
                                     <li>
-                                            <mark>Profilo utente</mark> in cui l’utente può cambiare la password e uscire
+                                            <strong>Profilo utente</strong> in cui l’utente può cambiare la password e uscire
                                             dall’applicazione;
                                     </li>
                                     <li>
-                                            <mark>Documentazione</mark> in cui l’utente può trovare le istruzioni fondamentali per
+                                            <strong>Documentazione</strong> in cui l’utente può trovare le istruzioni fondamentali per
                                             utilizzare KwicKK;
                                     </li>
-                                    <li>
-                                            <mark>Informativa e copyright</mark>.
-                                    </li>
                                 </ol>
-                                <img src="" id="fig2" alt="Figura 2. La barra di navigazione.">
+                                <img src="images/navbar.png" id="fig2" title="Figura 2. La barra di navigazione." alt="Figura 2. La barra di navigazione.">
                             </li>
                             <li>
                                     una <mark><strong>barra di strumenti</strong></mark> (<a href="#fig3">Figura 3</a>) che diventa visibile ed utilizzabile in modalità editing. La
                                     barra di strumenti è dotata delle seguenti funzionalità:
                                 <ol type="1">
                                     <li>
-                                            marcatura del testo selezionato (vedi la sezione <a href="#editingmode">Modalità editing</a>.);
+                                            <strong>Marcatura</strong> del testo selezionato (vedi la sezione <a href="#editingmode">Modalità editing</a>.);
                                     </li>
                                     <li>
-                                            <mark>Estendi selezione a parola intera</mark>: attivazione/disattivazione dell’estensione
+                                            <strong>Estendi selezione a parola intera</strong>: attivazione/disattivazione dell’estensione
                                             automatica della marcatura all’intera parola nel caso in cui l’utente seleziona solo
                                             una parte di essa;
                                     </li>
                                     <li>
-                                            <mark>Evidenzia tutte le istanze</mark>: attivazione/disattivazione dell’estensione automatica
+                                            <strong>Evidenzia tutte le istanze</strong>: attivazione/disattivazione dell’estensione automatica
                                             della marcatura a ogni stringa di testo presente nel documento uguale alla stringa
                                             selezionata dall’utente;
                                     </li>
                                     <li>
-                                            <mark>Cambia stato di marcatura</mark>: modifica dello stato di lavoro del documento tramite
+                                            <strong>Stato di marcatura</strong>: modifica dello stato di lavoro del documento tramite
                                             clic sull’icona colorata. Ci sono tre possibili valori tra cui scegliere, indicati da
                                             altrettanti colori:
                                         <ul>
                                             <li>
-                                                <button type="button" class="btn btn-primary">Da avviare</button>: il documento è stato caricato sull’applicazione;
+                                                <span class="badge badge-primary" style="padding: 10px;">Da avviare</span>: il documento è stato caricato sull’applicazione;
                                             </li>
                                             <li>
-                                                <button type="button" class="btn btn-warning">In corso</button>: il ricercatore sta lavorando sul documento;
+                                                <span class="badge badge-warning" style="padding: 10px; color:#fff">In corso</span>: il ricercatore sta lavorando sul documento;
                                             </li>
                                             <li>
-                                                <button type="button" class="btn btn-success">Terminato</button>: il ricercatore ha finito di lavorare sul documento;
+                                                <span class="badge badge-success" style="padding: 10px;">Terminato</span>: il ricercatore ha finito di lavorare sul documento;
                                             </li>
                                         </ul>
                                     </li>
                                 </ol>
-                                <img src="" id="fig3" alt="Figura 3. La barra degli strumenti.">
+                                <img src="images/toolbar.png" id="fig3" title="Figura 3. La barra degli strumenti." alt="Figura 3. La barra degli strumenti.">
                             </li>
                             <li>
                                     un <mark><strong>pannello delle entità</strong></mark> (<a href="#fig4">Figura 4</a>), contenente una serie di tab disposti orizzontalmente.
                                     Ogni tab corrisponde ad una determinata categoria di marcatura intratestuale presente
                                     nel testo. L’attivazione di un tab mediante clic del mouse rende visibile un indice di tutti
-                                    gli elementi marcati nel testo e appartenenti a quella determinata categoria (vedi <a href="#manipulation">Manipolazione degli elementi intratestuali</a>);
+                                    gli elementi marcati nel testo e appartenenti a quella determinata categoria. (vedi <a href="#manipulation">Manipolazione degli elementi intratestuali</a>);
                             </li>
-                            <img src="" id="fig4" alt="Figura 4. Il pannello delle entità.">
+                            <img src="images/entitypanel.png" id="fig4" title="Figura 4. Il pannello delle entità." alt="Figura 4. Il pannello delle entità." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
                             <li>
                                     una sezione contenente il <mark><strong>testo del documento</strong></mark> da annotare (<a href="#fig5">Figura 5</a>);
                             </li>
-                            <img src="" id="fig5" alt="Figura 5. Il testo del documento.">
+                            <img src="images/doctext.png" id="fig5" title="Figura 5. Il testo del documento." alt="Figura 5. Il testo del documento.">
                             <li>
                                     una sezione contenente le seguenti <mark><strong>utilità aggiuntive</strong></mark> (<a href="#fig6">Figura 6</a>), organizzate in pannelli
                                     attivabili tramite clic sui rispettivi tabs:
                                 <ol type="i">
                                     <li>
-                                            un <mark>pannello Scarti</mark>, in cui è possibile spostare elementi contenuti nel pannello
+                                            un <strong>pannello Scarti</strong>, in cui è possibile spostare elementi contenuti nel pannello
                                             delle entità tramite trascinamento e rilascio della selezione, per tenerli in disparte
                                             in attesa di ulteriori operazioni;
                                     </li>
                                     <li>
-                                            un <mark>pannello Info</mark> contenente un corpo di testo informativo che si aggiorna
+                                            un <strong>pannello Info</strong> contenente un corpo di testo informativo che si aggiorna
                                             automaticamente quando l’utente clicca su un elemento sincronizzato con
-                                            Wikidata (contrassegnato da un checkbox spuntato );
+                                            Wikidata;
                                     </li>
                                     <li>
-                                            <mark style="background-color: yellow">un pannello Cestino in cui è possibile spostare elementi contenuti nel pannello
-                                            delle entità o nel pannello Scarti per eliminarli. Il pannello Cestino si comporta
+                                            un <strong>pannello Cestino</strong> in cui è possibile spostare elementi per eliminarli. 
+                                            Il pannello Cestino si comporta
                                             come la funzionalità “Cestino” dei comuni sistemi operativi dotati di interfaccia
-                                            grafica. Per svuotarlo, eliminando così definitivamente gli elementi posti al suo
-                                            interno, è sufficiente cliccare sulla voce Operazioni nella barra di navigazione e
-                                            selezionare l’opzione Svuota cestino nel menu a tendina.</mark>
+                                            grafica (vedi <a href="#errormanag">Gestione degli errori</a>).
                                     </li>
                                 </ol>
-                                <img src="" id="fig6" alt="Figura 6. Utilità aggiuntive.">
+                                <img src="images/utilities.png" id="fig6" title="Figura 6. Utilità aggiuntive." alt="Figura 6. Utilità aggiuntive." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
                             </li>
                         </ol>
                     </p>
@@ -236,38 +232,47 @@
                                         Per accedere all’interno dell’ambiente di marcatura in modalità editing il ricercatore deve inserire
                                         il proprio nome utente e la propria password (ricevuti per email) nei rispettivi campi (<a href="#fig7">Figura 7</a>).
                                 </p>
-                                <img src="" id="fig7" alt="Figura 7. La pagina di accesso.">
+                                <img src="images/login.png" id="fig7" title="Figura 7. La pagina di accesso." alt="Figura 7. La pagina di accesso.">
                         </div>
                         <div id="load">
                             <h4 class="name">Caricamento e selezione dei documenti</h4>
                                 <p>
                                         Una volta eseguito l’accesso, l’utente può caricare i propri documenti sulla piattaforma cliccando
-                                        sull’icona nell’angolo in alto a destra nella barra di navigazione. Nella finestra modale che si
+                                        sull’icona <span class="badge badge-dark"><span class="iconify" data-icon="oi:cloud-upload"></span></span> nell’angolo in alto a destra nella barra di navigazione. Nella finestra modale che si
                                         apre (<a href="#fig8a">Figura 8a</a>), l’utente deve:
                                         <ol>
                                             <li>
                                                 inserire i dati necessari nel modulo di caricamento del
-                                                documento (numero della sezione, numero del volume, numero del tomo del documento);
+                                                documento (numero della <strong>sezione</strong>, numero del <strong>volume</strong>, numero del <strong>tomo</strong> del documento);
                                             </li>
                                             <li>
                                                 specificare il formato del documento, cliccando su <code>.docx</code> o <code>.html</code>;
                                             </li>
                                             <li>
-                                                cliccare sul bottone <mark>Scegli file</mark> per selezionare uno o più file che intende caricare;
+                                                cliccare sul bottone <span class="badge badge-light" style="padding: 5px; border: solid gray 2px">Scegli file</span> per selezionare uno o più file che si intende caricare;
                                             </li>
                                             <li>
-                                                cliccare sul bottone <mark>Carica file</mark> per completare l’operazione di caricamento (<a href="#fig8b">Figura 8b</a>).
+                                                cliccare sul bottone <span class="badge badge-primary" style="padding: 10px;">Svuota</span> per annullare l'operazione di caricamento; altrimenti
+                                            </li>
+                                            <li>
+                                                cliccare sul bottone <span class="badge badge-primary" style="padding: 10px;">Carica file</span> per completare l’operazione di caricamento (<a href="#fig8b">Figura 8b</a>). Si noti la possibilità di modificare il nome del documento, qualora siano presenti più documenti con lo stesso titolo.
                                             </li>
                                         </ol>
                                 </p>
-                                <img src="" alt="Figura 8a. La finestra che contiene il modulo di caricamento del documento.">
-                                <img src="" alt="Figura 8b. Un esempio di modulo di caricamento compilato, in cui tre documenti (appartenenti al tomo 1 del volume 1 della sezione 1 e in formato .docx) stanno per essere caricati sulla piattaforma.">
+                                <img src="images/loaddoc1.png" id="fig8a" title="Figura 8a. La finestra che contiene il modulo di caricamento del documento." alt="Figura 8a. La finestra che contiene il modulo di caricamento del documento.">
+                                <img src="images/loaddoc2.png" id="fig8b" title="Figura 8b. Un esempio di modulo di caricamento compilato, in cui tre documenti (appartenenti al tomo 1 del volume 1 della sezione 1 e in formato .docx) stanno per essere caricati sulla piattaforma." alt="Figura 8b. Un esempio di modulo di caricamento compilato, in cui tre documenti (appartenenti al tomo 1 del volume 1 della sezione 1 e in formato .docx) stanno per essere caricati sulla piattaforma.">
                                 <p>
                                         Dopo aver caricato un documento sulla piattaforma, l’utente può selezionare il documento 
                                         cliccando sul nome del documento che appare nel menù a tendina
-                                        attivabile attraverso un click o una ricerca nella barra di ricerca. La ricerca può essere
-                                        filtrata per titolo del documento e per stato della marcatura.
+                                        attivabile attraverso un click o una ricerca nella barra di ricerca (<a href="#fig8c">Figura 8c</a>) dotata delle seguenti funzionalità:
+                                        <ol>
+                                            <li><strong>filtri di ricerca</strong> a seconda dello stato di marcatura del documento;</li>
+                                            <li><strong>lista dei documenti</strong> caricati;</li>
+                                            <li><strong>eliminazione dei documenti</strong> selezionati tra quelli caricati.</li>
+                                        </ol>
+                                        È possibile recuperare un documento anche tramite <strong>ricerca diretta</strong> del suo nome nella barra di ricerca.
                                 </p>
+                                <img src="images/search.png" title="Figura 8c. La selezione di un documento caricato." alt="Figura 8c. La selezione di un documento caricato.">
                         </div>
                         <div id="editingmode">
                             <h4 class="name">Modalità editing</h4>
@@ -278,11 +283,11 @@
                                             barra degli strumenti (vedi <a href="#fig9">Figura 9</a>):
                                         <ul>
                                             <li>
-                                                <label class="btn btn-secondary btn-sm">Menzioni</label> a <mark style="background-color: lemonchiffon">Persone</mark> (es. “Aldo Moro”), <mark style="background-color:rgb(255, 185, 173)">Organizzazioni</mark> (es. “Società della gioventù
-                                                    cattolica italiana”) e <mark style="background-color:powderblue">Luoghi</mark> (es. “Bari”);
+                                                <span class="badge badge-secondary">Menzioni</span> a <span class="badge" style="background-color:lightyellow; padding: 10px">Persone</span> (es. “Aldo Moro”), <span class="badge" style="background-color:lightcoral; padding: 10px">Organizzazioni</span> (es. “Società della gioventù
+                                                    cattolica italiana”) e <span class="badge" style="background-color:lightsteelblue; padding: 10px">Luoghi</span> (es. “Bari”);
                                             </li>
                                             <li>
-                                                <label class="btn btn-secondary btn-sm">Riferimenti</label> suddivisi in <mark style="background-color:lightseagreen">Riferimenti bibliografici</mark> e <mark style="background-color: lightgreen">Citazioni</mark>;
+                                                <span class="badge badge-secondary">Riferimenti</span> suddivisi in <span class="badge" style="background-color:lightcyan; padding: 10px">Riferimenti bibliografici</span> e <span class="badge" style="background-color: lightgreen; padding: 10px">Citazioni</span>;
                                             </li>
                                         </ul>
                                     </p>
@@ -291,152 +296,152 @@
                                             bottone della rispettiva categoria intratestuale a cui appartiene l’elemento (es. “Persone”). La marcatura si esprime a livello di interfaccia sotto forma di evidenziature la cui
                                             colorazione cambia a seconda della categoria di marcatura.
                                     </p>
-                                    <img src="" id="fig9" alt="Figura 9. Parte di un testo marcato. A ogni colore corrisponde una categoria di marcatura: Persone (giallo), Luoghi (blu),
+                                    <img src="images/markedtext.png" id="fig9" title="Figura 9. Parte di un testo marcato. A ogni colore corrisponde una categoria di marcatura: Persone (giallo), Luoghi (blu), Organizzazioni (rosso), Riferimenti bibliografici (azzurro) e Citazioni (verde)." alt="Figura 9. Parte di un testo marcato. A ogni colore corrisponde una categoria di marcatura: Persone (giallo), Luoghi (blu),
                                     Organizzazioni (rosso), Riferimenti bibliografici (azzurro) e Citazioni (verde).">
                             </div>
                             <div id="manipulation">
                                 <h5 class="name">Manipolazione degli elementi intratestuali</h5>
                                     <p>
-                                            Gli elementi intratestuali (<label class="btn btn-secondary btn-sm">Menzioni</label> e <label class="btn btn-secondary btn-sm">Riferimenti</label>) vengono registrati nella colonna a sinistra e, più
+                                            Gli elementi intratestuali (<span class="badge badge-secondary">Menzioni</span> e <span class="badge badge-secondary">Riferimenti</span>) vengono registrati nella colonna a sinistra e, più
                                             precisamente, nel pannello delle entità, suddiviso in varie categorie (<a href="#fig10">Figura 10</a>).
                                     </p>
-                                    <img src="" id="fig10" alt="Figura 10. Il pannello delle entità mostra tutte le istanze degli elementi intratestuali, organizzate in finestre differenti a seconda della
-                                    categoria. In figura, il pannello delle entità mostra le menzioni e la finestra aperta è quella delle Persone.">
+                                    <img src="images/categories.png" id="fig10" title="Figura 10. Il pannello delle entità mostra tutte le istanze degli elementi intratestuali, organizzate in finestre differenti a seconda della categoria. In figura, il pannello delle entità mostra le menzioni e la finestra aperta è quella delle Persone." alt="Figura 10. Il pannello delle entità mostra tutte le istanze degli elementi intratestuali, organizzate in finestre differenti a seconda della
+                                    categoria. In figura, il pannello delle entità mostra le menzioni e la finestra aperta è quella delle Persone." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
                                     <p>
                                             L’utente può interagire in diversi modi con le menzioni e i riferimenti contenuti nel pannello delle
                                             entità. Per esempio, l’utente può integrare a proprio piacimento menzioni differenti che si
-                                            riferiscono alla medesima entità (es. “Aldo Moro”, “Aldo” e “Moro”). Un elemento, una volta
+                                            riferiscono alla medesima entità (es. “Azione Cattolica Italiana”, "Azione Cattolica" e "A.C.I.", vedi <a href="#fig11a">Figura 11a</a>). Un elemento, una volta
                                             annotato, viene automaticamente aggiunto al pannello delle entità sotto la sua rispettiva
                                             categoria. A questo punto, l’utente può selezionare e integrare una menzione o un riferimento
-                                            con un altro tramite trascinamento della selezione. Il risultato di tale operazione è l’integrazione
-                                            del primo elemento con il secondo (Figura 11).
+                                            con un altro tramite un meccanismo di trascinamento della selezione nel termine principale, che è quello realmente rappresentativo di quella menzione. Il risultato di tale operazione è l’integrazione
+                                            del primo elemento con il secondo (<a href="#fig11b">Figura 11b</a>).
                                     </p>
-                                    <img src="" alt="Figura 11. Aggiungendo la menzione Moro all’interno della menzione Aldo Moro, l’utente indica che le due menzioni si riferiscono
-                                    sostanzialmente alla stessa persona.">
+                                    <img src="images/integration1.png" id="fig11a" title="Figura 11a. Menzioni differenti si possono riferire alla medesima entità." alt="Figura 11a. Menzioni differenti si possono riferire alla medesima entità." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
+                                    <img src="images/integration2.png" id="fig11b" title="Figura 11b. Trascinando la menzione A.C.I all’interno della menzione Azione Cattolica Italiana, l’utente indica che le due menzioni si riferiscono sostanzialmente alla stessa entità." alt="Figura 11b. Trascinando la menzione A.C.I all’interno della menzione Azione Cattolica Italiana, l’utente indica che le due menzioni si riferiscono sostanzialmente alla stessa entità." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
                                     <p>
-                                            L’utente può inoltre cliccare sul singolo elemento per visualizzare la sua lista di concordanze
-                                            all’interno del testo. L’utente può cliccare su una concordanza per navigare in automatico alla sua
-                                            posizione all’interno del testo. Le concordanze possono essere visualizzate in maniere differenti,
-                                            a seconda delle preferenze impostate dall’utente (vedi Preferenze ).
+                                            L’utente può inoltre cliccare sul singolo elemento per visualizzare la sua lista di occorrenze
+                                            all’interno del testo. Cliccando una volta sulla riga corrispondente ad un'occorrenza, è possibile navigare in automatico alla sua
+                                            posizione all’interno del testo. Inoltre, ogni occorrenza è a sua volta trascinabile, permettendo l'integrazione con un altra menzione, o la sua cancellazione (vedi <a href="#errormanag">Gestione degli errori</a>), se necessari (<a href="#fig11c">Figura 11c</a>).
                                     </p>
+                                    <img src="images/concordances.png" id="fig11c" title="Figura 11c. Lista di occorrenze della menzione Azione Cattolica Italiana." alt="Figura 11c. Lista di occorrenze della menzione Azione Cattolica Italiana." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
                                     <p>
-                                            Inoltre l’utente può segnalare le concordanze che indicano una menzione generica alla rispettiva
-                                            entità (es. l’espressione “Papa” che si riferisce a “Pio XI” e quella che si riferisce a “Pio XII”). Per
-                                            disambiguare una menzione generica è sufficiente cliccarci sopra due volte. Questa operazione
-                                            evidenzia la menzione generica in modo da distinguerla dalle altre menzioni più precise a
-                                            quell’entità (Figura 12).
+                                            Inoltre l’utente può segnalare le occorrenze che indicano una menzione generica alla rispettiva
+                                            entità (es. l’espressione “Papa” che si riferisce a “Pio XI” e quella che si riferisce a “Pio XII”, vedi <a href="#fig12a">Figura 12a</a>). Per
+                                            disambiguare una menzione generica è sufficiente cliccarci sopra <strong>due volte</strong>. Questa operazione
+                                            evidenzia la menzione generica in modo da distinguerla dalle altre (<a href="#fig12b">Figura 12b</a>).
                                     </p>
-                                    <img src="" alt="Figura 12. “Papa”, una menzione generica che nel testo appare una volta riferita a Pio XII e un’altra volta riferita a Pio XI, disambiguata
-                                    e segnalata come tale.">
+                                    <img src="images/disambig1.png" id="fig12a" title="Figura 12a. “Papa”, una menzione generica che nel testo appare una volta riferita a Pio XII e un’altra volta riferita a Pio XI, viene inizialmente riconosciuta come menzione a sé stante." alt="Figura 12a. “Papa”, una menzione generica che nel testo appare una volta riferita a Pio XII e un’altra volta riferita a Pio XI, viene inizialmente riconosciuta come menzione a sé stante." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
+                                    <img src="images/disambig2.png" id="fig12b" title="Figura 12b. Le menzioni “Papa”, opportunamente disambiguate e segnalate come generiche." alt="Figura 12b. Le menzioni “Papa”, opportunamente disambiguate e segnalate come generiche." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
                                     <p>
                                             Infine, ogni elemento è accompagnato da icone con funzionalità differenti:
-                                        <ul>
+                                        <ol>
                                             <li>
-                                                    un checkbox che indica se all’elemento è associato un Wikidata ID ( ), utilissimo per
-                                                    creare collegamenti col Web;
+                                                un <strong>conteggio</strong> del numero totale di istanze dell’elemento marcato (es. <span class="badge badge-primary" style="padding-left: 15px; padding-right: 15px;">9</span>);
                                             </li>
                                             <li>
-                                                    un conteggio del numero totale di istanze dell’elemento marcato (es. );
+                                                un <strong>checkbox</strong> <span class="badge badge-light"><span class="iconify text-success" data-icon="oi-check"></span></span> che indica se all’elemento è associato un Wikidata ID;
                                             </li>
                                             <li>
-                                                    un bottone ( ) che l’utente può cliccare per rendere visibili le seguenti informazioni
-                                                    relative all’elemento (Figura 13a):
-                                                <ol>
+                                                un <strong>bottone</strong> <span class="badge badge-secondary" style="padding-left: 10px; padding-right: 10px"><span class="iconify" data-icon="oi:info"></span></span> che l’utente può cliccare per rendere visibili le seguenti informazioni
+                                                relative all’elemento (<a href="#fig13a">Figura 13a</a>):
+                                                <ol type="a">
                                                     <li>
-                                                            l’ etichetta che identifica l’elemento e che viene considerata nella ricerca del
-                                                            Wikidata ID (vedi sotto);
+                                                            l’<strong>etichetta</strong> che identifica l’elemento. L’utente può cercare
+                                                            il Wikidata ID in base all’etichetta (modificabile secondo necessità) cliccando
+                                                            sull’icona <span class="badge badge-light" style="padding-left: 10px; padding-right: 10px; border: solid gray 2px"><span class="iconify" data-icon="oi:magnifying-glass"></span></span> e selezionando l’opzione corrispondente, se disponibile
+                                                            (<a href="#fig13b">Figura 13b</a>). La selezione di una voce nel menu a tendina riempie i valori di Wikidata ID e Treccani ID, fatto salvo che per Treccani ID questo sia presente, altrimenti viene segnalato come non presente.
+                                                            Qualora l'utente volesse cambiare il valore inserito può selezionarne un altro, modificare l'etichetta e ripetere la ricerca, oppure non selezionare alcun valore se nessuno fra quelli presentati è adeguato all'etichetta che sta cercando.
                                                     </li>
                                                     <li>
-                                                            il valore con cui viene ordinato all’interno della lista;
+                                                            il valore con cui viene ordinato all’interno della lista di entità;
                                                     </li>
                                                     <li>
-                                                            l’identificatore Wikidata ( Wikidata ID ) associato all’elemento. L’utente può cercare
-                                                            un identificatore in base all’etichetta (modificabile secondo necessità) cliccando
-                                                            sull’icona a lente di ingrandimento e selezionare l’opzione corretta, se disponibile
-                                                            (Figura 13b).
+                                                            l’identificatore Wikidata (<strong>Wikidata ID</strong>) associato all’elemento;
+                                                    </li>
+                                                    <li>
+                                                            il <strong>Treccani ID</strong> associato a quell'entità, se disponibile. Qualora il link Treccani sia valorizzato dentro Wikidata, lo stesso appare cliccabile. È possibile che Wikidata non sia stato popolato con il valore del Dizionario biografico per la persona che sta cercando. In questo caso il campo viene popolato con la voce "Non rilevato".
                                                     </li>
                                                 </ol>
                                             </li>
-                                        </ul>
+                                        </ol>
                                     </p>
-                                    <img src="" alt="Figura 13a. I dettagli riguardanti la menzione “Umberto Calosso”. Il Wikidata ID è stato cercato secondo l’etichetta “Umberto Calosso”.">
-                                    <img src="" alt="Il Wikidata ID di “Umberto Calosso” (giornalista, politico e docente italiano). Il suo inserimento è segnalato dal check
-                                    verde.">
+                                    <img src="images/details1.png" id="fig13a" title="Figura 13a. I dettagli riguardanti la menzione “Azione Cattolica Italiana”. Il Wikidata ID è stato cercato secondo l’etichetta “Azione Cattolica Italiana”." alt="Figura 13a. I dettagli riguardanti la menzione “Azione Cattolica Italiana”. Il Wikidata ID è stato cercato secondo l’etichetta “Azione Cattolica Italiana”." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
+                                    <img src="images/details2.png" id="fig13b" title="Figura 13b. Il Wikidata ID di “Azione Cattolica Italiana” (associazione laica finalizzata alla collaborazione con le gerarchie ecclesiastiche della Chiesa cattolica). Il suo inserimento è segnalato dal check verde. Non ha un Treccani ID disponibile e quindi non viene rilevato." alt="Figura 13b. Il Wikidata ID di “Azione Cattolica Italiana” (associazione laica finalizzata alla collaborazione con le gerarchie ecclesiastiche della Chiesa cattolica). Il suo inserimento è segnalato dal check
+                                    verde. Non ha un Treccani ID disponibile e quindi non viene rilevato." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
                             </div>
                             <div id="errormanag">
                                 <h5 class="name">Gestione degli errori</h5>
                                     <p>
-                                            KwicKK permette una pronta gestione degli errori da parte dell’utente tramite la sezione Cestino
-                                            ( ) e la funzionalità Svuota cestino , presente nel menù a tendina generato cliccando sulla voce
-                                            Operazioni nella barra di navigazione.
-                                            Per annullare la marcatura di un elemento è sufficiente:
-                                        <ol>
+                                            KwicKK permette una pronta gestione degli errori da parte dell’utente tramite l'utilizzo della funzione <span class="badge badge-light" style="padding:10px">Cestino</span>.
+                                            Per <strong>annullare la marcatura</strong> di un elemento è sufficiente trascinare l’elemento nella sezione <span class="badge badge-light" style="padding:10px">Cestino</span> (<a href="#fig14a">Figura 14a</a>).
+                                    </p>
+                                    <img src="images/cancel1.png" id="fig14a" title="Figura 14a. La menzione Papa viene spostata dal pannello delle entità al cestino." alt="Figura 14a. La menzione Papa viene spostata dal pannello delle entità al cestino." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
+                                    <p>
+                                        Per <strong>svuotare il cestino</strong> e quindi cancellare definitivamente le marcature in esso contenute (<a href="#fig14b">Figura 14b</a>), è sufficiente:
+                                        <ol type="a">
                                             <li>
-                                                    cliccare sopra l’elemento;
+                                                cliccare <strong>due volte</strong> sul <span class="badge badge-light" style="padding:10px">Cestino</span> e confermare di voler portare a termine l'operazione; oppure
                                             </li>
                                             <li>
-                                                    trascinare l’elemento nella sezione Cestino ( );
-                                            </li>
-                                            <li>
-                                                    cliccare sulla voce di navigazione Operazioni e selezionare Svuota cestino.
+                                                cliccare sulla voce di navigazione <span class="badge badge-dark" style="padding:10px">Operazioni</span> e selezionare <span class="badge badge-light" style="padding:10px">Svuota cestino</span>.
                                             </li>
                                         </ol>
                                     </p>
+                                    <img src="images/cancel2.png" id="fig14b" title="Figura 14b. Il cestino viene svuotato, cancellando definitivamente tutte le menzioni e i riferimenti al suo interno." alt="Figura 14b. Il cestino viene svuotato, cancellando definitivamente tutte le menzioni e i riferimenti al suo interno." style="display: block; margin-left: auto; margin-right: auto;width: 50%; height: 50%;">
                             </div>
                         </div>
                         <div id="metadata">
                             <h4 class="name">Inserimento dei metadati</h4>
                                 <p>
-                                        L’utente deve anche aggiungere i metadati bibliografici del documento prima di poterlo
-                                        scaricare. Per aggiungere i metadati l’utente deve cliccare sulla voce di navigazione Operazioni
-                                        e selezionare Aggiungi metadati . Tale operazione apre una finestra contenente un modulo che
-                                        l’utente deve compilare inserendo i valori corretti (vedi Figura 14).
+                                        Per aggiungere i metadati l’utente deve cliccare sulla voce di navigazione <span class="badge badge-dark" style="padding:10px">Operazioni</span>
+                                        e selezionare <span class="badge badge-light" style="padding:10px">Aggiungi metadati</span>. Tale operazione apre una finestra contenente un modulo che
+                                        l’utente deve compilare inserendo i valori corretti (<a href="#fig15">Figura 15</a>).
                                 </p>
-                                <img src="" alt="Figura 14. Il modulo di inserimento dei metadati bibliografici.">
+                                <img src="images/metadata.png" id="fig15" title="Figura 15. Il modulo di inserimento dei metadati bibliografici." alt="Figura 15. Il modulo di inserimento dei metadati bibliografici.">
                                 <p>
                                         In particolare, il modulo di inserimento dei metadati è articolato come segue:
                                     <ul>
                                         <li>
-                                                Numero del documento : un numero di tre cifre da 001 a 999, da inserire in ordine
-                                                crescente (es. il primo documento avrà 001, il secondo 002, ecc.);
+                                                <strong>Numero del documento</strong>: un numero di tre cifre da 001 a 999, da inserire in ordine
+                                                cronologico crescente (es. il primo documento avrà 001, il secondo 002, ecc.);
                                         </li>
                                         <li>
-                                                Ruolo dell’autore : il ruolo ricoperto da Moro in quel momento;
+                                                <strong>Ruolo dell’autore</strong>: il ruolo ricoperto da Moro in quel momento;
                                         </li>
                                         <li>
-                                                Ricercatore curatore : il vostro nome;
+                                                <strong>Ricercatore curatore</strong>: il vostro nome;
                                         </li>
                                         <li>
-                                                Abstract : la descrizione del documento preparata dal ricercatore;
+                                                <strong>Abstract</strong>: la descrizione del documento preparata dal ricercatore;
                                         </li>
                                         <li>
-                                                Tipologia del documento : una o più categorie a cui il documento appartiene;
+                                                <strong>Tipologia del documento</strong>: una o più categorie a cui il documento appartiene;
                                         </li>
                                         <li>
-                                                Tematica del documento : una o più categorie a cui il soggetto del documento
+                                                <strong>Tematica del documento</strong>: una o più categorie a cui il soggetto del documento
                                                 appartiene;
                                         </li>
                                         <li>
-                                                Stato del documento : indica se il documento è stato pubblicato/edito oppure se invece è
+                                                <strong>Stato del documento</strong>: indica se il documento è stato pubblicato/edito oppure se invece è
                                                 non pubblicato/inedito;
                                         </li>
                                         <li>
-                                                Riferimento bibliografico / Segnatura archivistica : una o più indicazione di provenienza
+                                                <strong>Riferimento bibliografico</strong> / <strong>Segnatura archivistica</strong>: una o più indicazione di provenienza
                                                 del documento (riferimento della fonte editoriale, se edito; segnatura archivistica se
                                                 inedito);
                                         </li>
                                         <li>
-                                                Luogo dell’evento : nome del luogo in cui è avvenuto l’evento descritto nel documento;
+                                                <strong>Luogo dell’evento</strong>: nome del luogo in cui è avvenuto l’evento descritto nel documento;
                                         </li>
                                         <li>
-                                                Data dell’evento : data ( giorno-mese-anno oppure solo anno ) in cui è avvenuto l’evento
+                                                <strong>Data dell’evento</strong>: data ( giorno-mese-anno oppure solo anno ) in cui è avvenuto l’evento
                                                 descritto nel documento;
                                         </li>
                                         <li>
-                                                Note aggiuntive.
+                                                <strong>Note aggiuntive</strong>.
                                         </li>
                                     </ul>
-                                    <p>L’utente salva i metadati cliccando sul pulsante Salva situato in fondo al modulo.</p>
+                                    <p>L’utente deve seguire le indicazioni presenti sotto le voci dei vari metadati. Una volta completato il modulo, i metadati devono essere salvati cliccando sul pulsante <span class="badge badge-primary" style="padding:10px">Salva</span> situato in fondo al modulo.</p>
                                 </p>
                         </div>
                 </div>

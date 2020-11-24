@@ -20,6 +20,7 @@ img {
     object-fit: cover;
     margin-top: 10px;
     margin-bottom: 20px;
+    border: solid black 1px;
   }
 
 #form_container{
@@ -53,7 +54,7 @@ img {
 }
 
 mark {
-    background-color: rgb(222, 233, 247)
+    background-color: #ffa;
 }
 
 input[type=file]{ 
@@ -194,6 +195,10 @@ ul.CTAs a {
     width: 50%;
     margin-bottom: 30px;
     margin-top: 30px
+}
+
+#content a:hover {
+    background: #ffa;
 }
 
 /* ---------------------------------------------------
