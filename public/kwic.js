@@ -636,7 +636,7 @@ var kwic = new (function () {
 		var sort = ""
 		var wikidataId = ""
 		var treccaniId = ""
-		this.id = mentions[0].entity
+		this.id = mentions[0].entity.replace(/(#)/g,'') //delete #, but modify to replace just the first one
 		this.position = Number.MAX_VALUE
 		var inners = []
 
@@ -745,8 +745,7 @@ var kwic = new (function () {
 
 	// mentions are places in the document where entities are mentioned
 	// they end up as <span class="mention category">text</span>
-	this.Mention = function(nodeOrRange, options) {
-		console.log(nodeOrRange)
+	this.Mention = function(nodeOrRange, options) {		
 		if (!options) options = {}         // fallback object for inizialization
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "mention-" ;
@@ -763,11 +762,13 @@ var kwic = new (function () {
 		this.before = t.before || ""
 		this.after = t.after || ""
 		this.inner = t.inner  // this will remain the exact string in the document
-
+		
+		this.property = 'dcterms:relation' // RDFa branch
 		this.id = this.node.id || getNewId(prefix)		
 		this.prop('id', this.id, false) ;
 		this.prop('category', options.category || "scraps", true)
-		this.prop('entity', options.entity || options.id || t.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "entity$1"), false)
+		this.prop('property', options.property || this.property, options.force)
+		this.prop('entity', options.entity || options.id || t.inner.replace(/([^a-zA-Z0-9àèéìòù,.]+)/g,"").replace(/(^\d+)/, "entity$1"), false)
 		this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 		this.prop('wikidataId', options.wikidataId, options.force) ;
@@ -775,14 +776,14 @@ var kwic = new (function () {
 
 		this.category = dataset.category || options.category 	// person, place, thing, etc. 
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
-		this.entity = this.node.attributes.about.value
+		// this.entity = this.node.attributes.about.value
+		this.entity = this.node.attributes.resource.value // Questa riga probabilmente va cambiata
 		
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
 		if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
 		if (dataset.treccaniId) this.treccaniId = dataset.treccaniId // this is the Treccani Id associated to the entity this mention belongs to
 		if (dataset.rs) this.rs = `rs-active ${options.category}` // this is the value used for displaying if the mention is a referenceString
-		console.log(this.label+'MENTION');
 	}
 	this.Mention.prototype = {
 		// identify the text before and after the mention
@@ -841,6 +842,7 @@ var kwic = new (function () {
 					if (force || this.node.id== "") {
 						if (value!=='')
 							this.node.id = value
+							this.node.setAttribute('about',`#${value}`) //added line
 					}
 					break; 
 				case 'category':
@@ -854,15 +856,34 @@ var kwic = new (function () {
 						}
 					}
 					break; 
-				case 'entity':
-					if (force || this.node.attributes.about == undefined) {
+				// case 'entity':
+				// 	if (force || this.node.attributes.about == undefined) {
+				// 		if (value) {
+				// 			this.node.setAttribute('about',value)
+				// 		} else {
+				// 			this.node.removeAttribute('about')
+				// 		}
+				// 	}
+				// 	break;
+				case 'property':
+					if (force || this.node.attributes.property == undefined) {
 						if (value) {
-							this.node.setAttribute('about',value)
+							this.node.setAttribute('property',value)
 						} else {
-							this.node.removeAttribute('about')
+							this.node.removeAttribute('property')
 						}
 					}
 					break;
+				case 'entity':
+					if (force || this.node.attributes.resource == undefined) {
+						if (value) {
+							this.node.setAttribute('resource',`#${value}`)
+							console.log('resource');
+						} else {
+							this.node.removeAttribute('resource')
+						}
+					}
+					break;				
 				default:
 					if (force || this.node.dataset[name]== undefined) {
 						console.log(name,value,force)
@@ -1455,7 +1476,9 @@ var kwic = new (function () {
 
 		for (var i in mentions) {
 			var mention = mentions[i]
+			// mention.entity is the about value ex. mention: Moro mention.entity: AldoMoro
 			if(!entities[mention.entity]) {
+				// this.Entity(mentions,options,type)
 				entities[mention.entity] = new this.Entity([mention], {}, "mention")
 			} else {
 				entities[mention.entity].append(mention, true)
@@ -1750,19 +1773,19 @@ var kwic = new (function () {
 					} else {
 						var ranges = [sel.getRangeAt(0)]
 					}
-					for (var i in ranges) {
-						console.log(ranges);
-						//console.log(ciao);
+					for (var i in ranges) {												
 						if (cat.action=='wrap') {
 							if(cat.mention){
+								//this.Mentions(nodeorRange,options)
 								var m = new this.Mention(ranges[i], {
 									category: cat.entity
 								})
-								if (m.id) this.allMentions[m.id] = m
+								//m.id = node.id ex. mention-1
+								if (m.id) this.allMentions[m.id] = m //a quella posizione associo la mention rispettiva
 								ret = true
 							}		
 						}
-					}
+					}					
 				}
 			}
 		}

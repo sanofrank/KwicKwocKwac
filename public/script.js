@@ -576,8 +576,8 @@ function setupKWIC(location, saveView) {
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
-	} else {
-		mentions = kwic.findMentions('.mention', location);
+	} else {		
+		mentions = kwic.findMentions('.mention', location); // When a KwicKKed document get loaded
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
 		//console.log(list);
 		var c0 = kwic.toHTML(
@@ -1200,7 +1200,7 @@ function doAction(key, alt, shift) {
 	if (rangeAcceptable(sel, documentLocation)) {
 		let action = referenceMode ? kwic.doActionReference(key, alt, shift) : kwic.doAction(key, alt, shift); // If reference mode is active change action options
 
-		if (action) {
+		if (action) {					
 			setupKWIC(documentLocation, true)
 			sel.collapse(nullSelection, 0)
 		}

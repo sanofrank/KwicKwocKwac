@@ -105,7 +105,7 @@ let organizeFootnotes = function ($) {
         }
         
         //Return body
-        return content = $('body').html();
+        return content = $('html').html();
 }
 
 // List all document from public/files
@@ -276,9 +276,25 @@ router.post('/upload', async (req, res) => {
 
                 //If has footnote or endnote
                 if($("li[id^='footnote'], li[id^='endnote']").length){
-                    content = organizeFootnotes($);
+                    content = organizeFootnotes($);                    
                 }
-                            
+                
+                //BODY WRAPPER
+                if(!$("#bodyFile").length){
+                    let body = '<div id="bodyFile"></div>'
+                    $('body').wrap(body);
+
+                    content = $('html').html();
+                }
+
+                //HEAD WRAPPER
+                if(!$("#headFile").length){
+                    let head = '<div id="headFile"></div>'
+                    $('head').wrap(head);
+
+                    content = $('html').html();
+                }
+                                
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath,content, (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
