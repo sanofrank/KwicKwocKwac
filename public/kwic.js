@@ -625,18 +625,19 @@ var kwic = new (function () {
 	}
 
 	// entities are the individuals of the content: each person, each place, each concept, etc. is an entity
-	this.Entity = function(mentions, options, type) {
+	this.Entity = function(mentions, options) {
 		if (!options) options = {}         // fallback object for inizialization
 		var mentions = mentions || []   // fallback object for inizialization
 		var prefix = "entity-" ;
-	
+
 		this.mentions = []
 		var category = ""
 		var label = ""
 		var sort = ""
 		var wikidataId = ""
 		var treccaniId = ""
-		this.id = mentions[0].entity.replace(/(#)/g,'') //delete #, but modify to replace just the first one
+		var property = ""
+		this.id = mentions[0].entity.match(/^#/) ? mentions[0].entity.replace(/^#/,'') : mentions[0].entity //remove first occurence of #
 		this.position = Number.MAX_VALUE
 		var inners = []
 
@@ -647,16 +648,30 @@ var kwic = new (function () {
 			sort = mentions[i].sort || sort
 			wikidataId = mentions[i].wikidataId || wikidataId
 			treccaniId = mentions[i].treccaniId || treccaniId
+			property = mentions[i].property || property
 			inners.push(mentions[i].inner)
 			this.position = Math.min(this.position, mentions[i].position)
 			this.mentions.push(mentions[i])
 			}
-			
+		
+		// this.category = options.category || category || "scraps"
+		// this.label = options.label || label
+		// this.sort = options.sort || sort
+		// this.wikidataId = options.wikidataId || wikidataId
+		// this.treccaniId = options.treccaniId || treccaniId
+		
+		this.prop('id', 'foaf', options.category || category || "scraps", true)
+		this.prop('label', "rdfs:label", options.label || label, options.force)
+		this.prop('sort', 'rdfs:altLabel', options.sort || sort, options.force)
+		this.prop('wikidataId', property, options.wikidataId || wikidataId, options.force) //Wikidata
+		this.prop('treccaniId', 'wdt:P1986', options.treccaniId || treccaniId, options.force) //Treccani
+		
 		this.category = options.category || category || "scraps"
-		this.label = options.label || label
-		this.sort = options.sort || sort
-		this.wikidataId = options.wikidataId || wikidataId
-		this.treccaniId = options.treccaniId || treccaniId
+		// this.label = options.label || label
+		// this.sort = options.sort || sort
+		// this.wikidataId = options.wikidataId || wikidataId
+		// this.treccaniId = options.treccaniId || treccaniId
+		// this.property = options.property || property
 		
 		if (!this.label) {
 			var inn = {}
@@ -670,7 +685,7 @@ var kwic = new (function () {
 					max = inn[inners[i]]
 				}
 			}
-			this.change('label',el, type)
+			this.change('label',el)
 			this.label = el
 		}
 		
@@ -701,7 +716,7 @@ var kwic = new (function () {
 			kwic.allEntities[this.id] = null
 		},
 		// change a property of this entity by changing the corresponding property of the first mention 
-		change: function(field,value, type) {
+		change: function(field,value) {
 			var done = false
 			console.log('change')
 				for (var i=0; i<this.mentions.length; i++) {
@@ -724,6 +739,36 @@ var kwic = new (function () {
 					console.log(this.mentions[0],'notDone')
 					this.mentions[0].prop(field, value)}
 
+		},
+		// append data on meta tag file head
+		prop: function(name,prop,value,force = false) {
+			let id = "#"+this.id;
+
+			let metaTpl_type = `<meta resource="{$id}" typeof="{$prop}:{$value}"`
+			let metaTpl_prop = `<meta resource="{$id}" property="{$name}" content="{$value}"`
+
+			switch (name) {
+				case 'id':
+					if(force || id == "#"){
+						if(value!=''){
+							let meta_type = metaTpl_type.tpl({id,prop,value})
+							$('#headFile').append(meta_type);
+						}
+					}
+					break;
+				default :
+					if(force || $(`#headFile meta[resource='${id}']`).attr('property',name) == undefined || $(`#headFile meta[resource='${id}']`).attr('property',name) == false){
+						if(value) {
+							let meta_prop = metaTpl_prop.tpl({id,prop,value})
+							
+							$('#headFile').append(meta_prop);
+							this[name] = value
+						}else{
+							$(`#headFile meta[resource='${id}'][property='${prop}']`).remove()
+							delete this[name]
+						}
+					}
+			}
 		},
 		// assign this entity to a different category. 
 		switchTo: function(category,force, type) {
@@ -1479,7 +1524,7 @@ var kwic = new (function () {
 			// mention.entity is the about value ex. mention: Moro mention.entity: AldoMoro
 			if(!entities[mention.entity]) {
 				// this.Entity(mentions,options,type)
-				entities[mention.entity] = new this.Entity([mention], {}, "mention")
+				entities[mention.entity] = new this.Entity([mention], {})
 			} else {
 				entities[mention.entity].append(mention, true)
 			}
