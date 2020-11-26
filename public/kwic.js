@@ -659,13 +659,13 @@ var kwic = new (function () {
 		// this.wikidataId = options.wikidataId || wikidataId
 		// this.treccaniId = options.treccaniId || treccaniId
 		
-		this.prop('id', 'foaf', options.category || category || "scraps", true)
-		this.prop('label', "rdfs:label", options.label || label, options.force)
+		this.prop('id', 'moro', options.category || category || "scraps", true)
 		this.prop('sort', 'rdfs:altLabel', options.sort || sort, options.force)
 		this.prop('wikidataId', property, options.wikidataId || wikidataId, options.force) //Wikidata
 		this.prop('treccaniId', 'wdt:P1986', options.treccaniId || treccaniId, options.force) //Treccani
 		
 		this.category = options.category || category || "scraps"
+		this.label = options.label || label
 		// this.label = options.label || label
 		// this.sort = options.sort || sort
 		// this.wikidataId = options.wikidataId || wikidataId
@@ -685,8 +685,10 @@ var kwic = new (function () {
 				}
 			}
 			this.change('label',el)
-			this.label = el
+			this.label = el			
 		}
+
+		this.prop('label', "rdfs:label", options.label || this.label, options.force)
 		
 		return this; 	
 	}
@@ -743,27 +745,30 @@ var kwic = new (function () {
 		prop: function(name,prop,value,force = false) {
 			let id = "#"+this.id;
 
-			let metaTpl_type = `<meta resource="{$id}" typeof="{$prop}:{$value}"`
-			let metaTpl_prop = `<meta resource="{$id}" property="{$name}" content="{$value}"`
+			let metaTpl_type = `<meta resource="{$id}" typeof="{$prop}:{$value}">`
+			let metaTpl_prop = `<meta resource="{$id}" property="{$prop}" content="{$value}">`
 
 			switch (name) {
 				case 'id':
 					if(force || id == "#"){
 						if(value!=''){
 							let meta_type = metaTpl_type.tpl({id,prop,value})
-							$('#headFile').append(meta_type);
+
+							$('#file #headFile').append(meta_type);
+							console.log('ID meta');							
 						}
 					}
 					break;
 				default :
-					if(force || $(`#headFile meta[resource='${id}']`).attr('property',name) == undefined || $(`#headFile meta[resource='${id}']`).attr('property',name) == false){
+					if(force || $(`#headFile meta[resource='${id}'][property='${prop}']`).length <= 0){
+						console.log('inside default prop',name,prop,value,force)
 						if(value) {
 							let meta_prop = metaTpl_prop.tpl({id,prop,value})
 							
-							$('#headFile').append(meta_prop);
+							$('#file #headFile').append(meta_prop);
 							this[name] = value
 						}else{
-							$(`#headFile meta[resource='${id}'][property='${prop}']`).remove()
+							$(`#file #headFile meta[resource='${id}'][property='${prop}']`).remove()
 							delete this[name]
 						}
 					}
@@ -929,8 +934,7 @@ var kwic = new (function () {
 					}
 					break;				
 				default:
-					if (force || this.node.dataset[name]== undefined) {
-						console.log(name,value,force)
+					if (force || this.node.dataset[name]== undefined) {						
 						if (value) {
 							this.node.dataset[name] = value
 							this[name] = value // added for first round label
@@ -1977,6 +1981,8 @@ var kwic = new (function () {
 	
 	// resets all internal variables to empty
 	this.cleanAll = function() {
+		//CLEAR HEAD
+		if($('#file #headFile').length) $('#file #headFile').html('')
 		this.allCategories = {}
 		this.allEntities = {}
 		this.allMentions = {}
