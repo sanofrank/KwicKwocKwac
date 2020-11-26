@@ -481,10 +481,9 @@ var kwic = new (function () {
 		let footnote;
 		let href = container.getAttribute("href");
 
-
 		let footnoteNode = $(href);
-		let footnoteNum = container.textContent.replace( /\D+/g, '');
-		let footnoteText = footnoteNode[0].firstChild.textContent.replace(/↑+/g,"");
+		let footnoteNum = href.replace(/\D+/g, ''); //get footnote number
+		let footnoteText = footnoteNode.text().replace(/↑+/g,"").trim(); //get text by replacing arrow up symbol and removing start and end white space
 
 		return footnote = {
 			footnoteNode,
