@@ -718,8 +718,7 @@ var kwic = new (function () {
 		},
 		// change a property of this entity by changing the corresponding property of the first mention 
 		change: function(field,value) {
-			var done = false
-			console.log('change')
+			var done = false			
 				for (var i=0; i<this.mentions.length; i++) {
 					console.log(this.mentions[i],'for');
 					if (this.mentions[i][field]) {
@@ -1983,6 +1982,7 @@ var kwic = new (function () {
 	this.cleanAll = function() {
 		//CLEAR HEAD
 		if($('#file #headFile').length) $('#file #headFile').html('')
+
 		this.allCategories = {}
 		this.allEntities = {}
 		this.allMentions = {}
