@@ -1797,7 +1797,7 @@ function validate(t) {
 async function formattingDoc(location){
 	
 	//Format abstract
-	let file = $(location)[0];
+	let file = $('#bodyFile').length ? $('#bodyFile')[0] : $(location)[0];
 	let child = file.childNodes[1];
 
 	if(!child || !child.firstElementChild) return null;
