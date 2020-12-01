@@ -667,10 +667,10 @@ var kwic = new (function () {
 		this.category = options.category || category || "scraps"
 		this.label = options.label || label
 		// this.label = options.label || label
-		// this.sort = options.sort || sort
-		// this.wikidataId = options.wikidataId || wikidataId
-		// this.treccaniId = options.treccaniId || treccaniId
-		// this.property = options.property || property
+		this.sort = options.sort || sort
+		this.wikidataId = options.wikidataId || wikidataId
+		this.treccaniId = options.treccaniId || treccaniId
+		this.property = options.property || property
 		
 		if (!this.label) {
 			var inn = {}
@@ -696,6 +696,7 @@ var kwic = new (function () {
 		// adds a mention to this entity. If override, replace the info of the entity with the ones of the mention
 		append: function(mention, override=false) {
 			if (override) {
+				console.log(this.id);
 				mention.entity = this.id
 				this.label = mention.label || this.label
 				this.sort = mention.sort || this.sort
@@ -758,9 +759,22 @@ var kwic = new (function () {
 						}
 					}
 					break;
+				case 'wikidataId':
+					if(force || $(`#headFile meta[resource='${id}'][property='${prop}']`).length <= 0){						
+						if(value) {
+							value = 'http://www.wikidata.org/entity/'+value; //change prop adding wikidata URI
+							let meta_prop = metaTpl_prop.tpl({id,prop,value})
+							
+							$('#file #headFile').append(meta_prop);
+							this[name] = value
+						}else{
+							$(`#file #headFile meta[resource='${id}'][property='${prop}']`).remove()
+							delete this[name]
+						}
+					}
 				default :
 					if(force || $(`#headFile meta[resource='${id}'][property='${prop}']`).length <= 0){
-						console.log('inside default prop',name,prop,value,force)
+						//console.log('inside default prop',name,prop,value,force)
 						if(value) {
 							let meta_prop = metaTpl_prop.tpl({id,prop,value})
 							
@@ -825,7 +839,7 @@ var kwic = new (function () {
 		this.category = dataset.category || options.category 	// person, place, thing, etc. 
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
 		// this.entity = this.node.attributes.about.value
-		this.entity = this.node.attributes.resource.value // Questa riga probabilmente va cambiata
+		this.entity = this.node.attributes.resource.value.match(/^#/) ? this.node.attributes.resource.value.replace(/^#/,'') : this.node.attributes.resource.value // Questa riga probabilmente va cambiata // Questa riga probabilmente va cambiata
 		
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
@@ -1526,6 +1540,7 @@ var kwic = new (function () {
 			// mention.entity is the about value ex. mention: Moro mention.entity: AldoMoro
 			if(!entities[mention.entity]) {
 				// this.Entity(mentions,options,type)
+				console.log("mention.entity",mention.entity);
 				entities[mention.entity] = new this.Entity([mention], {})
 			} else {
 				entities[mention.entity].append(mention, true)

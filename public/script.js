@@ -1413,8 +1413,11 @@ async function changeStatus() {
 // user is changing label, sort or wikidata Id
 function changeValue(field, id, value) {
 	var pp;
+
 	console.log(field,id,value);
 	if (!referenceMode) {
+		console.log(kwic.allEntities)
+		console.log(kwic.allEntities['#'+id])
 		pp = kwic.allEntities[id]
 		console.log(pp);
 	} else {
