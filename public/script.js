@@ -1416,8 +1416,7 @@ function changeValue(field, id, value) {
 
 	console.log(field,id,value);
 	if (!referenceMode) {
-		console.log(kwic.allEntities)
-		console.log(kwic.allEntities['#'+id])
+		console.log(kwic.allEntities)	
 		pp = kwic.allEntities[id]
 		console.log(pp);
 	} else {
