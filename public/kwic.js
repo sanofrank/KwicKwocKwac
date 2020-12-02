@@ -664,7 +664,7 @@ var kwic = new (function () {
 	
 		label = $(`meta[resource="#${this.id}"][property='${ont.label}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.label}']`).attr('content') : label
 		sort = $(`meta[resource="#${this.id}"][property='${ont.sort}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.sort}']`).attr('content') : sort
-		wikidataId = $(`meta[resource="#${this.id}"][property='${ont.wikidataId}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.wikidataId}']`).attr('content') : wikidataId
+		wikidataId = $(`meta[resource="#${this.id}"][property='${ont.wikidataId}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.wikidataId}']`).attr('content').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : wikidataId
 		treccaniId = $(`meta[resource="#${this.id}"][property='${ont.treccaniId}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.treccaniId}']`).attr('content') : treccaniId
 
 		console.log('LABELLLLLLL',label);
@@ -682,8 +682,8 @@ var kwic = new (function () {
 		this.category = options.category || category || "scraps"
 		this.label = options.label || label
 		// this.label = options.label || label
-		this.sort = options.sort || sort
-		this.wikidataId = options.wikidataId || wikidataId
+		this.sort = options.sort || sort			
+		this.wikidataId = options.wikidataId || wikidataId //clean value wikidataId
 		this.treccaniId = options.treccaniId || treccaniId
 		this.property = options.property || property
 		
@@ -722,7 +722,7 @@ var kwic = new (function () {
 		},
 		// place all mentions of a different entity into this one.
 		mergeInto: function(target) {
-			for (var i=0; i<this.mentions.length; i++) {
+			for (var i=0; i<this.mentions.length; i++) {				
 				this.mentions[i].prop('entity',target.id, true)
 				this.mentions[i].prop('sort','', true)
 				this.mentions[i].prop('wikidataId','', true)
@@ -730,6 +730,19 @@ var kwic = new (function () {
 				this.mentions[i].prop('label','', true)
 				target.mentions.push(this.mentions[i])
 			}
+
+			// // adding target entity
+			// kwic.allEntities[target.id].prop('id',target.category,true)
+			// //kwic.allEntities[target.id].prop('label',target.label,true)
+			// kwic.allEntities[target.id].prop('sort','',true)
+			// kwic.allEntities[target.id].prop('wikidata','',true)
+			// kwic.allEntities[target.id].prop('treccaniId','',true)
+			// kwic.allEntities[target.id].prop('label','',true)
+
+			// cleaning source entity
+			let all = false, force = true, names = ['id','label','sort','wikidataId','treccaniId','label']
+			this.clearMeta(names,all,force)
+			
 			kwic.allEntities[this.id] = null
 		},
 		// // change a property of this entity by changing the corresponding property of the first mention 
@@ -803,16 +816,29 @@ var kwic = new (function () {
 							else{
 								$('#file #headFile').append(meta_type);												
 							}
+						}else{
+							console.log('REMOVE ID');
+							$(`#file #headFile meta[resource='${id}'][typeof]`).remove()
 						}
 					}
 					break;
 				case 'wikidataId':
 					if(force || $(`#headFile meta[resource='${id}'][property='${prop}']`).length <= 0){						
 						if(value) {
-							value = 'http://www.wikidata.org/entity/'+value; //change prop adding wikidata URI
-							let meta_prop = metaTpl_prop.tpl({id,prop,value})
-							
-							$('#file #headFile').append(meta_prop);
+							let valueURI = 'http://www.wikidata.org/entity/'+value; //change prop adding wikidata URI
+							let meta_prop = metaTpl_prop.tpl({id,prop,value:valueURI})
+							console.log(meta_prop)
+							if($(`#headFile meta[resource='${id}'][property='${prop}']`).length){
+								$(`#file #headFile meta[resource='${id}'][property='${prop}']`).attr('content',valueURI)	
+							}else{							
+								if($(`#headFile meta[resource='${id}']`).length){
+									$(`#headFile meta[resource='${id}']`).last().after(meta_prop); //append on the last element refered to resource
+								}																								 	
+								else{
+									$('#file #headFile').append(meta_prop);
+								}									
+							}
+							console.log(value,valueURI);
 							this[name] = value
 						}else{
 							$(`#file #headFile meta[resource='${id}'][property='${prop}']`).remove()
@@ -827,8 +853,11 @@ var kwic = new (function () {
 							
 							if($(`#headFile meta[resource='${id}'][property='${prop}']`).length){
 								$(`#file #headFile meta[resource='${id}'][property='${prop}']`).attr('content',value)	
-							}else{
-								$('#file #headFile').append(meta_prop);
+							}else{							
+								if($(`#headFile meta[resource='${id}']`).length)
+								 	$(`#headFile meta[resource='${id}']`).last().after(meta_prop); //append on the last element refered to resource
+								else
+									$('#file #headFile').append(meta_prop);
 							}
 							this[name] = value
 						}else{
@@ -837,6 +866,14 @@ var kwic = new (function () {
 						}
 					}
 			}
+		},
+		//clear meta head tag
+		clearMeta: function(names,all,force = false){
+			if(!all){
+				for(name of names){					
+					this.prop(name,'',force)
+				}
+			}			
 		},
 		// assign this entity to a different category. 
 		switchTo: function(category,force, type) {
@@ -894,7 +931,7 @@ var kwic = new (function () {
 		
 		this.label = $(`meta[resource="#${this.entity}"][property='${ont.label}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.label}']`).attr('content') : this.entity
 		this.sort = $(`meta[resource="#${this.entity}"][property='${ont.sort}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.sort}']`).attr('content') : ''
-		this.wikidataId = $(`meta[resource="#${this.entity}"][property='${ont.wikidataId}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.wikidataId}']`).attr('content') : ''
+		this.wikidataId = $(`meta[resource="#${this.entity}"][property='${ont.wikidataId}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.wikidataId}']`).attr('content').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : ''
 		this.treccaniId = $(`meta[resource="#${this.entity}"][property='${ont.treccaniId}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.treccaniId}']`).attr('content') : ''
 
 		// if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
@@ -1087,9 +1124,9 @@ var kwic = new (function () {
 			}
 		}
 
-				return this; 	
-		
+		return this; 	
 	}
+
 	this.Reference.prototype = {
 		// add a new category
 		append: function(citation, override=false) {
