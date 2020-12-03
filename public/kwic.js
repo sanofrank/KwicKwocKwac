@@ -662,10 +662,10 @@ var kwic = new (function () {
 			this.mentions.push(mentions[i])
 			}
 	
-		label = $(`meta[resource="#${this.id}"][property='${ont.label}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.label}']`).attr('content') : label
-		sort = $(`meta[resource="#${this.id}"][property='${ont.sort}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.sort}']`).attr('content') : sort
-		wikidataId = $(`meta[resource="#${this.id}"][property='${ont.wikidataId}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.wikidataId}']`).attr('content').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : wikidataId
-		treccaniId = $(`meta[resource="#${this.id}"][property='${ont.treccaniId}']`).length ? $(`meta[resource="#${this.id}"][property='${ont.treccaniId}']`).attr('content') : treccaniId
+		label = $(`meta[about="#${this.id}"][property='${ont.label}']`).length ? $(`meta[about="#${this.id}"][property='${ont.label}']`).attr('content') : label
+		sort = $(`meta[about="#${this.id}"][property='${ont.sort}']`).length ? $(`meta[about="#${this.id}"][property='${ont.sort}']`).attr('content') : sort
+		wikidataId = $(`meta[about="#${this.id}"][property='${ont.wikidataId}']`).length ? $(`meta[about="#${this.id}"][property='${ont.wikidataId}']`).attr('resource').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : wikidataId
+		treccaniId = $(`meta[about="#${this.id}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.id}"][property='${ont.treccaniId}']`).attr('resource') : treccaniId
 
 		console.log('LABELLLLLLL',label);
 		// this.category = options.category || category || "scraps"
@@ -802,8 +802,9 @@ var kwic = new (function () {
 			let id = "#"+this.id;
 			let prop = ont[name] ? ont[name] : ''; //Get property term
 
-			let metaTpl_type = `<meta resource="{$id}" typeof="{$prop}:{$value}">`
-			let metaTpl_prop = `<meta resource="{$id}" property="{$prop}" content="{$value}">`
+			let metaTpl_type = `<meta about="{$id}" typeof="{$prop}:{$value}">`
+			let metaTpl_res = `<meta about="{$id}" property="{$prop}" resource="{$value}">`
+			let metaTpl_prop = `<meta about="{$id}" property="{$prop}" content="{$value}">`
 
 
 			switch (name) {
@@ -811,57 +812,57 @@ var kwic = new (function () {
 					if(force || id == "#"){
 						if(value!=''){
 							let meta_type = metaTpl_type.tpl({id,prop,value})
-							if($(`#headFile meta[resource='${id}'][typeof='${prop}:${value}']`).length)
-								$(`#headFile meta[resource='${id}'][typeof='${prop}:${value}']`).attr('typeof',prop+':'+value)
+							if($(`#headFile meta[about='${id}'][typeof='${prop}:${value}']`).length)
+								$(`#headFile meta[about='${id}'][typeof='${prop}:${value}']`).attr('typeof',prop+':'+value)
 							else{
 								$('#file #headFile').append(meta_type);												
 							}
 						}else{
 							console.log('REMOVE ID');
-							$(`#file #headFile meta[resource='${id}'][typeof]`).remove()
+							$(`#file #headFile meta[about='${id}'][typeof]`).remove()
 						}
 					}
 					break;
 				case 'wikidataId':
-					if(force || $(`#headFile meta[resource='${id}'][property='${prop}']`).length <= 0){						
+					if(force || $(`#headFile meta[about='${id}'][property='${prop}']`).length <= 0){						
 						if(value) {
 							let valueURI = 'http://www.wikidata.org/entity/'+value; //change prop adding wikidata URI
-							let meta_prop = metaTpl_prop.tpl({id,prop,value:valueURI})
-							console.log(meta_prop)
-							if($(`#headFile meta[resource='${id}'][property='${prop}']`).length){
-								$(`#file #headFile meta[resource='${id}'][property='${prop}']`).attr('content',valueURI)	
+							let meta_res = metaTpl_res.tpl({id,prop,value:valueURI})
+
+							if($(`#headFile meta[about='${id}'][property='${prop}']`).length){
+								$(`#file #headFile meta[about='${id}'][property='${prop}']`).attr('content',valueURI)	
 							}else{							
-								if($(`#headFile meta[resource='${id}']`).length){
-									$(`#headFile meta[resource='${id}']`).last().after(meta_prop); //append on the last element refered to resource
+								if($(`#headFile meta[about='${id}']`).length){
+									$(`#headFile meta[about='${id}']`).last().after(meta_res); //append on the last element refered to resource
 								}																								 	
 								else{
-									$('#file #headFile').append(meta_prop);
+									$('#file #headFile').append(meta_res);
 								}									
 							}
 							console.log(value,valueURI);
 							this[name] = value
 						}else{
-							$(`#file #headFile meta[resource='${id}'][property='${prop}']`).remove()
+							$(`#file #headFile meta[about='${id}'][property='${prop}']`).remove()
 							//delete this[name]
 						}
 					}
 				default :
-					if(force || $(`#headFile meta[resource='${id}'][property='${prop}']`).length <= 0){
+					if(force || $(`#headFile meta[about='${id}'][property='${prop}']`).length <= 0){
 						//console.log('inside default prop',name,prop,value,force)
 						if(value) {						
 							let meta_prop = metaTpl_prop.tpl({id,prop,value})
 							
-							if($(`#headFile meta[resource='${id}'][property='${prop}']`).length){
-								$(`#file #headFile meta[resource='${id}'][property='${prop}']`).attr('content',value)	
+							if($(`#headFile meta[about='${id}'][property='${prop}']`).length){
+								$(`#file #headFile meta[about='${id}'][property='${prop}']`).attr('content',value)	
 							}else{							
-								if($(`#headFile meta[resource='${id}']`).length)
-								 	$(`#headFile meta[resource='${id}']`).last().after(meta_prop); //append on the last element refered to resource
+								if($(`#headFile meta[about='${id}']`).length)
+								 	$(`#headFile meta[about='${id}']`).last().after(meta_prop); //append on the last element refered to resource
 								else
 									$('#file #headFile').append(meta_prop);
 							}
 							this[name] = value
 						}else{
-							$(`#file #headFile meta[resource='${id}'][property='${prop}']`).remove()
+							$(`#file #headFile meta[about='${id}'][property='${prop}']`).remove()
 							//delete this[name]
 						}
 					}
@@ -929,10 +930,10 @@ var kwic = new (function () {
 		// this.entity = this.node.attributes.about.value
 		this.entity = this.node.attributes.resource.value.match(/^#/) ? this.node.attributes.resource.value.replace(/^#/,'') : this.node.attributes.resource.value // Questa riga probabilmente va cambiata // Questa riga probabilmente va cambiata		
 		
-		this.label = $(`meta[resource="#${this.entity}"][property='${ont.label}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.label}']`).attr('content') : this.entity
-		this.sort = $(`meta[resource="#${this.entity}"][property='${ont.sort}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.sort}']`).attr('content') : ''
-		this.wikidataId = $(`meta[resource="#${this.entity}"][property='${ont.wikidataId}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.wikidataId}']`).attr('content').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : ''
-		this.treccaniId = $(`meta[resource="#${this.entity}"][property='${ont.treccaniId}']`).length ? $(`meta[resource="#${this.entity}"][property='${ont.treccaniId}']`).attr('content') : ''
+		this.label = $(`meta[about="#${this.entity}"][property='${ont.label}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.label}']`).attr('content') : this.entity
+		this.sort = $(`meta[about="#${this.entity}"][property='${ont.sort}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.sort}']`).attr('content') : ''
+		this.wikidataId = $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).attr('resource').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : ''
+		this.treccaniId = $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).attr('resource') : ''
 
 		// if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		// if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to

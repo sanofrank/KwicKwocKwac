@@ -38,7 +38,7 @@ var apply_filter = false;                // whether filter have been applyied on
 var referenceMode;             			 // whether the reference panel is shown
 var currentMetadata = {};				 // the metadata of the current loaded file
 var loadedDocument;
-const spinner = document.getElementById("spinner");
+const spinner = document.getElementById("spinner"); 
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
 var draggableSelector = '.draggable'    // selector for elements that can be dragged in the left pane
