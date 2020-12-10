@@ -272,7 +272,6 @@ function hideSpinner() {
 
 // Callbacks for draggable elements
 function dragstart(event) {
-	console.log(event);
 	var e = event.originalEvent || event //drag
 	var tg = e.target.dataset.id ? e.target : e.target.parentElement
 	var data = JSON.stringify(tg.dataset)
@@ -413,7 +412,6 @@ function toggleInfo(e,target) {
 	//e.preventDefault();
 
 	let parent = $(target)[0].parentElement;
-	console.log(target,parent);
 
 	$(target).collapse({
 		toggle: false
@@ -528,7 +526,6 @@ function setupKWIC(location, saveView) {
 		quotes = kwic.findQuotes('.quote', location);
 		bibref = kwic.findBibRef('.bibref', location);
 		list = kwic.organizeQuotes();
-		console.log(list);
 		var r0 = kwic.toHTMLref(
 			kwic.allReferences,
 			{
@@ -966,7 +963,6 @@ async function load(item,file) {
 
 		currentFilename = file;
 		currentMetadata = json.metadata;
-		console.log(json.metadata)
 		checkMetadata();
 
 		split = file.split('_');
@@ -1249,7 +1245,6 @@ async function uploadDoc(dataHTML,dataDOCX) {
 
 	// User name
 	let user = $('#userUpload') ? $('#userUpload').val() : '';
-	console.log(user)
 	// Unique sez_vol_tom path
 	let sez = $('#sezNumber').val();
 	let vol = $('#volNumber').val();
@@ -1289,7 +1284,6 @@ async function uploadDoc(dataHTML,dataDOCX) {
 		dataDOCX.set("sez", sez);
 		dataDOCX.set("vol", vol);
 		dataDOCX.set("tom", tom);
-		console.log(dataDOCX);
 		requestOptions = {
 			method: 'POST',
 			body: dataDOCX

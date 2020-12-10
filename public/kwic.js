@@ -62,12 +62,10 @@ var kwic = new (function () {
 	// If one or both of them belong to an existing mention, no worries since the existing mention will be removed anyway. 
 	function compatibleExtremes(range, mention) {
 		if (range.startContainer.parentElement == range.endContainer.parentElement) return true //Meaning that if the selection is plain, untouched and it's in the same node.
-		console.log(range.startContainer.parentElement,range.endContainer.parentElement)
 		const formatters = ['B','STRONG','I','EM','MARK','SMALL','DEL','INS']
 
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
-		console.log('start __ end',start,end,end.classList.contains('bibref'));
 		if (start.classList.contains('mention'))
 			start = start.parentElement // will remove it anyway
 		if (end.classList.contains('mention'))
@@ -667,7 +665,6 @@ var kwic = new (function () {
 		wikidataId = $(`meta[about="#${this.id}"][property='${ont.wikidataId}']`).length ? $(`meta[about="#${this.id}"][property='${ont.wikidataId}']`).attr('resource').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : wikidataId
 		treccaniId = $(`meta[about="#${this.id}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.id}"][property='${ont.treccaniId}']`).attr('resource') : treccaniId
 
-		console.log('LABELLLLLLL',label);
 		// this.category = options.category || category || "scraps"
 		// this.label = options.label || label
 		// this.sort = options.sort || sort
@@ -811,9 +808,11 @@ var kwic = new (function () {
 				case 'id':
 					if(force || id == "#"){
 						if(value!=''){
+							value = value.charAt(0).toUpperCase() + value.slice(1) //first letter upper case
+
 							let meta_type = metaTpl_type.tpl({id,prop,value})
-							if($(`#headFile meta[about='${id}'][typeof='${prop}:${value}']`).length)
-								$(`#headFile meta[about='${id}'][typeof='${prop}:${value}']`).attr('typeof',prop+':'+value)
+							if($(`#headFile meta[about='${id}'][typeof]`).length)
+								$(`#headFile meta[about='${id}'][typeof]`).attr('typeof',prop+':'+value)
 							else{
 								$('#file #headFile').append(meta_type);												
 							}
@@ -880,8 +879,10 @@ var kwic = new (function () {
 		switchTo: function(category,force, type) {
 				for (var i=0; i<this.mentions.length; i++) {
 					this.mentions[i].prop('category', category,force)
+					this.mentions[i].prop('entity', this.id, force);
 				}
-				this.category = category	
+				this.category = category
+				this.prop('id',this.category);
 			
 		},
 		// assign this entity to scraps. 
@@ -1033,22 +1034,22 @@ var kwic = new (function () {
 				case 'entity':
 					if (force || this.node.attributes.resource == undefined) {
 						if (value) {
-							this.node.setAttribute('resource',`#${value}`)
+							
+								this.node.setAttribute('resource',`#${value}`)								
+														
 						} else {
 							this.node.removeAttribute('resource')
 						}
 					}
 					break;				
 				default:
-					console.log('DEFAULT',name,value,force);
 					if (force || this[name] == undefined) {
 						if (value) {
-							console.log('DEFAULT INSIDE IF',this)
-
+							//$(`meta[about="#${this.entity}"][property='${ont[name]}']`).attr('content',value)
 							//this.node.dataset[name] = value
 							this[name] = value // added for first round label							
-							console.log('DEFAULT INSIDE IF',this,this[name])
 						} else {
+							//$(`meta[about="#${this.entity}"][property='${ont[name]}']`).remove()
 							//delete this.node.dataset[name]
 							delete this[name] // added for first round label
 						}
@@ -1082,7 +1083,7 @@ var kwic = new (function () {
 			this.prop('rs','',true)
 		},
 		putToTrash: function() {
-			this.prop('entity','trash',true)
+			//this.prop('entity','trash',true)
 			this.prop('category', 'trash', true)
 			this.prop('sort','',true)
 			this.prop('label','Menzione cestinata',true)
@@ -1632,6 +1633,7 @@ var kwic = new (function () {
 		var entities = this.allEntities
 		var categories = this.allCategories
 
+		console.log(mentions);
 		for (var i in mentions) {
 			var mention = mentions[i]
 			// mention.entity is the about value ex. mention: Moro mention.entity: AldoMoro
@@ -1647,6 +1649,7 @@ var kwic = new (function () {
 			var entity = entities[i]
 			if(!categories[entity.category]) {
 				categories[entity.category] = new this.Category([entity], {})
+				console.log(categories[entity.category]);
 			} else {
 				categories[entity.category].append(entity, false)
 			}			
@@ -1853,7 +1856,6 @@ var kwic = new (function () {
 				source.putToScraps()
 			} else if (sourceData.level == 'citation' && targetData.level == 'trash') {
 				var source = this.allCitations[sourceData.id]
-				console.log(source);
 				source.putToTrash()
 			} else if (sourceData.level == 'quote' && targetData.level == 'citation') {
 				var source = this.allQuotes[sourceData.id]
@@ -1924,7 +1926,6 @@ var kwic = new (function () {
 			if (this.categoryList[i].letter == key) {
 				var cat = this.categoryList[i]
 				var sel = snapSelection(cat.type, this.prefs.extend, alt)
-				console.log(sel);
 				if (sel) {
 					if (xor(shift, this.prefs.markAll && cat.markAll)) { //if just one of them is true, but not both.
 						var ranges = searchAll(context, sel.toString() )
@@ -1960,17 +1961,13 @@ var kwic = new (function () {
 				let ref = this.referenceList[i]
 				let selection = snapSelectionRef(ref.type, this.prefs.extend, alt)
 				if(selection){
-					console.log("SELECTION",selection);
 					var range;
 					if(selection.footnoteNode){
-						console.log('FOOTNODE');
 						range = selection.range;
 					} else {
 						if (xor(shift, this.prefs.markAll && ref.markAll)) { //if just one of them is true, but not both.
 							range = searchAll(context, selection.sel.toString())
-							console.log(range);
 							if(range.length === 0){
-								console.log('emptyrange')
 								range = [selection.sel.getRangeAt(0)];
 							}
 						}else{
