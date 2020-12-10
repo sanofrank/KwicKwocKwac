@@ -53,6 +53,9 @@ async function change_password(){
 
 async function login(){
 
+    //clean errors
+    $('#errors').text('')
+
     let username = $('#usernameForm').val();
     let password = $('#password').val();
 
