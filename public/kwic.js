@@ -634,7 +634,7 @@ var kwic = new (function () {
 		if (!options) options = {}         // fallback object for inizialization
 		var mentions = mentions || []   // fallback object for inizialization
 		var prefix = "entity-" ;
-
+		console.log("MENTION",mentions);
 		this.mentions = []
 		var category = ""
 		var label = ""
@@ -650,7 +650,7 @@ var kwic = new (function () {
 			mentions[i].entity = this.id
 			category = mentions[i].category || category
 			console.log(mentions[i],mentions[i].label);
-			// label = mentions[i].label || label
+			label = mentions[i].label || label
 			// sort = mentions[i].sort || sort
 			// wikidataId = mentions[i].wikidataId || wikidataId
 			// treccaniId = mentions[i].treccaniId || treccaniId
@@ -879,7 +879,7 @@ var kwic = new (function () {
 		switchTo: function(category,force, type) {
 				for (var i=0; i<this.mentions.length; i++) {
 					this.mentions[i].prop('category', category,force)
-					this.mentions[i].prop('entity', this.id, force);
+					//this.mentions[i].prop('entity', this.id, force);
 				}
 				this.category = category
 				this.prop('id',this.category);
@@ -902,6 +902,7 @@ var kwic = new (function () {
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "mention-" ;
 		var mention = true;
+		let label;			
 
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
@@ -930,8 +931,16 @@ var kwic = new (function () {
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
 		// this.entity = this.node.attributes.about.value
 		this.entity = this.node.attributes.resource.value.match(/^#/) ? this.node.attributes.resource.value.replace(/^#/,'') : this.node.attributes.resource.value // Questa riga probabilmente va cambiata // Questa riga probabilmente va cambiata		
+
+		if(this.category == 'trash'){
+			label = 'Menzione cestinata'
+		}
+
+		if(this.category == 'scraps'){
+			label = 'Menzione scartata'
+		}
 		
-		this.label = $(`meta[about="#${this.entity}"][property='${ont.label}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.label}']`).attr('content') : this.entity
+		this.label = $(`meta[about="#${this.entity}"][property='${ont.label}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.label}']`).attr('content') : label || this.entity
 		this.sort = $(`meta[about="#${this.entity}"][property='${ont.sort}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.sort}']`).attr('content') : ''
 		this.wikidataId = $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).attr('resource').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : ''
 		this.treccaniId = $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).attr('resource') : ''
@@ -1033,10 +1042,8 @@ var kwic = new (function () {
 					break;
 				case 'entity':
 					if (force || this.node.attributes.resource == undefined) {
-						if (value) {
-							
-								this.node.setAttribute('resource',`#${value}`)								
-														
+						if (value) {							
+							this.node.setAttribute('resource',`#${value}`)																						
 						} else {
 							this.node.removeAttribute('resource')
 						}
@@ -1047,7 +1054,8 @@ var kwic = new (function () {
 						if (value) {
 							//$(`meta[about="#${this.entity}"][property='${ont[name]}']`).attr('content',value)
 							//this.node.dataset[name] = value
-							this[name] = value // added for first round label							
+							this[name] = value // added for first round label
+							console.log(this);
 						} else {
 							//$(`meta[about="#${this.entity}"][property='${ont[name]}']`).remove()
 							//delete this.node.dataset[name]
@@ -1083,7 +1091,7 @@ var kwic = new (function () {
 			this.prop('rs','',true)
 		},
 		putToTrash: function() {
-			//this.prop('entity','trash',true)
+			this.prop('entity','trash',true)
 			this.prop('category', 'trash', true)
 			this.prop('sort','',true)
 			this.prop('label','Menzione cestinata',true)
@@ -1800,21 +1808,24 @@ var kwic = new (function () {
 			} else if (sourceData.level=='entity' && targetData.level == 'category') {
 				var source = this.allEntities[sourceData.id]
 				var target = this.allCategories[targetData.id]
-				if (source.category !== target.id) {
-					var ok = confirm('Do you want to change category of entity "{$source}" to "{$target}"?'.tpl(
-						{
-							source: source.label,
-							target: target.label || targetData.id
+				console.log(source);
+				if(source.id != "trash" && source.id != "scraps"){
+					if (source.category !== target.id) {
+						var ok = confirm(`Vuoi cambiare categoria dell'entità da {$source}" a "{$target}"?`.tpl(
+							{
+								source: source.label,
+								target: target.label || targetData.id
+							}
+						))
+						if (ok) {
+							source.switchTo(target.id,true)
 						}
-					))
-					if (ok) {
-						source.switchTo(target.id,true)
 					}
-				}
+				}				
 			} else if (sourceData.level == 'entity' && targetData.level == 'scraps') {
 				var source = this.allEntities[sourceData.id]
 				source.putToScraps()
-			} else if (sourceData.level == 'entity' && targetData.level == 'trash') {
+			} else if (sourceData.level == 'entity' && targetData.level == 'trash') {				
 				var source = this.allEntities[sourceData.id]
 				source.putToTrash()
 			} else if (sourceData.level=='mention' && targetData.level == 'entity') {

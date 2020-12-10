@@ -289,7 +289,10 @@ router.post('/upload', async (req, res) => {
 
                 //HEAD WRAPPER
                 if(!$("#headFile").length){
-                    let head = '<div id="headFile"></div>'
+                    let head = `<div id="headFile">
+                                <meta about="#trash" typeof="moro:Trash">
+                                <meta about="#trash" property="rdfs:label" content="Menzione cestinata">
+                                </div>`
                     $('head').wrap(head);
 
                     content = $('html').html();
