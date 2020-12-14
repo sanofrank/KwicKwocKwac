@@ -576,6 +576,7 @@ function setupKWIC(location, saveView) {
 	} else {		
 		mentions = kwic.findMentions('.mention', location); // When a KwicKKed document get loaded
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
+		kwic.clearHead(list);
 		//console.log(list);
 		var c0 = kwic.toHTML(
 			kwic.allCategories,

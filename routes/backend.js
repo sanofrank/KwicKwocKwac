@@ -27,9 +27,10 @@ String.prototype.tpl = function(o, removeAll) {
 }
 
 //Organize footnotes in moronotes and curatornotes
-let organizeFootnotes = function ($) {
+let organizeFootnotes = function ($,username) {
         let moroNotes = [];
         let curatorNotes = [];
+        let prop = "dcterms:creator"
 
         // footnote search for moro notes
         // data-alert attribute for first time alert display                
@@ -39,7 +40,7 @@ let organizeFootnotes = function ($) {
             </ol>
             `
         let tplMoronote = `
-            <li id="moronote-{$index}" data-toggle="tooltip" data-placement="top" title="Nota di Aldo Moro">
+            <li id="moronote-{$index}" typeof="moro:footnote" about="#moronote-{$index}" property="{$prop}" resource="#AldoMoro" data-toggle="tooltip" data-placement="top" title="Nota di Aldo Moro">
                 {$content}
             </li>
             `
@@ -91,9 +92,11 @@ let organizeFootnotes = function ($) {
             let moroNotes_li = "";
             let moroNotes_ol = "";
 
+            $('#headFile').append('<meta about="#AldoMoro" typeof="foaf:Person"')
+
             for(i in moroNotes){
                 let index = parseInt(i)+1;
-                let moronote = tplMoronote.tpl({index: index, content: moroNotes[i]});                       
+                let moronote = tplMoronote.tpl({index: index, content: moroNotes[i], prop});                       
                 moroNotes_li = moroNotes_li.concat(moronote);                        
             }
 
@@ -274,11 +277,6 @@ router.post('/upload', async (req, res) => {
                 
                 const $ = cheerio.load(content)
 
-                //If has footnote or endnote
-                if($("li[id^='footnote'], li[id^='endnote']").length){
-                    content = organizeFootnotes($);                    
-                }
-                
                 //BODY WRAPPER
                 if(!$("#bodyFile").length){
                     let body = '<div id="bodyFile"></div>'
@@ -290,13 +288,20 @@ router.post('/upload', async (req, res) => {
                 //HEAD WRAPPER
                 if(!$("#headFile").length){
                     let head = `<div id="headFile">
-                                <meta about="#trash" typeof="moro:Trash">
-                                <meta about="#trash" property="rdfs:label" content="Menzione cestinata">
+                                    <div id="mentionMeta">
+                                    </div>
+                                    <div id="referenceMeta">
+                                    </div>
                                 </div>`
                     $('head').wrap(head);
 
                     content = $('html').html();
-                }
+                }                
+
+                //If has footnote or endnote
+                if($("li[id^='footnote'], li[id^='endnote']").length){
+                    content = organizeFootnotes($,username);                    
+                }                                
                                 
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath,content, (err) => {

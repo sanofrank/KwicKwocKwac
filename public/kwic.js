@@ -811,57 +811,57 @@ var kwic = new (function () {
 							value = value.charAt(0).toUpperCase() + value.slice(1) //first letter upper case
 
 							let meta_type = metaTpl_type.tpl({id,prop,value})
-							if($(`#headFile meta[about='${id}'][typeof]`).length)
-								$(`#headFile meta[about='${id}'][typeof]`).attr('typeof',prop+':'+value)
+							if($(`#mentionMeta meta[about='${id}'][typeof]`).length)
+								$(`#mentionMeta meta[about='${id}'][typeof]`).attr('typeof',prop+':'+value)
 							else{
-								$('#file #headFile').append(meta_type);												
+								$('#file #mentionMeta').append(meta_type);												
 							}
 						}else{
 							console.log('REMOVE ID');
-							$(`#file #headFile meta[about='${id}'][typeof]`).remove()
+							$(`#file #mentionMeta meta[about='${id}'][typeof]`).remove()
 						}
 					}
 					break;
 				case 'wikidataId':
-					if(force || $(`#headFile meta[about='${id}'][property='${prop}']`).length <= 0){						
+					if(force || $(`#mentionMeta meta[about='${id}'][property='${prop}']`).length <= 0){						
 						if(value) {
 							let valueURI = 'http://www.wikidata.org/entity/'+value; //change prop adding wikidata URI
 							let meta_res = metaTpl_res.tpl({id,prop,value:valueURI})
 
-							if($(`#headFile meta[about='${id}'][property='${prop}']`).length){
-								$(`#file #headFile meta[about='${id}'][property='${prop}']`).attr('content',valueURI)	
+							if($(`#mentionMeta meta[about='${id}'][property='${prop}']`).length){
+								$(`#file #mentionMeta meta[about='${id}'][property='${prop}']`).attr('content',valueURI)	
 							}else{							
-								if($(`#headFile meta[about='${id}']`).length){
-									$(`#headFile meta[about='${id}']`).last().after(meta_res); //append on the last element refered to resource
+								if($(`#mentionMeta meta[about='${id}']`).length){
+									$(`#mentionMeta meta[about='${id}']`).last().after(meta_res); //append on the last element refered to resource
 								}																								 	
 								else{
-									$('#file #headFile').append(meta_res);
+									$('#file #mentionMeta').append(meta_res);
 								}									
 							}
 							console.log(value,valueURI);
 							this[name] = value
 						}else{
-							$(`#file #headFile meta[about='${id}'][property='${prop}']`).remove()
+							$(`#file #mentionMeta meta[about='${id}'][property='${prop}']`).remove()
 							//delete this[name]
 						}
 					}
 				default :
-					if(force || $(`#headFile meta[about='${id}'][property='${prop}']`).length <= 0){
+					if(force || $(`#mentionMeta meta[about='${id}'][property='${prop}']`).length <= 0){
 						//console.log('inside default prop',name,prop,value,force)
 						if(value) {						
 							let meta_prop = metaTpl_prop.tpl({id,prop,value})
 							
-							if($(`#headFile meta[about='${id}'][property='${prop}']`).length){
-								$(`#file #headFile meta[about='${id}'][property='${prop}']`).attr('content',value)	
+							if($(`#mentionMeta meta[about='${id}'][property='${prop}']`).length){
+								$(`#file #mentionMeta meta[about='${id}'][property='${prop}']`).attr('content',value)	
 							}else{							
-								if($(`#headFile meta[about='${id}']`).length)
-								 	$(`#headFile meta[about='${id}']`).last().after(meta_prop); //append on the last element refered to resource
+								if($(`#mentionMeta meta[about='${id}']`).length)
+								 	$(`#mentionMeta meta[about='${id}']`).last().after(meta_prop); //append on the last element refered to resource
 								else
-									$('#file #headFile').append(meta_prop);
+									$('#file #mentionMeta').append(meta_prop);
 							}
 							this[name] = value
 						}else{
-							$(`#file #headFile meta[about='${id}'][property='${prop}']`).remove()
+							$(`#file #mentionMeta meta[about='${id}'][property='${prop}']`).remove()
 							//delete this[name]
 						}
 					}
@@ -902,7 +902,7 @@ var kwic = new (function () {
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "mention-" ;
 		var mention = true;
-		let label;			
+		let label;		
 
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
@@ -918,7 +918,7 @@ var kwic = new (function () {
 		
 		this.property = 'dcterms:references' // RDFa branch
 		this.id = this.node.id || getNewId(prefix)		
-		this.prop('id', this.id, false) ;
+		this.prop('id', this.id, false);
 		this.prop('category', options.category || "scraps", true)
 		this.prop('property', options.property || this.property, options.force)
 		this.prop('entity', options.entity || options.id || t.inner.replace(/([^a-zA-Z0-9àèéìòù,.]+)/g,"").replace(/(^\d+)/, "entity$1"), false)
@@ -940,7 +940,7 @@ var kwic = new (function () {
 			label = 'Menzione scartata'
 		}
 		
-		this.label = $(`meta[about="#${this.entity}"][property='${ont.label}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.label}']`).attr('content') : label || this.entity
+		this.label = $(`meta[about="#${this.entity}"][property='${ont.label}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.label}']`).attr('content') : label || this.inner
 		this.sort = $(`meta[about="#${this.entity}"][property='${ont.sort}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.sort}']`).attr('content') : ''
 		this.wikidataId = $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).attr('resource').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : ''
 		this.treccaniId = $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).attr('resource') : ''
@@ -1008,6 +1008,7 @@ var kwic = new (function () {
 					if (force || this.node.id== "") {
 						if (value!=='')
 							this.node.id = value
+							this.node.setAttribute('typeof','moro:Mention') //add type of data fragment
 							this.node.setAttribute('about',`#${value}`) //added line
 					}
 					break; 
@@ -1048,7 +1049,7 @@ var kwic = new (function () {
 							this.node.removeAttribute('resource')
 						}
 					}
-					break;				
+					break;	
 				default:
 					if (force || this[name] == undefined) {
 						if (value) {
@@ -1657,7 +1658,6 @@ var kwic = new (function () {
 			var entity = entities[i]
 			if(!categories[entity.category]) {
 				categories[entity.category] = new this.Category([entity], {})
-				console.log(categories[entity.category]);
 			} else {
 				categories[entity.category].append(entity, false)
 			}			
@@ -1713,6 +1713,38 @@ var kwic = new (function () {
 			}
 		}
 		return references;
+	}
+
+	// Remove left metatag after organizing the mentions 
+	this.clearHead = function(list) {
+		let meta = $('#mentionMeta meta'); // list of all meta tag
+
+		// Exit status
+		if(meta.length <= 0){
+			return null
+		}
+
+		// Search entities id
+		for(cat in list){
+			entities = list[cat].entities			
+			for(ent in entities){		
+				let id = '#' + entities[ent].id
+				
+				// Grep meta object from id no more included 
+				meta = $.grep(meta,function(tag){										
+					return tag.getAttribute('about') !== id
+				})	
+			}			
+		}
+
+		// Remove left metaTag 
+		if(meta.length){
+			for(metaTag of meta){
+				metaTag.remove()
+			}
+		}
+
+		return meta
 	}
 	
 	// creates an HTML structure out of a series of templates and some data. 
@@ -1811,7 +1843,7 @@ var kwic = new (function () {
 				console.log(source);
 				if(source.id != "trash" && source.id != "scraps"){
 					if (source.category !== target.id) {
-						var ok = confirm(`Vuoi cambiare categoria dell'entità da {$source}" a "{$target}"?`.tpl(
+						var ok = confirm(`Vuoi cambiare categoria dell'entità da "{$source}" a "{$target}"?`.tpl(
 							{
 								source: source.label,
 								target: target.label || targetData.id
@@ -2100,7 +2132,7 @@ var kwic = new (function () {
 	// resets all internal variables to empty
 	this.cleanAll = function() {
 		//CLEAR HEAD
-		//if($('#file #headFile').length) $('#file #headFile').html('')
+		//if($('#file #mentionMeta').length) $('#file #mentionMeta').html('')
 
 		this.allCategories = {}
 		this.allEntities = {}
