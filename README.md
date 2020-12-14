@@ -1,5 +1,39 @@
 # KwicKwocKwac
-Web application for labeling content.
+Web application for labeling documents generating RDFa and TEI output, developed for the digital edition of Aldo Moro opera omnia.
+
+## Set up MongoDB
+
+The project is build on the database management system Mongo, but this choice is up to you.
+
+To set up MongoDB you need to create a .env file to store the information abeling node.js to connect to your database. 
+
+Inside the .env file you need to declare a DB_CONNECT variable assigning the url for your DB.
+
+```
+DB_CONNECT = mongodb+srv://"username":"password"@"clustername"-rwpos.mongodb.net/"collection"?retryWrites=true&w=majority
+```
+
+On the database will be stored the user information and the metadata about the document.
+
+## Set up JWT
+
+For the authentication management we use the JSON Web Token standard.
+
+The encryption is based upon three parts: 
+
+- Header
+- Payload
+- Signature
+
+The header typically consists of two parts: the type of the token, which is JWT, and the signing algorithm being used, such as HMAC SHA256 or RSA.
+
+The second part of the token is the payload, which contains the claims. Claims are statements about an entity (typically, the user) and additional data. We store here the information about the username.
+
+To create the signature part you have to take the encoded header, the encoded payload, a secret, the algorithm specified in the header, and sign that. The secret will be store inside the .env file in the variable TOKEN_SECRET.
+
+```
+TOKEN_SECRET = tH1s_1s_An_eXAmpl3_0F_SEcreT_String
+```
 
 ## How to run
 
@@ -25,7 +59,14 @@ To execute it on developer mode, run the following command
 npm run dev
 ```
 
-This time is going to run nodemon a tool that will restart automatically the server when an edited file is saved. 
+This time is going to run nodemon a tool that will restart automatically the server when an edited file is saved.
+
+KwicKwocKwac will run on localhost:3000
+
+## How to use it
+
+Inside the doc folder there is a complete documentation of the application accessible also from the documentation button in the app menu.
+
 
 <!-- ## Login
 
