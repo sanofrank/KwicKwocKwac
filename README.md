@@ -3,17 +3,17 @@ Web application for labeling documents generating RDFa and TEI output, developed
 
 ## Set up MongoDB
 
-The project is build on the database management system Mongo, but this choice is up to you.
+The project is build on the database management system Mongo.
 
-To set up MongoDB you need to create a .env file to store the information abeling node.js to connect to your database. 
+First you need to create a Mongo collection where there has to be at least two tables: one named **users** for saving users, and another named **metadata** for stored the metadata information of every marked up document.
 
-Inside the .env file you need to declare a DB_CONNECT variable assigning the url for your DB.
+To set up MongoDB inside the project you need to create a **.env** file in order to store the connection information.
+
+Inside the file you need to declare a DB_CONNECT variable assigning the url for your Mongo collection.
 
 ```
 DB_CONNECT = mongodb+srv://"username":"password"@"clustername"-rwpos.mongodb.net/"collection"?retryWrites=true&w=majority
 ```
-
-On the database will be stored the user information and the metadata about the document.
 
 ## Set up JWT
 
@@ -29,7 +29,9 @@ The header typically consists of two parts: the type of the token, which is JWT,
 
 The second part of the token is the payload, which contains the claims. Claims are statements about an entity (typically, the user) and additional data. We store here the information about the username.
 
-To create the signature part you have to take the encoded header, the encoded payload, a secret, the algorithm specified in the header, and sign that. The secret will be store inside the .env file in the variable TOKEN_SECRET.
+To create the signature part you have to take the encoded header, the encoded payload, a secret, the algorithm specified in the header, and sign that. 
+
+The secret object will be store inside the **.env** file in the variable TOKEN_SECRET.
 
 ```
 TOKEN_SECRET = tH1s_1s_An_eXAmpl3_0F_SEcreT_String
