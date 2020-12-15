@@ -8,9 +8,11 @@ let mongo = {
     connect: () => {
         mongoose.connect(
         process.env.DB_CONNECT,
-        { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true , useFindAndModify: false},
-        () => console.log('Connected to DB',mongoose.connection.readyState)
-        ).catch(error => console.log('connection failed',error));
+        { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true , useFindAndModify: false})
+        .then(
+            () => console.log('Connected to DB',mongoose.connection.readyState),
+            error => console.log('connection failed',error)    
+        )        
     }
 };
 
