@@ -13,5 +13,4 @@ TEIexample/
 public/font-awesome-4.7.0/
 
 #node modules
-node_modules/
-
+node_modules

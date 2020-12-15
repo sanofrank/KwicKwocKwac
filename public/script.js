@@ -68,7 +68,7 @@ async function main() {
 	//Setting width and height of left and bottom panel, setting active class on current style and current sort
 	layoutSetup()
 
-	fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+	fetch('/api/list',{cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 	fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
 	fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No reference loaded'));
 
@@ -1324,7 +1324,7 @@ async function uploadDoc(dataHTML,dataDOCX) {
 		msg.css('display','block');
 		msg.addClass('alert-success').removeClass('alert-danger');
 		
-		fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+		fetch('/api/list', {cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 
 		return msg.text(text);
 	}
@@ -2119,7 +2119,7 @@ async function checkMetadata(){
 	let fileName = splitFilename(currentFilename,'work');
 	let user = splitFilename(currentFilename,'user');
 
-	let header = `Metadati dell'opera "${fileName}"`;
+	let header = `Metadati del documento "${fileName}"`;
 
 	if(isEmptyObject(currentMetadata)){
 		//Passing empty object to tpl function and remove all {$} variables
