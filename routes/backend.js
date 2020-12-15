@@ -40,7 +40,7 @@ let organizeFootnotes = function ($,username) {
             </ol>
             `
         let tplMoronote = `
-            <li id="moronote-{$index}" typeof="moro:footnote" about="#moronote-{$index}" property="{$prop}" resource="#AldoMoro" data-toggle="tooltip" data-placement="top" title="Nota di Aldo Moro">
+            <li id="moronote-{$index}" typeof="moro:Footnote" about="#moronote-{$index}" property="{$prop}" resource="#AldoMoro" data-toggle="tooltip" data-placement="top" title="Nota di Aldo Moro">
                 {$content}
             </li>
             `
@@ -73,6 +73,13 @@ let organizeFootnotes = function ($,username) {
 
                 //Change id
                 $(this).attr('id',`curatornote-${newLength}`)
+
+                //Add RDFa model: typeof, about attribute, property and resource value
+                $(this).attr('typeof',`moro:Footnote`)
+                $(this).attr('about',`curatornote-${newLength}`)
+                $(this).attr('property',prop)
+                $(this).attr('resource','#'+username.replace(/\s/g, ''))
+
                 //Get ref
                 let note_ref = $(this).find('a[href^="#footnote-ref-"],a[href^="#endnote-ref-"]');
                 let ref_id = $(note_ref).attr('href');
@@ -92,7 +99,9 @@ let organizeFootnotes = function ($,username) {
             let moroNotes_li = "";
             let moroNotes_ol = "";
 
-            $('#headFile').append('<meta about="#AldoMoro" typeof="foaf:Person"')
+            //Add footnoteMeta div to contain person typeof if Aldo Moro notes have been found
+            $('#headFile').append('<div id="footnoteMeta"></div>')
+            $('#footnoteMeta').append('<meta about="#AldoMoro" typeof="foaf:Person">')
 
             for(i in moroNotes){
                 let index = parseInt(i)+1;
@@ -105,6 +114,16 @@ let organizeFootnotes = function ($,username) {
 
                 $('body').append(moroNotes_ol);
             }
+        }
+        
+        //Add footnoteMeta div to contain person typeof if curator notes have been found
+        if(curatorNotes.length > 0 && $('#footnoteMeta').length){
+            $('#footnoteMeta').append(`<meta about="${username.replace(/\s/g, '')}" typeof="foaf:Person">`)
+        }else{
+            if(curatorNotes.length > 0){
+                $('#headFile').append('<div id="footnoteMeta"></div>')
+                $('#footnoteMeta').append(`<meta about="${username.replace(/\s/g, '')}" typeof="foaf:Person">`)
+            }            
         }
         
         //Return body
