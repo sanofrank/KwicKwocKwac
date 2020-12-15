@@ -76,7 +76,7 @@ let organizeFootnotes = function ($,username) {
 
                 //Add RDFa model: typeof, about attribute, property and resource value
                 $(this).attr('typeof',`moro:Footnote`)
-                $(this).attr('about',`curatornote-${newLength}`)
+                $(this).attr('about',`#curatornote-${newLength}`)
                 $(this).attr('property',prop)
                 $(this).attr('resource','#'+username.replace(/\s/g, ''))
 
@@ -102,6 +102,7 @@ let organizeFootnotes = function ($,username) {
             //Add footnoteMeta div to contain person typeof if Aldo Moro notes have been found
             $('#headFile').append('<div id="footnoteMeta"></div>')
             $('#footnoteMeta').append('<meta about="#AldoMoro" typeof="foaf:Person">')
+            $('#footnoteMeta').append('<meta about="#AldoMoro" property="rdfs:label" content="Aldo Moro">')
 
             for(i in moroNotes){
                 let index = parseInt(i)+1;
@@ -119,10 +120,12 @@ let organizeFootnotes = function ($,username) {
         //Add footnoteMeta div to contain person typeof if curator notes have been found
         if(curatorNotes.length > 0 && $('#footnoteMeta').length){
             $('#footnoteMeta').append(`<meta about="${username.replace(/\s/g, '')}" typeof="foaf:Person">`)
+            $('#footnoteMeta').append(`<meta about="#${username.replace(/\s/g, '')}" property="rdfs:label" content="${username}">`)
         }else{
             if(curatorNotes.length > 0){
                 $('#headFile').append('<div id="footnoteMeta"></div>')
-                $('#footnoteMeta').append(`<meta about="${username.replace(/\s/g, '')}" typeof="foaf:Person">`)
+                $('#footnoteMeta').append(`<meta about="#${username.replace(/\s/g, '')}" typeof="foaf:Person">`)
+                $('#footnoteMeta').append(`<meta about="#${username.replace(/\s/g, '')}" property="rdfs:label" content="${username}">`)
             }            
         }
         
