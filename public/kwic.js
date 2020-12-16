@@ -25,7 +25,9 @@
 var kwic = new (function () {
 	var lastId = -1;                  // last specified id for new mentions
 	var lastQuoteId = -1;
-	var lastBibId = -1;
+	var lastBibId = -1; //to regenerate exp and bibref
+
+	const uri = '#'
 
 	const ont = {
 		id: 'moro',
@@ -34,6 +36,11 @@ var kwic = new (function () {
 		wikidataId: 'dcterms:relation',
 		treccaniId: 'wdt:P1986'
 		}
+	
+	const rdfaBib = {
+		typeof: 'moro:BibliographicReference',
+		property: 'biro:references'
+	}
 	
 	// generates the id for a mention
 	function getNewId(prefix) {
@@ -1157,7 +1164,6 @@ var kwic = new (function () {
 		if (!options) options = {}         // fallback object for inizialization
 		var bibrefs = bibrefs || []
 		var prefix = "citation-" ;
-
 	
 		this.quotes = []
 		this.bibrefs = []
@@ -1193,7 +1199,7 @@ var kwic = new (function () {
 				this.id = bibrefs[0].citation;
 
 				for (var i=0; i<bibrefs.length; i++) {
-					bibrefs[i].citation = this.id
+					bibrefs[i].citation = this.id // exp-#
 					reference = bibrefs[i].reference || reference
 					label = bibrefs[i].label || label
 					sort = bibrefs[i].sort || sort
@@ -1434,6 +1440,7 @@ var kwic = new (function () {
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "bibref-" ;
 		var mention = false;
+		let uriRegExp = new RegExp('^'+uri)
 
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
@@ -1446,28 +1453,44 @@ var kwic = new (function () {
 
 		this.inner = this.node.innerText;
 
+		this.property = rdfaBib.property;
 		this.id = this.node.id || getNewBibId(prefix) 
-		this.prop('id', this.id, false) ;
+		this.prop('id', this.id, false);
 		this.prop('reference', options.reference || "scraps", true)
-		this.prop('citation', options.citation || options.id || this.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "citation$1"), false)
-		this.prop('label', options.label, options.force) ;
+		this.prop('property', options.property || this.property, options.force)
+		this.prop('resource', options.resource || options.id || 'exp-'+(lastBibId - 1))
+		//this.prop('citation', options.citation || options.id || this.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "citation$1"), false)
+		//this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 
 		this.reference = dataset.reference || options.reference 	// bibRef, quote
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
-		this.citation = this.node.attributes.about.value
+		this.citation = this.node.attributes.resource.value.match(uriRegExp) ? this.node.attributes.resource.value.replace(uriRegExp,'') : this.node.attributes.resource.value // Questa riga probabilmente va cambiata // Questa riga probabilmente va cambiata		
 
-		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
-		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
+		if(this.reference == 'trash'){
+			label = 'Riferimento bibliografico cestinato'
+		}
+
+		if(this.reference == 'scraps'){
+			label = 'Riferimento bibliografico scartato'
+		}
+
+		this.label = options.label;
+		this.sort = options.sort;
+
+		// if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
+		// if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
 	}
 
 	this.BibRef.prototype = {
-		prop: function(name,value,force=false){
+		prop: function(name,value,force=false){			
 			switch (name) {
 				case 'id':
 					if (force || this.node.id== "") {
-						if (value!=='')
+						if (value!=='')						
 							this.node.id = value
+							this.node.setAttribute('typeof',rdfaBib.typeof)
+							this.node.setAttribute('about',uri + value)
 					}
 					break; 
 				case 'reference':
@@ -1481,21 +1504,31 @@ var kwic = new (function () {
 						}
 					}
 					break; 
-				case 'citation':
-					if (force || this.node.attributes.about == undefined) {
+				case 'property':
+					if (force || this.node.attributes.property == undefined) {
 						if (value) {
-							this.node.setAttribute('about',value)
+							this.node.setAttribute('property',value)
 						} else {
-							this.node.removeAttribute('about')
+							this.node.removeAttribute('property')
+						}
+					}
+					break;
+				case 'resource':					
+					if (force || this.node.attributes.resource == undefined) {
+						if (value) {
+							this.node.setAttribute('resource',uri+value)
+						} else {
+							this.node.removeAttribute('resource')
 						}
 					}
 					break;
 				default:
 					if (force || this.node.dataset[name]== undefined) {
 						if (value) {
-							this.node.dataset[name] = value
+							//this.node.dataset[name] = value
+							this[name] = value
 						} else {
-							delete this.node.dataset[name]
+							delete this[name]
 						}
 					}
 					break;
