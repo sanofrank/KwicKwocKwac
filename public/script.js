@@ -526,6 +526,8 @@ function setupKWIC(location, saveView) {
 		quotes = kwic.findQuotes('.quote', location);
 		bibref = kwic.findBibRef('.bibref', location);
 		list = kwic.organizeQuotes();
+		console.log(list);
+		kwic.clearHeadRef(list);
 		var r0 = kwic.toHTMLref(
 			kwic.allReferences,
 			{

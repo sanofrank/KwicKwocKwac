@@ -38,6 +38,8 @@ var kwic = new (function () {
 		}
 	
 	const rdfaBib = {
+		exp: 'fabio:Expression',
+		label: 'dcterms:bibliographicCitation',
 		typeof: 'moro:BibliographicReference',
 		property: 'biro:references'
 	}
@@ -744,7 +746,7 @@ var kwic = new (function () {
 			// kwic.allEntities[target.id].prop('label','',true)
 
 			// cleaning source entity
-			let all = false, force = true, names = ['id','label','sort','wikidataId','treccaniId','label']
+			let all = false, force = true, names = ['id','label','sort','wikidataId','treccaniId']
 			this.clearMeta(names,all,force)
 			
 			kwic.allEntities[this.id] = null
@@ -804,7 +806,7 @@ var kwic = new (function () {
 		// append data on meta tag file head
 		prop: function(name,value,force = false) {
 			let id = "#"+this.id;
-			let prop = ont[name] ? ont[name] : ''; //Get property term
+			let prop = ont[name] || ''; //Get property term
 
 			let metaTpl_type = `<meta about="{$id}" typeof="{$prop}:{$value}">`
 			let metaTpl_res = `<meta about="{$id}" property="{$prop}" resource="{$value}">`
@@ -852,6 +854,7 @@ var kwic = new (function () {
 							//delete this[name]
 						}
 					}
+					break;
 				default :
 					if(force || $(`#mentionMeta meta[about='${id}'][property='${prop}']`).length <= 0){
 						//console.log('inside default prop',name,prop,value,force)
@@ -872,6 +875,7 @@ var kwic = new (function () {
 							//delete this[name]
 						}
 					}
+					break;
 			}
 		},
 		//clear meta head tag
@@ -1208,7 +1212,8 @@ var kwic = new (function () {
 					this.bibrefs.push(bibrefs[i])
 					}
 				
-				this.label = options.label || label //|| bibrefs[0].id
+				label = $(`meta[about="#${this.id}"][property='${rdfaBib.label}']`).length ? $(`meta[about="#${this.id}"][property='${rdfaBib.label}']`).attr('content') : label
+				this.label = options.label || label //|| bibrefs[0].id				
 				break;
 		}
 
@@ -1231,6 +1236,11 @@ var kwic = new (function () {
 			}
 			this.change('label',el, type)
 			this.label = el
+		}
+
+		if(type == 'bibref'){
+			this.prop('id', options.reference || rdfaBib.exp || "scraps", true)
+			this.prop('label', options.label || this.label, options.force)
 		}
 
 		// Reduce label.
@@ -1283,6 +1293,11 @@ var kwic = new (function () {
 				this.bibrefs[i].prop('label','', true)
 				target.bibrefs.push(this.bibrefs[i])
 			}
+			
+			// cleaning source entity
+			let all = false, force = true, names = ['id','label']
+			this.clearMeta(names,all,force)
+
 			kwic.allCitations[this.id] = null
 		}
 	},
@@ -1303,13 +1318,73 @@ var kwic = new (function () {
 			case 'bibref' :
 				for (var i=0; i<this.bibrefs.length; i++) {
 					if (this.bibrefs[i][field]) {
+						this.prop(field,value,true)
+
 						this.bibrefs[i].prop(field, value,true)
 						done = true
 					}
 				}			
-				if (!done) this.bibrefs[0].prop(field, value)
+				if (!done){
+					this.prop(field,value)
+					this.bibrefs[0].prop(field, value)
+				} 
 				break;
 		}
+	},
+	prop: function(name,value,force = false){
+		let id = uri+this.id;
+		let prop = rdfaBib[name] || '';
+
+		let metaTpl_type = `<meta about="{$id}" typeof="{$value}">`
+		let metaTpl_prop = `<meta about="{$id}" property="{$prop}" content="{$value}">`
+
+		switch(name) {
+			case 'id':
+				if(force || id == uri){
+					if(value!=''){					
+						let meta_type = metaTpl_type.tpl({id,value})
+
+						if($(`#referenceMeta meta[about='${id}'][typeof]`).length)
+							$(`#referenceMeta meta[about='${id}'][typeof]`).attr('typeof',value)
+						else{
+							$('#file #referenceMeta').append(meta_type);												
+						}
+					}else{
+						console.log('REMOVE ID');
+						$(`#file #referenceMeta meta[about='${id}'][typeof]`).remove()
+					}
+				}
+				break;
+			default :
+				if(force || $(`#referenceMeta meta[about='${id}'][property='${prop}']`).length <= 0){
+					//console.log('inside default prop',name,prop,value,force)
+					if(value) {						
+						let meta_prop = metaTpl_prop.tpl({id,prop,value})
+						
+						if($(`#referenceMeta meta[about='${id}'][property='${prop}']`).length){
+							$(`#file #referenceMeta meta[about='${id}'][property='${prop}']`).attr('content',value)	
+						}else{							
+							if($(`#referenceMeta meta[about='${id}']`).length)
+								$(`#referenceMeta meta[about='${id}']`).last().after(meta_prop); //append on the last element refered to resource
+							else
+								$('#file #referenceMeta').append(meta_prop);
+						}
+						this[name] = value
+					}else{
+						$(`#file #referenceMeta meta[about='${id}'][property='${prop}']`).remove()
+						//delete this[name]
+					}
+				}
+				break;				
+		}
+	},	
+	//clear meta head tag
+	clearMeta: function(names,all,force = false){
+		if(!all){
+			for(name of names){					
+				this.prop(name,'',force)
+			}
+		}			
 	},
 	// assign this citation to a different references. 
 	switchTo: function(reference,force) {
@@ -1323,6 +1398,7 @@ var kwic = new (function () {
 			}
 		}
 		this.reference = reference;
+		this.prop('id',this.reference);
 		},
 		// assign this citation to scraps. 
 		putToScraps: function() {
@@ -1440,7 +1516,9 @@ var kwic = new (function () {
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "bibref-" ;
 		var mention = false;
+		
 		let uriRegExp = new RegExp('^'+uri)
+		let label = ''
 
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
@@ -1458,7 +1536,7 @@ var kwic = new (function () {
 		this.prop('id', this.id, false);
 		this.prop('reference', options.reference || "scraps", true)
 		this.prop('property', options.property || this.property, options.force)
-		this.prop('resource', options.resource || options.id || 'exp-'+(lastBibId - 1))
+		this.prop('citation', options.citation || options.id || 'exp-'+(lastBibId - 1))
 		//this.prop('citation', options.citation || options.id || this.inner.replace(/([^a-zA-Z0-9]+)/g,"").replace(/(^\d+)/, "citation$1"), false)
 		//this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
@@ -1475,8 +1553,10 @@ var kwic = new (function () {
 			label = 'Riferimento bibliografico scartato'
 		}
 
-		this.label = options.label;
-		this.sort = options.sort;
+		this.label = $(`meta[about="#${this.citation}"][property='${rdfaBib.label}']`).length ? $(`meta[about="#${this.citation}"][property='${rdfaBib.label}']`).attr('content') : label || this.inner
+
+		// this.label = options.label || label;
+		// this.sort = options.sort;
 
 		// if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		// if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
@@ -1513,7 +1593,7 @@ var kwic = new (function () {
 						}
 					}
 					break;
-				case 'resource':					
+				case 'citation':					
 					if (force || this.node.attributes.resource == undefined) {
 						if (value) {
 							this.node.setAttribute('resource',uri+value)
@@ -1769,6 +1849,39 @@ var kwic = new (function () {
 				})	
 			}			
 		}
+
+		// Remove left metaTag 
+		if(meta.length){
+			for(metaTag of meta){
+				metaTag.remove()
+			}
+		}
+
+		return meta
+	}
+
+	// Remove left metatag after organizing the mentions 
+	this.clearHeadRef = function(list) {
+		let meta = $('#referenceMeta meta'); // list of all meta tag
+
+		// Exit status
+		if(meta.length <= 0){
+			return null
+		}
+
+		//takes just the bibref
+		let citations = list.bibref.citations;
+
+		// Search entities id			
+		for(cit in citations){		
+			let exp = '#' + citations[cit].id
+			
+			// Grep meta object from id no more included 
+			meta = $.grep(meta,function(tag){										
+				return tag.getAttribute('about') !== exp
+			})	
+		}			
+		
 
 		// Remove left metaTag 
 		if(meta.length){
