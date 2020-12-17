@@ -45,7 +45,8 @@ var kwic = new (function () {
 	}
 
 	const rdfaQuote = {
-		typeof: 'moro:Quotation'
+		typeof: 'moro:Quotation',
+		property: 'dcterms:relation'
 	}
 	
 	// generates the id for a mention
@@ -501,12 +502,12 @@ var kwic = new (function () {
 		let href = container.getAttribute("href");
 
 		let footnoteNode = $(href);
-		let footnoteNum = href.replace(/\D+/g, ''); //get footnote number
+		let footnoteID = href.replace(/^#/, ''); //get footnote number
 		let footnoteText = footnoteNode.text().replace(/↑+/g,"").trim(); //get text by replacing arrow up symbol and removing start and end white space
 
 		return footnote = {
 			footnoteNode,
-			footnoteNum,
+			footnoteID,
 			footnoteText
 		}
 
@@ -1179,7 +1180,7 @@ var kwic = new (function () {
 		var label = ""
 		var sort = ""
 		var footnoteText = ""
-		var footnoteNum = ""
+		var footnoteID = ""
 		this.position = Number.MAX_VALUE
 		var inners = []
 
@@ -1194,7 +1195,7 @@ var kwic = new (function () {
 					label = quotes[i].label || label
 					sort = quotes[i].sort || sort
 					footnoteText = quotes[i].footnoteText || footnoteText
-					footnoteNum = quotes[i].footnoteNum || footnoteNum
+					footnoteID = quotes[i].footnoteID || footnoteID
 					inners.push(quotes[i].inner)
 					this.position = Math.min(this.position, quotes[i].position)
 					this.quotes.push(quotes[i])
@@ -1222,9 +1223,9 @@ var kwic = new (function () {
 		}
 
 		this.reference = options.reference || reference || "scraps"
-		this.sort = options.sort || sort
-		this.footnoteText = options.footnoteText || footnoteText
-		this.footnoteNum = options.footnoteNum || footnoteNum
+		this.sort = options.sort || sort		
+		this.footnoteID = options.footnoteID || footnoteID
+		this.footnoteText = options.footnoteText || footnoteText || $('#'+this.footnoteID).text()
 
 		if (!this.label) {
 			var inn = {}
@@ -1419,6 +1420,8 @@ var kwic = new (function () {
 		var dataset = nodeOrRange.dataset || {}   // fallback object for inizialization		
 		var prefix = "quote-" ;
 		var mention = false;
+
+		let uriRegExp = new RegExp(`^${uri}`)
 		
 		if (nodeOrRange.nodeType == Node.ELEMENT_NODE) { //if has already been created
 			this.node = nodeOrRange	
@@ -1438,24 +1441,25 @@ var kwic = new (function () {
 		this.prop('id', this.id, false) ;		
 		this.prop('reference', options.reference || "scraps", true)
 		this.prop('citation', options.citation || options.id || `${prefix}${lastQuoteId}`, false)
-		this.prop('footnoteRef', options.footnoteNum);
-		this.prop('footnoteText', options.footnoteText) ;
+		this.prop('property', options.footnoteID, options.force);
+		//this.prop('footnoteText', options.footnoteText, options.force) ;
 		this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 
 		this.reference = dataset.reference || options.reference 	// person, place, thing, etc. 
 		this.footnoteNode = options.footnote || null;
-		this.footnoteNum = options.footnoteNum || null;
+		this.footnoteID = options.footnoteID || null;
 		this.footnoteText = options.footnoteText || null;
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
-		this.citation = this.node.attributes.about.value
+		this.citation = this.node.attributes.about.value.replace(uriRegExp,'');
 		this.quote_text = this.node.getElementsByClassName('quote-text')[0];
-	
+
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
-		if (dataset.footnoteRef) this.footnoteRef = dataset.footnoteRef
-		if (dataset.footnoteText) this.footnoteText = dataset.footnoteText
+		if (this.node.attributes.resource) this.footnoteID = this.node.attributes.resource.value
+		if ($(this.footnoteID).length) this.footnoteText = $(this.footnoteID).text()		 
 	}
+
 	this.Quote.prototype = {
 		prop: function(name,value, force=false) {
 			switch (name) {
@@ -1485,6 +1489,14 @@ var kwic = new (function () {
 							this.node.setAttribute('about',value)
 						} else {
 							this.node.removeAttribute('about')
+						}
+					}
+					break;
+				case 'property':
+					if(force || this.node.attributes.property == undefined){
+						if (value) {
+							this.node.setAttribute(name,rdfaQuote.property);
+							this.node.setAttribute('resource',uri+value);
 						}
 					}
 					break;
@@ -2180,7 +2192,7 @@ var kwic = new (function () {
 								reference: ref.entity,
 								supNode: selection.footnoteNode,
 								footnote: footnote.footnoteNode,
-								footnoteNum: footnote.footnoteNum,
+								footnoteID: footnote.footnoteID,
 								footnoteText: footnote.footnoteText
 							})
 						}else{
