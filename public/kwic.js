@@ -43,6 +43,10 @@ var kwic = new (function () {
 		typeof: 'moro:BibliographicReference',
 		property: 'biro:references'
 	}
+
+	const rdfaQuote = {
+		typeof: 'moro:Quotation'
+	}
 	
 	// generates the id for a mention
 	function getNewId(prefix) {
@@ -1431,11 +1435,11 @@ var kwic = new (function () {
 			this.inner = this.node.innerText;
 
 		this.id = this.node.id || getNewQuoteId(prefix) 
-		this.prop('id', this.id, false) ;
+		this.prop('id', this.id, false) ;		
 		this.prop('reference', options.reference || "scraps", true)
 		this.prop('citation', options.citation || options.id || `${prefix}${lastQuoteId}`, false)
 		this.prop('footnoteRef', options.footnoteNum);
-		this.prop('footnoteText', options.footnoteText)
+		this.prop('footnoteText', options.footnoteText) ;
 		this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 
@@ -1459,6 +1463,9 @@ var kwic = new (function () {
 					if (force || this.node.id== "") {
 						if (value!=='')
 							this.node.id = value
+							this.node.setAttribute('about',uri+value);
+							this.node.setAttribute('typeof',rdfaQuote.typeof);
+
 					}
 					break; 
 				case 'reference':
