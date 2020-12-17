@@ -25,7 +25,7 @@
 
 <body>
 	<div id="wrapper">
-		<nav id="top" class="navbar navbar-expand-md navbar-dark bg-dark  disable-select">
+		<nav id="top" class="navbar navbar-expand-md navbar-dark bg-dark disable-select">
 			<a class="navbar-brand" href="/">KWIC KWOC KWAC</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
 				aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,8 +34,10 @@
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item dropdown active">
-						<input class="nav-link dropdown-toggle ml-3" type="search" id="fileList" autocomplete="false" data-toggle="dropdown" 
-							aria-haspopup="true" aria-expanded="false" onkeyup="searchDocuments()" placeholder="Cerca documenti">
+					<form data-toggle="dropdown" >
+						<input class="nav-link dropdown-toggle ml-3" type="text" id="fileList" name="fileList"
+						aria-haspopup="true" aria-expanded="false" onkeyup="searchDocuments()" placeholder="Cerca documenti">
+					</form>						
 						<div id="fileMenu" class="dropdown-menu" aria-labelledby="fileList">
 							<div id="file-filter" class="dropdown-header pb-0">
 								<div class="d-flex">
@@ -45,7 +47,7 @@
 										<span id="trash-filter" class="oi oi-trash" title="elimina i file" aria-hidden="true" ondragover="dragDocOver(event)" ondragleave="dragDocLeave(event)" ondrop="dropDoc(event)"onclick="deleteDocuments()"></span>
 									</div>
 								</div>
-									<input id="user-filter" class="form-control form-control-sm d-flex" type="text" placeholder="Utente, untente, ...">
+									<input id="user-filter" class="form-control form-control-sm d-flex" type="text" placeholder="Utente, utente, ...">
 									<small>Inserire i nomi degli utenti separati da una virgola.</small>
 								<div class="d-flex">
 									<div id="state-filter"class="w-100 p-2">
