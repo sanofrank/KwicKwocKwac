@@ -87,7 +87,7 @@ function basicCallbacks() {
 	$('input[name="inlineRadioOptions"]').change(emptyUpload);
 	$('#docFile').change(uploadFileSetup);
 	$('#user-filter').on('keypress',function(e) {
-		if(e.which == 13) {
+		if(e.which == 10) {
 			applyFilter();
 		}
 	});
@@ -505,7 +505,7 @@ function searchDocuments(){
 	$('#documentCounter').text(visible)
 
 	//resize fileMenu
-	if(visible > 13){
+	if(visible > 10){
 		$('#ulFile').css("height", "26em")
 	}else{
 		$('#ulFile').css("height", "");
@@ -728,7 +728,7 @@ function docList(elements) {
 		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}">
 
 	//resize fileMenu
-	if(elements.list.length > 13){
+	if(elements.list.length > 10){
 		$('#ulFile').css("height", "26em")
 	}else{
 		$('#ulFile').css("height", "");
@@ -943,7 +943,7 @@ function applyFilter() {
 	$('#documentCounter').text(count)
 
 	//resize fileMenu
-	if(count > 13){
+	if(count > 10){
 		$('#ulFile').css("height", "26em")
 	}else{
 		$('#ulFile').css("height", "");
