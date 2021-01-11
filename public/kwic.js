@@ -677,7 +677,7 @@ var kwic = new (function () {
 		label = $(`meta[about="#${this.id}"][property='${ont.label}']`).length ? $(`meta[about="#${this.id}"][property='${ont.label}']`).attr('content') : label
 		sort = $(`meta[about="#${this.id}"][property='${ont.sort}']`).length ? $(`meta[about="#${this.id}"][property='${ont.sort}']`).attr('content') : sort
 		wikidataId = $(`meta[about="#${this.id}"][property='${ont.wikidataId}']`).length ? $(`meta[about="#${this.id}"][property='${ont.wikidataId}']`).attr('resource').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : wikidataId
-		treccaniId = $(`meta[about="#${this.id}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.id}"][property='${ont.treccaniId}']`).attr('resource') : treccaniId
+		treccaniId = $(`meta[about="#${this.id}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.id}"][property='${ont.treccaniId}']`).attr('content') : treccaniId
 
 		// this.category = options.category || category || "scraps"
 		// this.label = options.label || label
@@ -959,7 +959,7 @@ var kwic = new (function () {
 		this.label = $(`meta[about="#${this.entity}"][property='${ont.label}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.label}']`).attr('content') : label || this.inner
 		this.sort = $(`meta[about="#${this.entity}"][property='${ont.sort}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.sort}']`).attr('content') : ''
 		this.wikidataId = $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).attr('resource').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : ''
-		this.treccaniId = $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).attr('resource') : ''
+		this.treccaniId = $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).attr('content') : ''
 
 		// if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		// if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
@@ -1224,8 +1224,8 @@ var kwic = new (function () {
 
 		this.reference = options.reference || reference || "scraps"
 		this.sort = options.sort || sort		
-		this.footnoteID = options.footnoteID || footnoteID
-		this.footnoteText = options.footnoteText || footnoteText || $('#'+this.footnoteID).text()
+		this.footnoteID = options.footnoteID || footnoteID || null
+		this.footnoteText = options.footnoteText || footnoteText || $('#'+this.footnoteID).text() || ''
 
 		if (!this.label) {
 			var inn = {}
