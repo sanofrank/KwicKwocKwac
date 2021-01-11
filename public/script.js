@@ -68,7 +68,7 @@ async function main() {
 	//Setting width and height of left and bottom panel, setting active class on current style and current sort
 	layoutSetup()
 
-	fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+	fetch('/api/list',{cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 	fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
 	fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No reference loaded'));
 
@@ -87,7 +87,7 @@ function basicCallbacks() {
 	$('input[name="inlineRadioOptions"]').change(emptyUpload);
 	$('#docFile').change(uploadFileSetup);
 	$('#user-filter').on('keypress',function(e) {
-		if(e.which == 13) {
+		if(e.which == 10) {
 			applyFilter();
 		}
 	});
@@ -505,7 +505,7 @@ function searchDocuments(){
 	$('#documentCounter').text(visible)
 
 	//resize fileMenu
-	if(visible > 13){
+	if(visible > 10){
 		$('#ulFile').css("height", "26em")
 	}else{
 		$('#ulFile').css("height", "");
@@ -728,7 +728,7 @@ function docList(elements) {
 		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}">
 
 	//resize fileMenu
-	if(elements.list.length > 13){
+	if(elements.list.length > 10){
 		$('#ulFile').css("height", "26em")
 	}else{
 		$('#ulFile').css("height", "");
@@ -943,7 +943,7 @@ function applyFilter() {
 	$('#documentCounter').text(count)
 
 	//resize fileMenu
-	if(count > 13){
+	if(count > 10){
 		$('#ulFile').css("height", "26em")
 	}else{
 		$('#ulFile').css("height", "");
@@ -1329,7 +1329,7 @@ async function uploadDoc(dataHTML,dataDOCX) {
 		msg.css('display','block');
 		msg.addClass('alert-success').removeClass('alert-danger');
 		
-		fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+		fetch('/api/list', {cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 
 		return msg.text(text);
 	}
@@ -1797,7 +1797,7 @@ function validate(t) {
 async function formattingDoc(location){
 	
 	//Format abstract
-	let file = $(location)[0];
+	let file = $('#bodyFile').length ? $('#bodyFile')[0] : $(location)[0];
 	let child = file.childNodes[1];
 
 	if(!child || !child.firstElementChild) return null;
@@ -2122,7 +2122,7 @@ async function checkMetadata(){
 	let fileName = splitFilename(currentFilename,'work');
 	let user = splitFilename(currentFilename,'user');
 
-	let header = `Metadati dell'opera "${fileName}"`;
+	let header = `Metadati del documento "${fileName}"`;
 
 	if(isEmptyObject(currentMetadata)){
 		//Passing empty object to tpl function and remove all {$} variables

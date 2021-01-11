@@ -45,14 +45,20 @@ let organizeFootnotes = function ($) {
             `
 
         $("li[id^='footnote'], li[id^='endnote']").each(function(index) {
-            console.log(roman.toRoman(index + 1) + ": " + $(this).html());
+            //console.log(roman.toRoman(index + 1) + ": " + $(this).html());
             let text = $(this).text();
-            let trim = text.trim();
+
+            //Splice text from end arrow symbol
+            let noArrow = text.slice(0,text.length - 1);            
+            //Trim string
+            let trim = noArrow.trim();
+
             let newLength;
             
-            if(trim.charAt(0) === '[' && trim.charAt(trim.length - 3) === ']'){
+            if(trim.charAt(0) === '[' && trim.charAt(trim.length-1) === ']'){ // Check first and last character
                 newLength = moroNotes.length + 1
                 
+                //console.log('Moro Notes'+$(this).text())
                 //Change id
                 $(this).attr('id',`moronote-${newLength}`)
                 //Get ref
@@ -68,7 +74,11 @@ let organizeFootnotes = function ($) {
                 moroNotes.push($(this).html());
                 $(this).remove()
             }else{
+                if(!$(this).parent().attr('id')) $(this).parent().attr('id','curatorNotes') //Add id to curator list
+
                 newLength = curatorNotes.length + 1
+
+                //console.log('Curator Notes'+$(this).text())                
 
                 //Change id
                 $(this).attr('id',`curatornote-${newLength}`)
