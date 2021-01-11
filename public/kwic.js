@@ -937,7 +937,7 @@ var kwic = new (function () {
 		this.prop('id', this.id, false);
 		this.prop('category', options.category || "scraps", true)
 		this.prop('property', options.property || this.property, options.force)
-		this.prop('entity', options.entity || options.id || t.inner.replace(/([^a-zA-Z0-9àèéìòù,.]+)/g,"").replace(/(^\d+)/, "entity$1"), false)
+		this.prop('entity', options.entity || options.id || t.inner.removeAccent(keepSpecial = true).replace(/(^\d+)/, "entity$1"), false)
 		//this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
 		//this.prop('wikidataId', options.wikidataId, options.force) ;
