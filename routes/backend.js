@@ -27,9 +27,10 @@ String.prototype.tpl = function(o, removeAll) {
 }
 
 //Organize footnotes in moronotes and curatornotes
-let organizeFootnotes = function ($) {
+let organizeFootnotes = function ($,username) {
         let moroNotes = [];
         let curatorNotes = [];
+        let prop = "dcterms:creator"
 
         // footnote search for moro notes
         // data-alert attribute for first time alert display                
@@ -39,7 +40,7 @@ let organizeFootnotes = function ($) {
             </ol>
             `
         let tplMoronote = `
-            <li id="moronote-{$index}" data-toggle="tooltip" data-placement="top" title="Nota di Aldo Moro">
+            <li id="moronote-{$index}" typeof="moro:Footnote" about="#moronote-{$index}" property="{$prop}" resource="#AldoMoro" data-toggle="tooltip" data-placement="top" title="Nota di Aldo Moro">
                 {$content}
             </li>
             `
@@ -82,6 +83,13 @@ let organizeFootnotes = function ($) {
 
                 //Change id
                 $(this).attr('id',`curatornote-${newLength}`)
+
+                //Add RDFa model: typeof, about attribute, property and resource value
+                $(this).attr('typeof',`moro:Footnote`)
+                $(this).attr('about',`#curatornote-${newLength}`)
+                $(this).attr('property',prop)
+                $(this).attr('resource','#'+username.replace(/\s/g, ''))
+
                 //Get ref
                 let note_ref = $(this).find('a[href^="#footnote-ref-"],a[href^="#endnote-ref-"]');
                 let ref_id = $(note_ref).attr('href');
@@ -101,9 +109,14 @@ let organizeFootnotes = function ($) {
             let moroNotes_li = "";
             let moroNotes_ol = "";
 
+            //Add footnoteMeta div to contain person typeof if Aldo Moro notes have been found
+            $('#headFile').append('<div id="footnoteMeta"></div>')
+            $('#footnoteMeta').append('<meta about="#AldoMoro" typeof="foaf:Person">')
+            $('#footnoteMeta').append('<meta about="#AldoMoro" property="rdfs:label" content="Aldo Moro">')
+
             for(i in moroNotes){
                 let index = parseInt(i)+1;
-                let moronote = tplMoronote.tpl({index: index, content: moroNotes[i]});                       
+                let moronote = tplMoronote.tpl({index: index, content: moroNotes[i], prop});                       
                 moroNotes_li = moroNotes_li.concat(moronote);                        
             }
 
@@ -114,8 +127,20 @@ let organizeFootnotes = function ($) {
             }
         }
         
+        //Add footnoteMeta div to contain person typeof if curator notes have been found
+        if(curatorNotes.length > 0 && $('#footnoteMeta').length){
+            $('#footnoteMeta').append(`<meta about="${username.replace(/\s/g, '')}" typeof="foaf:Person">`)
+            $('#footnoteMeta').append(`<meta about="#${username.replace(/\s/g, '')}" property="rdfs:label" content="${username}">`)
+        }else{
+            if(curatorNotes.length > 0){
+                $('#headFile').append('<div id="footnoteMeta"></div>')
+                $('#footnoteMeta').append(`<meta about="#${username.replace(/\s/g, '')}" typeof="foaf:Person">`)
+                $('#footnoteMeta').append(`<meta about="#${username.replace(/\s/g, '')}" property="rdfs:label" content="${username}">`)
+            }            
+        }
+        
         //Return body
-        return content = $('body').html();
+        return content = $('html').html();
 }
 
 // List all document from public/files
@@ -284,11 +309,32 @@ router.post('/upload', async (req, res) => {
                 
                 const $ = cheerio.load(content)
 
+                //BODY WRAPPER
+                if(!$("#bodyFile").length){
+                    let body = '<div id="bodyFile"></div>'
+                    $('body').wrap(body);
+
+                    content = $('html').html();
+                }
+
+                //HEAD WRAPPER
+                if(!$("#headFile").length){
+                    let head = `<div id="headFile">
+                                    <div id="mentionMeta">
+                                    </div>
+                                    <div id="referenceMeta">
+                                    </div>
+                                </div>`
+                    $('head').wrap(head);
+
+                    content = $('html').html();
+                }                
+
                 //If has footnote or endnote
                 if($("li[id^='footnote'], li[id^='endnote']").length){
-                    content = organizeFootnotes($);
-                }
-                            
+                    content = organizeFootnotes($,username);                    
+                }                                
+                                
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath,content, (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);

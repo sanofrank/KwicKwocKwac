@@ -116,6 +116,35 @@
 			return r 
 		}
 
+		// String accent vocal translate
+		String.prototype.removeAccent = function(special) {
+			let translate_re = /([^a-zA-Z0-9]+)/g; //get all special character
+			let translate = {
+			  a: ['à','á','À','Á'],
+			  e: ['è','é','È','É'],
+			  i: ['ì','í','Ì','Í'],
+			  o: ['ò','ó','Ò','Ó'],
+			  u: ['ù','ú','Ù','Ú']
+			};		
+			let s = this;
+			
+			return s.replace(translate_re, function(match) { 
+				let replace = '';
+
+				for(v in translate){	
+					for(a of translate[v]){
+						for(c of match){
+							if(a === c) replace += v; //if accent vocal, replace with just vocal variable
+							else replace += special ? '' : c	//else keep the character
+						}						
+					}
+				}
+
+				return replace //return changed string
+				});			
+		  };
+
+
 		// creates a CSS stylesheet with custom rules.  
 		async function setStylesheet(css, id, asExternalFile, onload) {
 			if (!id) var id = "pdxDefaultCSS" ;

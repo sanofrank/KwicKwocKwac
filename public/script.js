@@ -38,7 +38,7 @@ var apply_filter = false;                // whether filter have been applyied on
 var referenceMode;             			 // whether the reference panel is shown
 var currentMetadata = {};				 // the metadata of the current loaded file
 var loadedDocument;
-const spinner = document.getElementById("spinner");
+const spinner = document.getElementById("spinner"); 
 
 var expandableSelector = '.treeExpand'   // selector for expandable items in the tree in the left pane
 var draggableSelector = '.draggable'    // selector for elements that can be dragged in the left pane
@@ -272,7 +272,6 @@ function hideSpinner() {
 
 // Callbacks for draggable elements
 function dragstart(event) {
-	console.log(event);
 	var e = event.originalEvent || event //drag
 	var tg = e.target.dataset.id ? e.target : e.target.parentElement
 	var data = JSON.stringify(tg.dataset)
@@ -413,7 +412,6 @@ function toggleInfo(e,target) {
 	//e.preventDefault();
 
 	let parent = $(target)[0].parentElement;
-	console.log(target,parent);
 
 	$(target).collapse({
 		toggle: false
@@ -529,6 +527,7 @@ function setupKWIC(location, saveView) {
 		bibref = kwic.findBibRef('.bibref', location);
 		list = kwic.organizeQuotes();
 		console.log(list);
+		kwic.clearHeadRef(list);
 		var r0 = kwic.toHTMLref(
 			kwic.allReferences,
 			{
@@ -576,9 +575,10 @@ function setupKWIC(location, saveView) {
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
-	} else {
-		mentions = kwic.findMentions('.mention', location);
+	} else {		
+		mentions = kwic.findMentions('.mention', location); // When a KwicKKed document get loaded
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
+		kwic.clearHead(list);
 		//console.log(list);
 		var c0 = kwic.toHTML(
 			kwic.allCategories,
@@ -966,7 +966,6 @@ async function load(item,file) {
 
 		currentFilename = file;
 		currentMetadata = json.metadata;
-		console.log(json.metadata)
 		checkMetadata();
 
 		split = file.split('_');
@@ -1200,7 +1199,7 @@ function doAction(key, alt, shift) {
 	if (rangeAcceptable(sel, documentLocation)) {
 		let action = referenceMode ? kwic.doActionReference(key, alt, shift) : kwic.doAction(key, alt, shift); // If reference mode is active change action options
 
-		if (action) {
+		if (action) {					
 			setupKWIC(documentLocation, true)
 			sel.collapse(nullSelection, 0)
 		}
@@ -1249,7 +1248,6 @@ async function uploadDoc(dataHTML,dataDOCX) {
 
 	// User name
 	let user = $('#userUpload') ? $('#userUpload').val() : '';
-	console.log(user)
 	// Unique sez_vol_tom path
 	let sez = $('#sezNumber').val();
 	let vol = $('#volNumber').val();
@@ -1289,7 +1287,6 @@ async function uploadDoc(dataHTML,dataDOCX) {
 		dataDOCX.set("sez", sez);
 		dataDOCX.set("vol", vol);
 		dataDOCX.set("tom", tom);
-		console.log(dataDOCX);
 		requestOptions = {
 			method: 'POST',
 			body: dataDOCX
@@ -1413,8 +1410,10 @@ async function changeStatus() {
 // user is changing label, sort or wikidata Id
 function changeValue(field, id, value) {
 	var pp;
+
 	console.log(field,id,value);
 	if (!referenceMode) {
+		console.log(kwic.allEntities)	
 		pp = kwic.allEntities[id]
 		console.log(pp);
 	} else {
