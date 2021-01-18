@@ -1433,7 +1433,7 @@ var kwic = new (function () {
 		}
 		
 		if(this.node.getElementsByClassName('quote-text')[0])
-			this.inner = this.node.getElementsByClassName('quote-text')[0].innerHTML;
+			this.inner = this.node.getElementsByClassName('quote-text')[0].innerText;
 		else 
 			this.inner = this.node.innerText;
 
