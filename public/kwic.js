@@ -47,7 +47,7 @@ var kwic = new (function () {
 	const rdfaQuote = {
 		typeof: 'moro:Quotation',
 		property: 'dcterms:relation',
-		label: 'c4o:asContent'
+		label: 'c4o:hasContent'
 	}
 	
 	// generates the id for a mention
@@ -1250,12 +1250,15 @@ var kwic = new (function () {
 		}
 
 		// Reduce label.
-		let words = this.label.split(' ');
-		let reduce_words = words.slice(0,6);
+		if(this.label){
+			console.log(this.label)
+			let words = this.label.split(' ');
+			let reduce_words = words.slice(0,6);
 
-		if(words.length > 6) reduce_words.push('...');
-		
-		this.label = reduce_words.join(' ');
+			if(words.length > 6) reduce_words.push('...');
+			
+			this.label = reduce_words.join(' ');
+		}		
 		 
 		return this; 	
 	}
@@ -1454,8 +1457,8 @@ var kwic = new (function () {
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
 		this.citation = this.node.attributes.about.value.replace(uriRegExp,'');
 		this.quote_text = this.node.getElementsByClassName('quote-text')[0];
-		//
-		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
+
+		if (this.node.attributes.content) this.label = this.node.attributes.content.value // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
 		if (this.node.attributes.resource) this.footnoteID = this.node.attributes.resource.value
 		if ($(this.footnoteID).length) this.footnoteText = $(this.footnoteID).text()		 
@@ -1498,6 +1501,16 @@ var kwic = new (function () {
 						if (value) {
 							this.node.setAttribute(name,rdfaQuote.property);
 							this.node.setAttribute('resource',uri+value);
+						}
+					}
+					break;
+				case 'label':
+					if(force || this.node.attributes.content == undefined){
+						if (value) {
+							this.node.setAttribute('property',rdfaQuote.label);
+							this.node.setAttribute('content',value);
+						} else {
+							this.node.removeAttribute('content');
 						}
 					}
 					break;
