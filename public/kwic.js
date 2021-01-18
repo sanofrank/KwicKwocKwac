@@ -46,7 +46,8 @@ var kwic = new (function () {
 
 	const rdfaQuote = {
 		typeof: 'moro:Quotation',
-		property: 'dcterms:relation'
+		property: 'dcterms:relation',
+		label: 'c4o:asContent'
 	}
 	
 	// generates the id for a mention
@@ -1313,7 +1314,7 @@ var kwic = new (function () {
 			case 'quote' :
 				for (var i=0; i<this.quotes.length; i++) {
 					if (this.quotes[i][field]) {
-						this.quotes[i].prop(field, value,true)
+						this.quotes[i].prop(field, value, true)
 						done = true
 					}
 				}			
@@ -1454,6 +1455,7 @@ var kwic = new (function () {
 		this.citation = this.node.attributes.about.value.replace(uriRegExp,'');
 		this.quote_text = this.node.getElementsByClassName('quote-text')[0];
 
+		//if (this.node.attributes.content) this.label = this.node.attributes.content // this is the value used for displaying the entity this mention belongs to
 		if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
 		if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
 		if (this.node.attributes.resource) this.footnoteID = this.node.attributes.resource.value
@@ -1500,6 +1502,17 @@ var kwic = new (function () {
 						}
 					}
 					break;
+				// case 'label':
+				// 	if(force || this.node.attributes.content == undefined){
+				// 		if(value) {
+				// 			console.log(name,value)
+				// 			this.node.setAttribute('property',rdfaQuote.label)
+				// 			this.node.setAttribute('content',value)
+				// 		} else {							
+				// 			this.node.removeAttribute('content')
+				// 		}
+				// 	}
+				// 	break;
 				default:
 					if (force || this.node.dataset[name]== undefined) {
 						if (value) {
