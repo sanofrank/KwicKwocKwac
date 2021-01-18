@@ -80,3 +80,11 @@
     background-color: yellow;
 }
 
+.citationLabel {
+    vertical-align:middle;
+    display: inline-block;
+    white-space: nowrap;
+    width: 18em;
+    overflow: hidden !important;
+    text-overflow: ellipsis; /* ... at the end of citation label */
+}
