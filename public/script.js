@@ -2035,7 +2035,32 @@ function rdfaFormatting(container){
 	let referenceMeta = $('#referenceMeta').clone().children()
 	let footnoteMeta = $('#footnoteMeta').clone().children()
 
-	if(mentionMeta)     mentionMeta.each(m => head.appendChild(mentionMeta[m]))
+	if(mentionMeta){
+
+		mentionMeta.each(function () {
+			let newLabel = []
+			head.appendChild(this);					
+
+			if(this.attributes.item(1).value == 'rdfs:label'){
+				let about = this.attributes.getNamedItem('about').value
+				let label = this.attributes.getNamedItem('content').value
+
+				$(`#bodyFile span[resource='${about}']`).each( function () {
+					if(this.innerText.toUpperCase() != label.toUpperCase() && !newLabel.includes(this.innerText)){
+						let newMeta = document.createElement('meta');
+
+						newMeta.setAttribute('about',about)
+						newMeta.setAttribute('property','moro:altLabel')
+						newMeta.setAttribute('content',this.innerText)
+
+						head.appendChild(newMeta)
+						newLabel.push(this.innerText)
+					} 
+				})
+			}
+		})
+	}     
+
 	if(referenceMeta)	referenceMeta.each(r => head.appendChild(referenceMeta[r]))
 	if(footnoteMeta)	footnoteMeta.each(f => head.appendChild(footnoteMeta[f]))
 
