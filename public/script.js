@@ -1150,8 +1150,16 @@ async function downloadDoc(type) {
 			src: $('[data-src]').data('src')
 		})
 	}
-	if (type == 'html') {
-		download(currentFilename, $('#file').html(), "text/html", options)
+	if (type == 'html') {			
+		let container = document.createElement('div')
+
+		const html = rdfaFormatting(container);
+	
+		download(currentFilename, html , "text/html", options)
+
+		// Clear container
+		container.remove()
+
 	} else if (type == 'tei') {
 		let objId = splitFilename(currentFilename,'objId')
 
@@ -2011,6 +2019,46 @@ async function getMetadata(fragment, doc) {
 	}
 
 	return fragment
+}
+
+function rdfaFormatting(container){	
+	// CREATE STRUCTURE
+
+	let fileFragment = new DocumentFragment();	
+	let html = document.createElement('html')
+	let head = document.createElement('head')
+	let body = document.createElement('body')
+
+	// HEAD
+
+	let mentionMeta = $('#mentionMeta').clone().children()
+	let referenceMeta = $('#referenceMeta').clone().children()
+	let footnoteMeta = $('#footnoteMeta').clone().children()
+
+	if(mentionMeta)     mentionMeta.each(m => head.appendChild(mentionMeta[m]))
+	if(referenceMeta)	referenceMeta.each(r => head.appendChild(referenceMeta[r]))
+	if(footnoteMeta)	footnoteMeta.each(f => head.appendChild(footnoteMeta[f]))
+
+	// BODY
+
+	let bodyDocument = $('#bodyFile').html()
+
+	if(bodyDocument) 
+		body.innerHTML = bodyDocument			
+	else
+		body.innerHTML = $('#file').html()
+
+	// APPEND TO DOCUMENT FRAGMENT
+
+	fileFragment.appendChild(html)
+	fileFragment.firstElementChild.appendChild(head);
+	fileFragment.firstElementChild.appendChild(body);
+	
+	// APPEND TO CONTAINER 
+
+	container.appendChild(fileFragment);
+
+	return container.innerHTML
 }
 
 //  save a file in the local download folder

@@ -525,4 +525,17 @@ router.post('/change' , (req,res) => {
 
 })
 
+router.get('/download', (req,res) => {
+    const file = req.query.file;
+
+    const path = `${dir}/${file}/index.html`
+
+    console.log(path)
+
+    res.download(path, 'index.html', function (err) {
+        if (err) {
+          res.status(400).send(err)
+        }})
+})
+
 module.exports = router; 
