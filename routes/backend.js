@@ -2,6 +2,7 @@ const router = require('express').Router();
 const fs = require('fs');
 const rimraf = require('rimraf');
 const fgc = require('file-get-contents');
+const format = require('html-format');
 const mkDir = require('make-dir');
 const mammoth = require('mammoth');
 const cheerio = require('cheerio');
@@ -336,7 +337,7 @@ router.post('/upload', async (req, res) => {
                 }                                
                                 
                 if(content!== "" && !content.includes("Key Words In Context")){
-                    fs.writeFile(htmlPath,content, (err) => {
+                    fs.writeFile(htmlPath,format(content), (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
                     });
                 }else{
@@ -381,7 +382,7 @@ router.post('/upload', async (req, res) => {
                 content.replace(regex,"");
 
                 if(content!== "" && !content.includes("Key Words In Context")){
-                    fs.writeFile(htmlPath,content, (err) => {
+                    fs.writeFile(htmlPath, format(content) , (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
                     });
                 }else{

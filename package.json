@@ -24,6 +24,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.0",
     "file-get-contents": "^1.0.0",
+    "html-format": "^1.0.1",
     "jsonwebtoken": "^8.5.1",
     "make-dir": "^3.1.0",
     "mammoth": "^1.4.14",

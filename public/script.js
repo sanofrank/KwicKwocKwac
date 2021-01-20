@@ -91,8 +91,6 @@ function basicCallbacks() {
 			applyFilter();
 		}
 	});
-	//$('#state-filter').change(() => $('#apply-filter').prop('disabled',false)) //enable apply filter button on selected status filter
-	//$('#user-filter').keyup(() => $('#apply-filter').prop('disabled',false)) //enable apply filter button on inserted text in user input
 	$(document).on('click', '#file-filter', e => e.stopPropagation()); //prevent closing dropdown-menu on click
 	$(document).on('click', expandableSelector, treeClick)
 	$(document).on('dblclick', expandableSelector, treeClickAll)
@@ -570,8 +568,6 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()
-		//$('#markAll').prop('disabled',true)
-		//document.getElementById('markAll-label').style.display = "none";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 
@@ -579,7 +575,7 @@ function setupKWIC(location, saveView) {
 		mentions = kwic.findMentions('.mention', location); // When a KwicKKed document get loaded
 		list = kwic.organize(mentions) //Estrapola entità e categorie dalle menzioni ordinandole in un array di array
 		kwic.clearHead(list);
-		//console.log(list);
+
 		var c0 = kwic.toHTML(
 			kwic.allCategories,
 			{
@@ -622,8 +618,6 @@ function setupKWIC(location, saveView) {
 		$('#trash-realpane').html($('#trash-pane').html())
 		$('#trash-tab').remove()
 		$('#trash-pane').remove()		
-		//$('#markAll').prop('disabled',false);
-		//document.getElementById('markAll-label').style.display = "";
 		editSetup(editMode)
 		if (saveView) setCurrentView(view)
 	}
@@ -693,8 +687,6 @@ function docList(elements) {
 			<h6>Documenti: <span id="documentCounter" class ="pl-1"></span></h6>
 		</div>
 	`
-	//<span class="oi oi-trash flex-shrink-1" title="delete files" aria-hidden="true"></span>		
-
 	//empty docList if already populated and add 
 	if($('#ulFile').children()) $('#ulFile')[0].innerHTML = '' 
 
@@ -724,9 +716,6 @@ function docList(elements) {
 			</div>
 			</a>
 		`		
-
-		//<input class="document-checkbox form-check-input" type="checkbox" value="{$url}">
-
 	//resize fileMenu
 	if(elements.list.length > 10){
 		$('#ulFile').css("height", "26em")
@@ -1153,8 +1142,11 @@ async function downloadDoc(type) {
 	if (type == 'html') {			
 		let container = document.createElement('div')
 
-		const html = rdfaFormatting(container);
-	
+		rdfaFormatting(container);
+		enumerateParagraph(container);
+
+		const html = container.innerHTML
+
 		download(currentFilename, html , "text/html", options)
 
 		// Clear container
@@ -1886,27 +1878,6 @@ function showFileName(fileName) {
 // Mark curator note and author note
 function markFootnote(location, mark){
 
-	// let markOptions = {
-	// 	author: 'Aldo Moro',
-	// 	markChar: '[',
-	// 	node: 'li',
-	// 	attribute: "id",
-	// 	selector: 'footnote-',
-	// 	exception: ''
-	// };
-
-	// let authorNotes = kwic.markFootnote(location, markOptions);
-	// if (authorNotes > 0) {
-
-	// 	let alert_footnote = `<p id="alert-count">Sono state marcate automaticamente ${authorNotes} note di ${markOptions.author}</p>`
-	// 	$('#footnote-alert').prepend(alert_footnote);
-	// 	$("#footnote-alert").fadeTo(3500, 500).slideUp(500, function () {
-	// 		$("#footnote-alert").slideUp(500, function(){
-	// 			$("#alert-count").remove();
-	// 		});
-	// 	});
-	// }
-
 	if($('#moroNotes').length && $('#moroNotes').attr('data-alert') == 'true'){
 		$('[data-toggle="tooltip"]').tooltip();
 		$('#moroNotes').attr('data-alert','false')
@@ -2021,51 +1992,52 @@ async function getMetadata(fragment, doc) {
 	return fragment
 }
 
-function rdfaFormatting(container){	
-	// CREATE STRUCTURE
+// Append mention in "head" and check if exist any altLabel for every mentionable entities if true create meta and append
+function appendMeta(head,meta,property) {
+	
+	meta.each(function () {
+		let newLabel = []
+		head.appendChild(this);					
 
+		if(property && this.attributes.item(1).value == property){
+			let about = this.attributes.getNamedItem('about').value	// get reference property, sort of 'id'
+			let label = this.attributes.getNamedItem('content').value // get property content
+
+			$(`#bodyFile span[resource='${about}']`).each( function () {
+				if(this.innerText.toUpperCase() != label.toUpperCase() && !newLabel.includes(this.innerText)){
+					let newMeta = document.createElement('meta');
+
+					newMeta.setAttribute('about',about)
+					newMeta.setAttribute('property','moro:altLabel') // new property to define different attribute
+					newMeta.setAttribute('content',this.innerText)
+
+					head.appendChild(newMeta)
+					newLabel.push(this.innerText)
+				} 
+			})
+		}
+	})
+
+}
+
+// Replace div haedFile and bodyFIle with "head" and "body" pushing entities inside "head"
+function rdfaFormatting(container) {	
+	// CREATE STRUCTURE
 	let fileFragment = new DocumentFragment();	
 	let html = document.createElement('html')
 	let head = document.createElement('head')
 	let body = document.createElement('body')
 
 	// HEAD
-
 	let mentionMeta = $('#mentionMeta').clone().children()
 	let referenceMeta = $('#referenceMeta').clone().children()
 	let footnoteMeta = $('#footnoteMeta').clone().children()
 
-	if(mentionMeta){
-
-		mentionMeta.each(function () {
-			let newLabel = []
-			head.appendChild(this);					
-
-			if(this.attributes.item(1).value == 'rdfs:label'){
-				let about = this.attributes.getNamedItem('about').value
-				let label = this.attributes.getNamedItem('content').value
-
-				$(`#bodyFile span[resource='${about}']`).each( function () {
-					if(this.innerText.toUpperCase() != label.toUpperCase() && !newLabel.includes(this.innerText)){
-						let newMeta = document.createElement('meta');
-
-						newMeta.setAttribute('about',about)
-						newMeta.setAttribute('property','moro:altLabel')
-						newMeta.setAttribute('content',this.innerText)
-
-						head.appendChild(newMeta)
-						newLabel.push(this.innerText)
-					} 
-				})
-			}
-		})
-	}     
-
-	if(referenceMeta)	referenceMeta.each(r => head.appendChild(referenceMeta[r]))
-	if(footnoteMeta)	footnoteMeta.each(f => head.appendChild(footnoteMeta[f]))
+	if(mentionMeta) 	appendMeta(head,mentionMeta,'rdfs:label')	
+	if(referenceMeta)	appendMeta(head,referenceMeta)
+	if(footnoteMeta)	appendMeta(head,footnoteMeta)
 
 	// BODY
-
 	let bodyDocument = $('#bodyFile').html()
 
 	if(bodyDocument) 
@@ -2074,19 +2046,33 @@ function rdfaFormatting(container){
 		body.innerHTML = $('#file').html()
 
 	// APPEND TO DOCUMENT FRAGMENT
-
 	fileFragment.appendChild(html)
 	fileFragment.firstElementChild.appendChild(head);
 	fileFragment.firstElementChild.appendChild(body);
 	
 	// APPEND TO CONTAINER 
-
 	container.appendChild(fileFragment);
 
-	return container.innerHTML
 }
 
-//  save a file in the local download folder
+function enumerateParagraph(container) {
+	// Get each paragraph that are directly child of the body
+	
+	let counter = 1
+
+	container.querySelectorAll('body > p').forEach( p => {		
+		if(p.childNodes.length > 1 || p.firstChild.nodeType == Node.TEXT_NODE){
+			if(p.innerText.trim() !== 'ALDO MORO'){
+				p.setAttribute('class','paragraph')
+				p.setAttribute(`data-counter`,counter)
+
+				counter += 1 // increment counter
+			}			
+		}		
+	})
+}
+
+// save a file in the local download folder
 function download(filename, content, format) {
 	// https://ourcodeworld.com/articles/read/189/how-to-create-a-file-and-generate-a-download-with-javascript-in-the-browser-without-a-server
 	var element = document.createElement('a');
