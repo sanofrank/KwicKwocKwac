@@ -27,7 +27,7 @@
     "html-format": "^1.0.1",
     "jsonwebtoken": "^8.5.1",
     "make-dir": "^3.1.0",
-    "mammoth": "^1.4.14",
+    "mammoth": "^1.4.16",
     "mammoth-style": "0.0.3",
     "mongoose": "^5.11.8",
     "node-html-parser": "^2.0.0",
