@@ -32,7 +32,7 @@ var kwic = new (function () {
 	const ont = {
 		id: 'moro',
 		label: 'rdfs:label',
-		sort: 'rdfs:altLabel',
+		sort: 'moro:altLabel',
 		wikidataId: 'dcterms:relation',
 		treccaniId: 'wdt:P1986'
 		}
