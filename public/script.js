@@ -2058,13 +2058,14 @@ function rdfaFormatting(container) {
 function enumerateParagraph(container) {
 	// Get each paragraph that are directly child of the body
 
-	
+
 	
 	let counter = 1
 
 	container.querySelectorAll('body > p').forEach( p => {		
 		if(p.childNodes.length > 1 || p.firstChild.nodeType == Node.TEXT_NODE){
 			if(p.innerText.trim() !== 'ALDO MORO'){
+				p.setAttribute('id',`p-${counter}`)
 				p.setAttribute('class','paragraph')
 				p.setAttribute(`data-counter`,counter)
 
