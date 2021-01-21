@@ -694,6 +694,7 @@ function docList(elements) {
 		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick='load(this,"{$url}")'>
 		<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+		</svg>
 		<div class="flex-grow-1 pr-3 fileLabel">
 		{$label}
 		</div>
