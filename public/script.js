@@ -2057,9 +2057,6 @@ function rdfaFormatting(container) {
 
 function enumerateParagraph(container) {
 	// Get each paragraph that are directly child of the body
-
-
-	
 	let counter = 1
 
 	container.querySelectorAll('body > p').forEach( p => {		
