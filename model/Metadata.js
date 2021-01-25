@@ -84,7 +84,7 @@ const metadataSchema = new mongoose.Schema({
         //required: true,
         default: '',
         min: 10,
-        max: 1024
+        max: 5000
     },
     eventPlace: {
         type: String,
