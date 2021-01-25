@@ -280,7 +280,6 @@ router.post('/upload', async (req, res) => {
 
                 if (opera !== ""){
                     if(fs.existsSync(path)){
-                     //TODO remove file or ask to remove
                      return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`)  
                     }
                 }
@@ -298,7 +297,6 @@ router.post('/upload', async (req, res) => {
                     if(!fs.existsSync(path)){
                         await mkDir(path);
                     }else{
-                     //TODO remove file or ask to remove
                      return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`)
                     }
                 }
@@ -356,13 +354,28 @@ router.post('/upload', async (req, res) => {
             let vol = req.body.vol;
             let tom = req.body.tom;
             let data = req.body.data;
-            
-            
-            data.forEach(async file => {
-                let opera = file.filename;
+            let opera,fileName,path
 
-                let fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
-                let path = `${dir}/${fileName}`;
+            //Check if path already exist
+            data.forEach(file => {
+                opera = file.filename.replace(/_+/g,' ');
+
+                fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
+                path = `${dir}/${fileName}`;
+
+                if (opera !== ""){
+                    if(fs.existsSync(path)){
+                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`)  
+                    }
+                }
+            })
+            
+            //Create directories and upload html files
+            data.forEach(async file => {
+                opera = file.filename.replace(/_+/g,' ');
+
+                fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
+                path = `${dir}/${fileName}`;
                 let htmlPath = `${path}/index.html`;
 
                 let content;
@@ -370,6 +383,8 @@ router.post('/upload', async (req, res) => {
                 if (opera !== ""){
                     if(!fs.existsSync(path)){
                         await mkDir(path);
+                    }else{
+                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`)
                     }
                 }
 
@@ -400,7 +415,6 @@ router.post('/upload', async (req, res) => {
 
 // Save document
 router.post('/save' , async (req,res) => {
-    
     try{
         let filename = req.body.filename;
         let path = `${dir}/${filename}`;
@@ -414,9 +428,19 @@ router.post('/save' , async (req,res) => {
         }
 
         let newPath = `files/${filename}`;
-
         let out = req.body.content;
-        let regex = new RegExp(newPath,'g');
+        let regex;
+
+        // Handle - charcter in regex 
+        if(newPath.match(/-/g)){
+        
+            let newReg = newPath.replace(/-/g,"/-")
+            console.log(newReg)
+            regex = new RegExp(newReg,'g');    
+        }else{
+            regex = new RegExp(newPath,'g');
+        }
+
 
         content = out.replace(regex,"");
         content.replace(regex,"");
@@ -431,6 +455,7 @@ router.post('/save' , async (req,res) => {
         return res.send('File empty');
 
     }catch(err){
+        console.log(err);
         res.status(400).send(err)
     }
 })
