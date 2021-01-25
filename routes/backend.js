@@ -247,7 +247,7 @@ router.post('/upload', async (req, res) => {
         let username = '';
 
         if(req.body.user == '') return res.status(400).send('Compilare il nome')
-        if(req.body.user != 'undefined'){
+        if(req.body.user != 'undefined' && req.body.user){
             username = req.body.user;
         }else{
             username = verified.username;
@@ -306,7 +306,7 @@ router.post('/upload', async (req, res) => {
                 const result = await mammoth.convertToHtml({buffer: docFile});   
                 content = await result.value;
                 
-                const $ = cheerio.load(content)
+                let $ = cheerio.load(content)
 
                 //BODY WRAPPER
                 if(!$("#bodyFile").length){
@@ -396,6 +396,34 @@ router.post('/upload', async (req, res) => {
                 content = out.replace(regex,"");
                 content.replace(regex,"");
 
+                let $ = cheerio.load(content)
+
+                //BODY WRAPPER
+                if(!$("#bodyFile").length){
+                    let body = '<div id="bodyFile"></div>'
+                    $('body').wrap(body);
+
+                    content = $('html').html();
+                }
+
+                //HEAD WRAPPER
+                if(!$("#headFile").length){
+                    let head = `<div id="headFile">
+                                    <div id="mentionMeta">
+                                    </div>
+                                    <div id="referenceMeta">
+                                    </div>
+                                </div>`
+                    $('head').wrap(head);
+
+                    content = $('html').html();
+                }                
+
+                //If has footnote or endnote                
+                if($("li[id^='footnote'], li[id^='endnote']").length){
+                    content = organizeFootnotes($,username);                    
+                }                                
+                                
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath, format(content) , (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
@@ -433,14 +461,11 @@ router.post('/save' , async (req,res) => {
 
         // Handle - charcter in regex 
         if(newPath.match(/-/g)){
-        
             let newReg = newPath.replace(/-/g,"/-")
-            console.log(newReg)
             regex = new RegExp(newReg,'g');    
         }else{
             regex = new RegExp(newPath,'g');
         }
-
 
         content = out.replace(regex,"");
         content.replace(regex,"");
@@ -455,7 +480,6 @@ router.post('/save' , async (req,res) => {
         return res.send('File empty');
 
     }catch(err){
-        console.log(err);
         res.status(400).send(err)
     }
 })

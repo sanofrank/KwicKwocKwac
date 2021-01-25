@@ -1231,7 +1231,7 @@ async function saveDoc() {
 		body: JSON.stringify(data)
 	};
 	showSpinner();
-	const response = await fetch('/api/save', saveOptions);
+	const response = await fetch('/api/save', saveOptions)
 	const text = await response.text();
 	hideSpinner();
 	if (text) alert(text);
@@ -1274,6 +1274,7 @@ async function uploadDoc(dataHTML,dataDOCX) {
 			
 			if(operaName.length == 1){
 				dataDOCX.set('filenames',title)
+				if(format_radio === "html" && dataHTML) dataHTML[i].filename = title;
 			}else{
 				if(format_radio === "docx" && dataDOCX) dataDOCX.append('filenames',title); //append to dataDOCX.filenames all the titles
 				if(format_radio === "html" && dataHTML) dataHTML[i].filename = title; // Change title in case of changes / opera[0] index
