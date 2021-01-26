@@ -257,6 +257,11 @@ router.post('/upload', async (req, res) => {
         const sez = req.body.sez;
         const vol = req.body.vol;
         const tom = req.body.tom;
+
+        // Check path consistency
+        if( (sez > 2 || sez <= 0) || (vol > 4 || vol <= 0 ) || (tom > 2 || tom <= 0)){
+            return res.status(400).send('Il percorso sezione/volume/tomo del documento è invalido.')
+        }
         
         if(type === "docx"){
             if(!req.files)   return res.status(400).send('Scegliere almeno un documento da caricare')
