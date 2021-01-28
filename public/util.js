@@ -89,6 +89,7 @@
 		// returns an array of the positions of all matches of a regular expression
 		// inside an input
 		function allMatches(r, input) {
+			console.log("text highlight",r);
 			var re = new RegExp(r, 'g')
 			var ret = []
 			var i = re.exec(input)

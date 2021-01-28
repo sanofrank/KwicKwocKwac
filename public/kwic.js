@@ -516,7 +516,7 @@ var kwic = new (function () {
 	// search for a text and return the text node(s) containing the text (even across text nodes)
 	function searchAll(context, text) {
 		var ret = []
-		var atn = context.allTextNodes()
+		var atn = context.allTextNodes()		
 		var all = allMatches(text, context.textContent)
 
 		var pos = 0; 
@@ -1858,7 +1858,7 @@ var kwic = new (function () {
 		if(meta.length <= 0){
 			return null
 		}
-
+		console.log('mentionList',list);
 		// Search entities id
 		for(cat in list){
 			entities = list[cat].entities			
@@ -1890,21 +1890,20 @@ var kwic = new (function () {
 		if(meta.length <= 0){
 			return null
 		}
-
-		//takes just the bibref
-		let citations = list.bibref.citations;
-
+		
 		// Search entities id			
-		for(cit in citations){		
-			let exp = '#' + citations[cit].id
-			
-			// Grep meta object from id no more included 
-			meta = $.grep(meta,function(tag){										
-				return tag.getAttribute('about') !== exp
-			})	
+		for(ref in list){		
+			citations = list[ref].citations			
+			for(cit in citations){
+				let exp = '#' + citations[cit].id
+				console.log(exp);
+				// Grep meta object from id no more included 
+				meta = $.grep(meta,function(tag){										
+					return tag.getAttribute('about') !== exp
+				})	
+			}			
 		}			
 		
-
 		// Remove left metaTag 
 		if(meta.length){
 			for(metaTag of meta){
