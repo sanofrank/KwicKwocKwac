@@ -516,8 +516,9 @@ var kwic = new (function () {
 	// search for a text and return the text node(s) containing the text (even across text nodes)
 	function searchAll(context, text) {
 		var ret = []
-		var atn = context.allTextNodes()		
+		var atn = context.allTextNodes()	
 		var all = allMatches(text, context.textContent)
+		console.log(all)
 
 		var pos = 0; 
 		var index  = 0

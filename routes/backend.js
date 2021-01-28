@@ -217,8 +217,9 @@ router.get('/load', async (req, res) => {
         // content = content.replace(srcEnd,`src=$1${files}${fileName}/`);
         // content = content.replace(hrefEnd,`href=$1${files}${fileName}/`);
 
-        json.html = content;
+        json.html = content
 
+        console.log(json.html)
         //res.set('Content-Type: text/html');
         //Check metadata
         let split = fileName.split('_')
@@ -340,7 +341,7 @@ router.post('/upload', async (req, res) => {
                 }                                
                                 
                 if(content!== "" && !content.includes("Key Words In Context")){
-                    fs.writeFile(htmlPath,format(content), (err) => {
+                    fs.writeFile(htmlPath,content, (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
                     });
                 }else{
@@ -430,7 +431,7 @@ router.post('/upload', async (req, res) => {
                 }                                
                                 
                 if(content!== "" && !content.includes("Key Words In Context")){
-                    fs.writeFile(htmlPath, format(content) , (err) => {
+                    fs.writeFile(htmlPath, content , (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
                     });
                 }else{
