@@ -2211,11 +2211,13 @@ var kwic = new (function () {
 					}
 					if(ref.action == 'wrap-bib'){
 						//Search for every range
+						let exp = 'exp-'+(lastBibId);
 						for(let i in range){
 							var b;
 
 							b = new this.BibRef(range[i],{
 								reference: ref.entity,
+								citation: exp
 							})
 							console.log(b);
 						}
