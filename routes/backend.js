@@ -219,7 +219,6 @@ router.get('/load', async (req, res) => {
 
         json.html = content
 
-        console.log(json.html)
         //res.set('Content-Type: text/html');
         //Check metadata
         let split = fileName.split('_')
@@ -313,7 +312,7 @@ router.post('/upload', async (req, res) => {
                 content = await result.value;
                 
                 let $ = cheerio.load(content)
-
+                
                 //BODY WRAPPER
                 if(!$("#bodyFile").length){
                     let body = '<div id="bodyFile"></div>'
@@ -338,8 +337,8 @@ router.post('/upload', async (req, res) => {
                 //If has footnote or endnote
                 if($("li[id^='footnote'], li[id^='endnote']").length){
                     content = organizeFootnotes($,username);                    
-                }                                
-                                
+                }    
+                                                
                 if(content!== "" && !content.includes("Key Words In Context")){
                     fs.writeFile(htmlPath,content, (err) => {
                         if(err) return res.status(400).send(`File ${opera} non salvato corretamente`);
