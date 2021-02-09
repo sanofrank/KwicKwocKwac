@@ -259,7 +259,7 @@ router.post('/upload', async (req, res) => {
         const tom = req.body.tom;
 
         // Check path consistency
-        if( (sez > 2 || sez <= 0) || (vol > 4 || vol <= 0 ) || (tom > 2 || tom <= 0)){
+        if( (sez > 2 || sez <= 0) || (vol > 4 || vol <= 0 ) || (tom > 2 || tom < 0)){
             return res.status(400).send('Il percorso sezione/volume/tomo del documento è invalido.')
         }
         
