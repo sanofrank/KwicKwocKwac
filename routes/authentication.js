@@ -178,8 +178,8 @@ router.post('/register', async (req,res) => { // async finchè aspettiamo il sal
         port: 587,
         secure: false, // true for 465, false for other ports
         auth: {
-          user: "francesco.paolucci7@unibo.it", // generated ethereal user
-          pass: "IKnowIt'sOver86", // generated ethereal password
+          user: process.env.EMAIL_USER, // generated ethereal user
+          pass: process.env.EMAIL_PASSWORD, // generated ethereal password
         },
       });
 
