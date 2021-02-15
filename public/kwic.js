@@ -939,10 +939,7 @@ var kwic = new (function () {
 		this.prop('category', options.category || "scraps", true)
 		this.prop('property', options.property || this.property, options.force)
 		this.prop('entity', options.entity || options.id || t.inner.removeAccent(keepSpecial = true).replace(/(^\d+)/, "entity$1"), false)
-		//this.prop('label', options.label, options.force) ;
 		this.prop('sort', options.sort, options.force) ;
-		//this.prop('wikidataId', options.wikidataId, options.force) ;
-		//this.prop('treccaniId', options.treccaniId, options.force) ;
 
 		this.category = dataset.category || options.category 	// person, place, thing, etc. 
 		this.position = dataset.position || options.position || -1	// order in document, etc. 
@@ -961,11 +958,7 @@ var kwic = new (function () {
 		this.sort = $(`meta[about="#${this.entity}"][property='${ont.sort}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.sort}']`).attr('content') : ''
 		this.wikidataId = $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.wikidataId}']`).attr('resource').replace(/http:\/\/www.wikidata.org\/entity\//g,'') : ''
 		this.treccaniId = $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).length ? $(`meta[about="#${this.entity}"][property='${ont.treccaniId}']`).attr('content') : ''
-
-		// if (dataset.label) this.label = dataset.label // this is the value used for displaying the entity this mention belongs to
-		// if (dataset.sort) this.sort = dataset.sort // this is the value used for sorting the entity this mention belongs to
-		// if (dataset.wikidataId) this.wikidataId = dataset.wikidataId // this is the Wikidata Id associated to the entity this mention belongs to
-		// if (dataset.treccaniId) this.treccaniId = dataset.treccaniId // this is the Treccani Id associated to the entity this mention belongs to
+		
 		if (dataset.rs) this.rs = `rs-active ${options.category}` // this is the value used for displaying if the mention is a referenceString
 	}
 	this.Mention.prototype = {
@@ -1039,16 +1032,7 @@ var kwic = new (function () {
 							this.node.classList.remove(value)					
 						}
 					}
-					break; 
-				// case 'entity':
-				// 	if (force || this.node.attributes.about == undefined) {
-				// 		if (value) {
-				// 			this.node.setAttribute('about',value)
-				// 		} else {
-				// 			this.node.removeAttribute('about')
-				// 		}
-				// 	}
-				// 	break;
+					break; 				
 				case 'property':
 					if (force || this.node.attributes.property == undefined) {
 						if (value) {

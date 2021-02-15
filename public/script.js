@@ -1810,10 +1810,13 @@ async function formattingDoc(location){
 			if(window.confirm(`È stata rilevata l'introduzione:\n${abstract}\nSi desidera spostarla all'interno dell'abstract dei metadati?`)){
 				//Add abstract to metadata field
 				$('#abstract')[0].innerText = abstract;
+				//Add default saved filename as title
+				let title = splitFilename(currentFilename,'work');
 
 				let data = {
 					file : currentFilename,
-					abstract
+					abstract,
+					title
 				}
 
 				const requestOptions = {
@@ -2200,7 +2203,8 @@ async function checkMetadata(){
 		let ident = currentMetadata.ident;
 		let split = ident.split('_');
 		currentMetadata.ident = split[3];
-
+		
+		
 		//Create new form from template and add single value field parsing
 		let string = $('#metadataTpl').html();
 		let newForm = string.tpl(currentMetadata);
