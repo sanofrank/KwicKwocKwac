@@ -278,7 +278,7 @@ router.post('/upload', async (req, res) => {
 
             //Check if path already exist
             for(i in filenames){
-                opera = filenames[i].replace(/_+/g,' ');
+                opera = filenames[i].replace(/_+/g,' ').replace(/'/g,"’");
 
                 fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
                 path = `${dir}/${fileName}`;
@@ -291,7 +291,7 @@ router.post('/upload', async (req, res) => {
             }
 
             for(i in files){
-                opera = filenames[i].replace(/_+/g,' ');
+                opera = filenames[i].replace(/_+/g,' ').replace(/'/g,"’");
 
                 fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
                 path = `${dir}/${fileName}`;
@@ -363,7 +363,7 @@ router.post('/upload', async (req, res) => {
 
             //Check if path already exist
             data.forEach(file => {
-                opera = file.filename.replace(/_+/g,' ');
+                opera = file.filename.replace(/_+/g,' ').replace(/'/g,"’");
 
                 fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
                 path = `${dir}/${fileName}`;
@@ -377,7 +377,7 @@ router.post('/upload', async (req, res) => {
             
             //Create directories and upload html files
             data.forEach(async file => {
-                opera = file.filename.replace(/_+/g,' ');
+                opera = file.filename.replace(/_+/g,' ').replace(/'/g,"’");
 
                 fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
                 path = `${dir}/${fileName}`;

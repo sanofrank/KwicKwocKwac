@@ -691,7 +691,7 @@ function docList(elements) {
 	if($('#ulFile').children()) $('#ulFile')[0].innerHTML = '' 
 
 	var menuItemTpl =
-		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick='load(this,"{$url}")'>
+		`<a class="dropdown-item pl-2 pr-3 d-none d-flex justify-content-between align-items-center" href="#" draggable="true" onclick="load(this,'{$url}')">
 		<svg  height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 		<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 		</svg>
@@ -703,7 +703,7 @@ function docList(elements) {
 		</a>`
 	var menuItemTplSu =
 		`			
-			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" draggable="true" onclick='load(this,"{$url}")'>
+			<a class=" dropdown-item pl-2 pr-3 d-none d-flex flex-row justify-content-between align-items-center" href="#" draggable="true" onclick="load(this,'{$url}')">
 			<svg height="2em" viewBox="0 0 16 16" class="justify-content-start bi bi-dot {$stat}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 			<path fill-rule="evenodd" d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
 			</svg>
@@ -943,9 +943,9 @@ function applyFilter() {
 
 // load and show a document
 async function load(item,file) {
-	
+	console.log(file);
 	showSpinner();
-	let response = await fetch('/api/load?file=' + file);
+	let response = await fetch("/api/load?file=" + file);
 	if (!response.ok){
 		let text = await response.text();
 		alert(text);
