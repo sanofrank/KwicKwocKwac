@@ -1519,7 +1519,7 @@ async function wikidataChoose(entity, uri) {
 	const value = await getPropWikidata(uri,treccaniProp);
 	if(!value){
 		changeValue('treccaniId', entity, '')
-		$('#'+entity+' .popoverTreccani').popover('toggle')
+		//$('#'+entity+' .popoverTreccani').popover('toggle')
 	}else{
 		changeValue('treccaniId', entity, value)
 	}
