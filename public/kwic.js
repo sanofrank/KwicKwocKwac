@@ -811,7 +811,7 @@ var kwic = new (function () {
 		},
 		// append data on meta tag file head
 		prop: function(name,value,force = false) {
-			let id = "#"+this.id;
+			let id = "#"+this.id.toLowerCase()
 			let prop = ont[name] || ''; //Get property term
 
 			let metaTpl_type = `<meta about="{$id}" typeof="{$prop}:{$value}">`
@@ -938,7 +938,7 @@ var kwic = new (function () {
 		this.prop('id', this.id, false);
 		this.prop('category', options.category || "scraps", true)
 		this.prop('property', options.property || this.property, options.force)
-		this.prop('entity', options.entity || options.id || t.inner.removeAccent(keepSpecial = true).replace(/(^\d+)/, "entity$1"), false)
+		this.prop('entity', options.entity || options.id || t.inner.removeAccent(keepSpecial = true).replace(/(^\d+)/, "entity$1").toLowerCase(), false)
 		this.prop('sort', options.sort, options.force) ;
 
 		this.category = dataset.category || options.category 	// person, place, thing, etc. 
