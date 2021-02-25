@@ -76,7 +76,7 @@ var kwic = new (function () {
 	// If one or both of them belong to an existing mention, no worries since the existing mention will be removed anyway. 
 	function compatibleExtremes(range, mention) {
 		if (range.startContainer.parentElement == range.endContainer.parentElement){
-			//ADDED TO PREVENT SUBSCRIPTION OF MENTIONS CONTAINING OTHERS 
+			//ADDED TO PREVENT OVERWRITE OF MENTIONS CONTAINING OTHERS 
 			if((range.startContainer.parentElement.classList.contains('mention') && range.endContainer.parentElement.classList.contains('mention')) 
 				&& !(range.startContainer.parentElement.classList.contains('trash') || range.endContainer.parentElement.classList.contains('trash'))
 				&& !(range.startContainer.parentElement.classList.contains('scraps') || range.endContainer.parentElement.classList.contains('scraps'))){

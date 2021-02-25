@@ -278,20 +278,25 @@ router.post('/upload', async (req, res) => {
 
             //Check if path already exist
             for(i in filenames){
-                opera = filenames[i].replace(/_+/g,' ').replace(/'/g,"’");
+                opera = filenames[i].replace(/_+/g,' ').replace(/'/g,"’").trim();
 
-                fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
+                fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_`; //_default removed
                 path = `${dir}/${fileName}`;
-
+                console.log(fileName);
                 if (opera !== ""){
-                    if(fs.existsSync(path)){
-                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`)  
-                    }
+                    //CHECK IF FILE ALREADY EXIST EXTRACTING THE FOLDER NAME WITHOUT OBJID   
+                    const all_files = fs.readdirSync(dir);
+                    
+                    for(const file of all_files){
+                        if(file.includes(fileName)){                                
+                            return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`) 
+                        }
+                    }                    
                 }
-            }
+            }            
 
             for(i in files){
-                opera = filenames[i].replace(/_+/g,' ').replace(/'/g,"’");
+                opera = filenames[i].replace(/_+/g,' ').replace(/'/g,"’").trim();
 
                 fileName = `${username}_sez${sez}_vol${vol}_tom${tom}_${opera}_default`;
                 path = `${dir}/${fileName}`;
@@ -369,8 +374,13 @@ router.post('/upload', async (req, res) => {
                 path = `${dir}/${fileName}`;
 
                 if (opera !== ""){
-                    if(fs.existsSync(path)){
-                     return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`)  
+                    //CHECK IF FILE ALREADY EXIST EXTRACTING THE FOLDER NAME WITHOUT OBJID   
+                    const all_files = fs.readdirSync(dir);
+                    
+                    for(const file of all_files){
+                        if(file.includes(fileName)){                                
+                            return res.status(400).send(`Il documento ${opera} è già presente nella piattaforma, si prega di cambiare il titolo prima di caricarlo o rimuoverlo.`) 
+                        }
                     }
                 }
             })
