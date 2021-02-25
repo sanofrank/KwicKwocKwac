@@ -75,11 +75,22 @@ var kwic = new (function () {
 	// If start and end anchors of a range are compatible the mention can be created. 
 	// If one or both of them belong to an existing mention, no worries since the existing mention will be removed anyway. 
 	function compatibleExtremes(range, mention) {
-		if (range.startContainer.parentElement == range.endContainer.parentElement) return true //Meaning that if the selection is plain, untouched and it's in the same node.
+		if (range.startContainer.parentElement == range.endContainer.parentElement){
+			//ADDED TO PREVENT SUBSCRIPTION OF MENTIONS CONTAINING OTHERS 
+			if((range.startContainer.parentElement.classList.contains('mention') && range.endContainer.parentElement.classList.contains('mention')) 
+				&& !(range.startContainer.parentElement.classList.contains('trash') || range.endContainer.parentElement.classList.contains('trash'))
+				&& !(range.startContainer.parentElement.classList.contains('scraps') || range.endContainer.parentElement.classList.contains('scraps'))){
+				console.log('RANGE')
+				return false
+			}
+				
+			return true //Meaning that if the selection is plain, untouched and it's in the same node.
+		} 
 		const formatters = ['B','STRONG','I','EM','MARK','SMALL','DEL','INS']
 
 		var start = range.startContainer.parentElement
 		var end = range.endContainer.parentElement
+
 		if (start.classList.contains('mention'))
 			start = start.parentElement // will remove it anyway
 		if (end.classList.contains('mention'))
@@ -155,8 +166,9 @@ var kwic = new (function () {
 			eo: range.endOffset
 		}
 		console.log("WRAP",range);
-		if (range.startContainer.parentElement.classList.contains('mention') && mention) 
+		if (range.startContainer.parentElement.classList.contains('mention') && mention){
 			unwrap(range.startContainer.parentElement)
+		} 			
 		if (range.endContainer.parentElement.classList.contains('mention') && mention) 
 			unwrap(range.endContainer.parentElement)
 		// if (range.startContainer.parentElement.classList.contains('block') && !mention) 
@@ -535,9 +547,10 @@ var kwic = new (function () {
 			var endOffset = end-endPos
 
 			var r = document.createRange();
+			console.log('ATN[index]',atn[index]);
 			r.setStart(atn[index], offset);
 			r.setEnd(atn[endIndex], endOffset);
-			
+
 			ret.push(r)
 		}
 		console.log(ret);
