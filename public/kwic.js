@@ -944,14 +944,14 @@ var kwic = new (function () {
 		var t = this.surroundingContent(this.node) 
 		this.before = t.before || ""
 		this.after = t.after || ""
-		this.inner = t.inner  // this will remain the exact string in the document
+		this.inner = t.inner  // this will remain the exact string in the document		
 		
 		this.property = 'dcterms:references' // RDFa branch
 		this.id = this.node.id || getNewId(prefix)		
 		this.prop('id', this.id, false);
 		this.prop('category', options.category || "scraps", true)
 		this.prop('property', options.property || this.property, options.force)
-		this.prop('entity', options.entity || options.id || t.inner.removeAccent(keepSpecial = true).replace(/(^\d+)/, "entity$1").toLowerCase(), false)
+		this.prop('entity', options.entity || options.id || t.inner.formattingEntity().replace(/(^\d+)/, "entity$1").toLowerCase(), false) 
 		this.prop('sort', options.sort, options.force) ;
 
 		this.category = dataset.category || options.category 	// person, place, thing, etc. 
@@ -1056,6 +1056,7 @@ var kwic = new (function () {
 					}
 					break;
 				case 'entity':
+					console.log(value);
 					if (force || this.node.attributes.resource == undefined) {
 						if (value) {							
 							this.node.setAttribute('resource',`#${value}`)																						
