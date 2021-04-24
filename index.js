@@ -19,7 +19,7 @@ const { resolveSoa } = require('dns');
 
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:3001',
     credentials: true
 }));
 
@@ -29,27 +29,27 @@ app.set('views', './public')
 app.engine('html', require('ejs').renderFile);
 
 
-app.get('/index', verify, (req,res) => {
+app.get('marcatura/index', verify, (req,res) => {
     res.render('index.html')
 })
 
-app.get('/login', (req,res) =>{
+app.get('marcatura/login', (req,res) =>{
     res.render("login.html");
 })
 
-app.get('/documentazione', (req,res) => {
+app.get('marcatura/documentazione', (req,res) => {
     res.render("documentation.html")
 })
 
-app.get('/send_email', (req,res) =>{
+app.get('marcatura/send_email', (req,res) =>{
     res.render("send_email.html");
 })
 
-app.get('/', verify , function( req, res ) {
+app.get('marcatura/', verify , function( req, res ) {
     res.redirect('/index')
    });
 
-app.get('/read', function(req,res){
+app.get('marcatura/read', function(req,res){
     let file = req.query.file;
 
     fs.readFile(`./doc/${file}`, (err, data) => {
