@@ -60,7 +60,7 @@ app.engine('html', require('ejs').renderFile);
 //       });
 // })
 
-app.use(express.static('public'))
+app.use('/markup',express.static('public'))
 
 
 //Middleware

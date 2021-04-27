@@ -69,8 +69,8 @@ async function main() {
 	layoutSetup()
 
 	fetch('/api/list',{cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
-	fetch('/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
-	fetch('/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No reference loaded'));
+	fetch('/markup/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
+	fetch('/markup/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No reference loaded'));
 
 	// setup event callbacks
 	basicCallbacks()
