@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3001;
 const listRoute = require('./routes/backend');
 const authRoute = require('./routes/authentication');
 const metadataRoute = require('./routes/metadata');
+const baseRoute = require('./routes/baseRouting');
 const { resolveSoa } = require('dns');
 
 app.use(cookieParser());
@@ -28,37 +29,36 @@ mongo.connect();
 app.set('views', './public')
 app.engine('html', require('ejs').renderFile);
 
+// app.get('/index', verify, (req,res) => {
+// res.render('index.html')
+// })
 
-app.get('/index', verify, (req,res) => {
-res.render('index.html')
-})
+// app.get('/login', (req,res) =>{
+//     res.render("login.html");
+// })
 
-app.get('/login', (req,res) =>{
-    res.render("login.html");
-})
+// app.get('/documentazione', (req,res) => {
+//     res.render("documentation.html")
+// })
 
-app.get('/documentazione', (req,res) => {
-    res.render("documentation.html")
-})
+// app.get('/send_email', (req,res) =>{
+//     res.render("send_email.html");
+// })
 
-app.get('/send_email', (req,res) =>{
-    res.render("send_email.html");
-})
+// app.get('/', verify , function( req, res ) {
+//     res.redirect('/index')
+//    });
 
-app.get('/', verify , function( req, res ) {
-    res.redirect('/index')
-   });
+// app.get('/read', function(req,res){
+//     let file = req.query.file;
 
-app.get('/read', function(req,res){
-    let file = req.query.file;
+//     fs.readFile(`./doc/${file}`, (err, data) => {
+//         if (err) throw err;
+//         console.log(data);
 
-    fs.readFile(`./doc/${file}`, (err, data) => {
-        if (err) throw err;
-        console.log(data);
-
-        return res.send(data);
-      });
-})
+//         return res.send(data);
+//       });
+// })
 
 app.use(express.static('public'))
 
@@ -68,6 +68,7 @@ app.use(express.json({limit: '50mb'})); //json parser per mandare post request
 app.use(fileUpload());
 app.use(express.urlencoded( {extended : false})); //allow us to send data from front end to server
 //Route Middleware
+app.use('/markup',baseRoute);
 app.use('/api',listRoute);
 app.use('/api',authRoute);
 app.use('/api',metadataRoute);

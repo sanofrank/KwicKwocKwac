@@ -77,7 +77,7 @@ async function login(){
         $('#errors').text(text);
     }else{
         const origin = window.location.origin;
-        location.assign(`${origin}/index`);
+        location.assign(`${origin}/markup/index`);
          
         console.log("Text");
         console.log(text);

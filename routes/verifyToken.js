@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 module.exports = (req,res,next) => {
     const token = req.cookies.auth_token;
     if(!token){  //Checking if the token exist in the header
-        return res.redirect('/login');
+        return res.redirect('/markup/login');
     };
 
     try{
