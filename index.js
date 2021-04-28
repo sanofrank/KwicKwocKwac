@@ -30,7 +30,11 @@ app.set('views', './public')
 app.engine('html', require('ejs').renderFile);
 
 app.get('/', (req,res) => {
-    res.redirect('/markup/')
+    res.redirect('/markup')
+})
+
+app.get('/markup/', (req,res) => {
+    res.redirect('/markup/index')
 })
 
 // app.get('/index', verify, (req,res) => {
