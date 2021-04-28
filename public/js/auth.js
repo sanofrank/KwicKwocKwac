@@ -122,7 +122,7 @@ async function logout() {
 
     const token = await fetch('/markup/api/logout')
     if(token){
-        location.assign(`${origin}/login`);
+        location.assign(`${origin}/markup/login`);
     }
 }
 
