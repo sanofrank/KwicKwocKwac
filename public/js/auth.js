@@ -70,7 +70,7 @@ async function login(){
         credentials: 'include'
     };
     //showSpinner();
-    const response = await fetch("/api/login",requestOptions);
+    const response = await fetch("/markup/api/login",requestOptions);
     const text = await response.text();
 
     if(!response.ok) {
@@ -106,7 +106,7 @@ async function login(){
             body: JSON.stringify(data)
         };
     
-        const response = await fetch("/api/register",requestOptions);
+        const response = await fetch("/markup/api/register",requestOptions);
         const text = await response.text();
         if(!response.ok) $('#errors').text(text);
         else{
@@ -120,7 +120,7 @@ async function login(){
 async function logout() {
     const origin = window.location.origin;
 
-    const token = await fetch('/api/logout')
+    const token = await fetch('/markup/api/logout')
     if(token){
         location.assign(`${origin}/login`);
     }

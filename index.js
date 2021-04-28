@@ -29,6 +29,10 @@ mongo.connect();
 app.set('views', './public')
 app.engine('html', require('ejs').renderFile);
 
+app.get('/', (req,res) => {
+    res.redirect('/markup/')
+})
+
 // app.get('/index', verify, (req,res) => {
 // res.render('index.html')
 // })
@@ -62,15 +66,14 @@ app.engine('html', require('ejs').renderFile);
 
 app.use('/markup',express.static('public'))
 
-
 //Middleware
 app.use(express.json({limit: '50mb'})); //json parser per mandare post request
 app.use(fileUpload());
 app.use(express.urlencoded( {extended : false})); //allow us to send data from front end to server
 //Route Middleware
 app.use('/markup',baseRoute);
-app.use('/api',listRoute);
-app.use('/api',authRoute);
-app.use('/api',metadataRoute);
+app.use('/markup/api',listRoute);
+app.use('/markup/api',authRoute);
+app.use('/markup/api',metadataRoute);
 
 app.listen(PORT,() => console.log(`Server listening on port ${PORT}`));

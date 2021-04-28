@@ -68,7 +68,7 @@ async function main() {
 	//Setting width and height of left and bottom panel, setting active class on current style and current sort
 	layoutSetup()
 
-	fetch('/api/list',{cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+	fetch('/markup/api/list',{cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 	fetch('/markup/categories.json').then((res) => res.json()).then((json) => categoriesList(json)).catch(() => alert('No category loaded'));
 	fetch('/markup/references.json').then((res) => res.json()).then((json) => referencesList(json)).catch(() => alert('No reference loaded'));
 
@@ -945,7 +945,7 @@ function applyFilter() {
 async function load(item,file) {
 	console.log(file);
 	showSpinner();
-	let response = await fetch("/api/load?file=" + file);
+	let response = await fetch("/markup/api/load?file=" + file);
 	if (!response.ok){
 		let text = await response.text();
 		alert(text);
@@ -1164,7 +1164,7 @@ async function downloadDoc(type) {
 			//Get id for filename.xml 
 			//TODO change the parameter to get all metadata and pass it through saveAsXML and then getMetadata
 			//Too many server call
-			let response = await fetch('/api/check_metadata?objId='+objId);
+			let response = await fetch('/markup/api/check_metadata?objId='+objId);
 			let id = await response.text();
 
 			let filename = `${id}_${title}`;
@@ -1231,7 +1231,7 @@ async function saveDoc() {
 		body: JSON.stringify(data)
 	};
 	showSpinner();
-	const response = await fetch('/api/save', saveOptions)
+	const response = await fetch('/markup/api/save', saveOptions)
 	const text = await response.text();
 	hideSpinner();
 	if (text) alert(text);
@@ -1315,7 +1315,7 @@ async function uploadDoc(dataHTML,dataDOCX) {
 	}
 
 	showSpinner();
-	const response = await fetch('/api/upload', requestOptions);
+	const response = await fetch('/markup/api/upload', requestOptions);
 	const text = await response.text();
 	hideSpinner();
 
@@ -1328,7 +1328,7 @@ async function uploadDoc(dataHTML,dataDOCX) {
 		msg.css('display','block');
 		msg.addClass('alert-success').removeClass('alert-danger');
 		
-		fetch('/api/list', {cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+		fetch('/markup/api/list', {cache: "no-store"}).then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 
 		return msg.text(text);
 	}
@@ -1383,7 +1383,7 @@ async function changeStatus() {
 		body: JSON.stringify(data)
 	}
 
-	const response = await fetch('/api/change', statusOptions);
+	const response = await fetch('/markup/api/change', statusOptions);
 	const text = await response.text();
 
 	currentFilename = text;
@@ -1406,7 +1406,7 @@ async function changeStatus() {
 			break
 	}
 
-	return fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+	return fetch('/markup/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 }
 
 // user is changing label, sort or wikidata Id
@@ -1671,7 +1671,7 @@ async function deleteDocuments(value = null) {
 			body: JSON.stringify(val)
 		}
 		
-		const response = await fetch('/api/delete',deleteOptions);
+		const response = await fetch('/markup/api/delete',deleteOptions);
 		const text = await response.text();
 		alert(text);
 		if(response.ok){
@@ -1827,14 +1827,14 @@ async function formattingDoc(location){
 					body: JSON.stringify(data)
 				}
 				//Save only abstract without other options
-				let metadata = await fetch('/api/save_abstract',requestOptions);
+				let metadata = await fetch('/markup/api/save_abstract',requestOptions);
 				let json = await metadata.json();
 				currentFilename = json.fileName;
 				//Remove abstract from file and save document
 				file.removeChild(child);
 				saveDoc()
 				//Reload doclist
-				let update = await fetch('/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
+				let update = await fetch('/markup/api/list').then((res) => res.json()).then((elements) => docList(elements)).catch(() => alert('No document to show'));
 				//Change save button behaviour 
 				$('#save-metadata').text('Aggiorna');
 				$('#save-metadata').attr('onclick','saveMetadata(true)')
@@ -1932,7 +1932,7 @@ async function getMetadata(fragment, doc) {
 		headers: { 'Content-type': 'application/json' }
 	}
 
-	let response = await fetch("/api/getId?id=" + id, getIdOptions);
+	let response = await fetch("/markup/api/getId?id=" + id, getIdOptions);
 	const json = await response.json();
 
 	fragment.querySelector('idno').textContent = json.ident
@@ -2319,11 +2319,11 @@ async function saveMetadata(update = false) {
 	let msg = $('#msg');
 
 	if(update){
-		response = await fetch("/api/update_metadata",requestOptions);
+		response = await fetch("/markup/api/update_metadata",requestOptions);
 		text = await response.text();
 		msg.text(text);
 	}else{
-		response = await fetch("/api/save_metadata", requestOptions);
+		response = await fetch("/markup/api/save_metadata", requestOptions);
 		json = await response.json();
 		msg.text(json.msg);
 	}
