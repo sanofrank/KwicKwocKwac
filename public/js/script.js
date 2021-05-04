@@ -1002,6 +1002,13 @@ function toggleStyles() {
 	$('#styleButton').toggleClass('bg-primary')
 }
 
+// modify documents without the newer onthologies
+function toogleModifyOlderDocs() {
+	let modify = kwic.toogleModifyOlderDocs();	
+	if(modify) $('#modifyOlderDocuments').addClass('selected')
+	else $('#modifyOlderDocuments').removeClass('selected')
+}
+
 // increment ID of element
 function incrementID(x, y) {
 	var i = 0;
@@ -1414,10 +1421,14 @@ function changeValue(field, id, value) {
 	var pp;
 
 	console.log(field,id,value);
-	if (!referenceMode) {
-		console.log(kwic.allEntities)	
-		pp = kwic.allEntities[id]
-		console.log(pp);
+	if (!referenceMode) {		
+		//if(kwic.allEntities[id]){
+			pp = kwic.allEntities[id];
+		//}		
+		// else{
+		// 	pp = kwic.allEntities.filter(entity => entity.id.formattingEntity().replace(/(^\d+)/, "entity$1").toLowerCase() == id)[0]
+		// }
+		console.log('PP',pp);
 	} else {
 		pp = kwic.allCitations[id]
 		var ref = pp.reference;

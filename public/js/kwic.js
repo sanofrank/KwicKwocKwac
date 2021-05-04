@@ -26,6 +26,7 @@ var kwic = new (function () {
 	var lastId = -1;                  // last specified id for new mentions
 	var lastQuoteId = -1;
 	var lastBibId = -1; //to regenerate exp and bibref
+	var modifyOlderDocuments = false;
 
 	const uri = '#'
 
@@ -824,7 +825,9 @@ var kwic = new (function () {
 		},
 		// append data on meta tag file head
 		prop: function(name,value,force = false) {
-			let id = "#"+this.id.toLowerCase()
+			// modify older documents without the newer markup			
+			let id = modifyOlderDocuments ? "#"+this.id : "#"+this.id.toLowerCase()
+			console.log('IIDDDDDD\n',id, modifyOlderDocuments);
 			let prop = ont[name] || ''; //Get property term
 
 			let metaTpl_type = `<meta about="{$id}" typeof="{$prop}:{$value}">`
@@ -856,7 +859,7 @@ var kwic = new (function () {
 							let valueURI = 'http://www.wikidata.org/entity/'+value; //change prop adding wikidata URI
 							let meta_res = metaTpl_res.tpl({id,prop,value:valueURI})
 
-							if($(`#mentionMeta meta[about='${id}'][property='${prop}']`).length){
+							if($(`#mentionMeta meta[about='${id}'][property='${prop}']`).length ){
 								$(`#file #mentionMeta meta[about='${id}'][property='${prop}']`).attr('content',valueURI)	
 							}else{							
 								if($(`#mentionMeta meta[about='${id}']`).length){
@@ -879,7 +882,7 @@ var kwic = new (function () {
 						//console.log('inside default prop',name,prop,value,force)
 						if(value) {						
 							let meta_prop = metaTpl_prop.tpl({id,prop,value})
-							
+							console.log('MEta_prop',meta_prop);
 							if($(`#mentionMeta meta[about='${id}'][property='${prop}']`).length){
 								$(`#file #mentionMeta meta[about='${id}'][property='${prop}']`).attr('content',value)	
 							}else{							
@@ -2296,6 +2299,11 @@ var kwic = new (function () {
 			m0.prop('treccaniId',entityListItem.treccaniId)
 		}
 	}
+
+	this.toogleModifyOlderDocs = function() {
+		modifyOlderDocuments = !modifyOlderDocuments;
+		console.log(modifyOlderDocuments,'MODIFY OLDER DOCUMENTS')
+	}	
 	
 	// resets all internal variables to empty
 	this.cleanAll = function() {

@@ -377,6 +377,11 @@ label .btn.done.active{
 	color: #596267;
 }
 
+#commandMenu .selected{
+	background-color: #017bfe;
+	color: white;
+}
+
 #ulFile .dropdown-item.selected{
 	background-color: #017bfe;
 	color: white;

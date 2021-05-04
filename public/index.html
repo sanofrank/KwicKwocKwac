@@ -11,7 +11,7 @@
 	<meta http-equiv="Expires" content="0" />
 
 	<title>KWIC KWOC KWAC</title>
-	<link rel="icon" href="/markup/assets/K.png" sizes="16x16" type="image/png">	
+	<link rel="icon" href="/markup/assets/K.png" sizes="16x16" type="image/png">
 	<link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
 		integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -35,47 +35,56 @@
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item dropdown active">
-					<form data-toggle="dropdown" >
-						<input class="nav-link dropdown-toggle ml-3" type="text" id="fileList" name="fileList"
-						aria-haspopup="true" aria-expanded="false" onkeyup="searchDocuments()" placeholder="Cerca documenti" autocomplete="off">
-					</form>						
+						<form data-toggle="dropdown">
+							<input class="nav-link dropdown-toggle ml-3" type="text" id="fileList" name="fileList"
+								aria-haspopup="true" aria-expanded="false" onkeyup="searchDocuments()"
+								placeholder="Cerca documenti" autocomplete="off">
+						</form>
 						<div id="fileMenu" class="dropdown-menu" aria-labelledby="fileList">
 							<div id="file-filter" class="dropdown-header pb-0">
 								<div class="d-flex">
 									<h6 class="w-100">Filtri di ricerca</h6>
 									<div class="flex-shrink-1">
 										<small>Elimina i documenti selezionati <span id="checked-doc"></span></small>
-										<span id="trash-filter" class="oi oi-trash" title="elimina i file" aria-hidden="true" ondragover="dragDocOver(event)" ondragleave="dragDocLeave(event)" ondrop="dropDoc(event)"onclick="deleteDocuments()"></span>
+										<span id="trash-filter" class="oi oi-trash" title="elimina i file"
+											aria-hidden="true" ondragover="dragDocOver(event)"
+											ondragleave="dragDocLeave(event)" ondrop="dropDoc(event)"
+											onclick="deleteDocuments()"></span>
 									</div>
 								</div>
-									<input id="user-filter" class="form-control form-control-sm d-flex" type="text" placeholder="Utente, utente, ...">
-									<small>Inserire i nomi degli utenti separati da una virgola.</small>
+								<input id="user-filter" class="form-control form-control-sm d-flex" type="text"
+									placeholder="Utente, utente, ...">
+								<small>Inserire i nomi degli utenti separati da una virgola.</small>
 								<div class="d-flex">
-									<div id="state-filter"class="w-100 p-2">
-									<span class="pr-2">Marcatura:</span>
-									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="checkbox" id="inlineRadio_default" value="default">
-										<label class="form-check-label" for="inlineRadio1">Da avviare</label>
-									</div>
-									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="checkbox" id="inlineRadio_working" value="working">
-										<label class="form-check-label" for="inlineRadio2">In corso</label>
-									</div>
-									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="checkbox" id="inlineRadio_done" value="done">
-										<label class="form-check-label" for="inlineRadio3">Terminata</label>
-									</div>
+									<div id="state-filter" class="w-100 p-2">
+										<span class="pr-2">Marcatura:</span>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="checkbox" id="inlineRadio_default"
+												value="default">
+											<label class="form-check-label" for="inlineRadio1">Da avviare</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="checkbox" id="inlineRadio_working"
+												value="working">
+											<label class="form-check-label" for="inlineRadio2">In corso</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="checkbox" id="inlineRadio_done"
+												value="done">
+											<label class="form-check-label" for="inlineRadio3">Terminata</label>
+										</div>
 									</div>
 									<div class="flex-shrink-1 p-1">
-									<button id="apply-filter" type="button" class="btn btn-secondary btn-sm" onclick="applyFilter()">applica</button>
+										<button id="apply-filter" type="button" class="btn btn-secondary btn-sm"
+											onclick="applyFilter()">applica</button>
 									</div>
 								</div>
 								<hr>
 								<div class="d-inline-flex">
-									<h6>Documenti: <span id="documentCounter" class ="pl-1"></span></h6>
+									<h6>Documenti: <span id="documentCounter" class="pl-1"></span></h6>
 								</div>
 							</div>
-							<ul class="list-group overflow-auto"id="ulFile">
+							<ul class="list-group overflow-auto" id="ulFile">
 							</ul>
 						</div>
 					</li>
@@ -84,17 +93,20 @@
 							aria-haspopup="true" aria-expanded="false">Operazioni</a>
 						<div id="commandMenu" class="dropdown-menu" aria-labelledby="dropdown01">
 							<a class="dropdown-item" href="#" onclick='toggleStyles()'>Mostra annotazioni</a>
-							<a id="metadata-toggle"class="dropdown-item editOnly" href="#" data-toggle="modal"
+							<a id="metadata-toggle" class="dropdown-item editOnly" href="#" data-toggle="modal"
 								data-target="#add-metadata">Aggiungi Metadati</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="#" onclick="downloadDoc('html')">Scarica HTML</a>
 							<a class="dropdown-item" href="#" onclick="downloadDoc('tei')">Scarica TEI</a>
 							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" href="#" onclick="exportEntities('JSON')">Esporta entità in JSON</a>
+							<a class="dropdown-item" href="#" onclick="exportEntities('JSON')">Esporta entità in
+								JSON</a>
 							<a class="dropdown-item" href="#" onclick="exportEntities('CSV')">Esporta entità in CSV</a>
 							<a class="dropdown-item editOnly" href="#" role="button" data-toggle="modal"
 								data-target="#EntityUpload">Importa entità</a>
 							<div class="dropdown-divider"></div>
+							<a id="modifyOlderDocuments" class="dropdown-item editOnly" href="#"
+								onclick="toogleModifyOlderDocs()">Modifica vecchi documenti</a>
 							<a class="dropdown-item editOnly" href="#" onclick="emptyTrash()">Svuota cestino</a>
 						</div>
 					</li>
@@ -116,31 +128,31 @@
 				<ul class="navbar-nav my-2 my-lg-0">
 					<li class="nav-item active loadedDocumentOnly" id="editButton">
 						<a class="nav-link" id="edit-mode" href="#" role="button" onclick="toggleEdit()"><span
-								class="oi oi-pencil" title="Passa alla modalità editing" aria-hidden="true"></span> <span
-								class="sr-only">Modifica documento</span></a>
+								class="oi oi-pencil" title="Passa alla modalità editing" aria-hidden="true"></span>
+							<span class="sr-only">Modifica documento</span></a>
 					</li>
 					<li class="nav-item active" id="uploadButton">
-						<a class="nav-link" href="#" role="button" data-toggle="modal"
-							data-target="#FileUpload"><span class="oi oi-cloud-upload"
-								title="Carica documento in locale" aria-hidden="true"></span> <span
-								class="sr-only">Carica documento</span></a>
+						<a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#FileUpload"><span
+								class="oi oi-cloud-upload" title="Carica documento in locale" aria-hidden="true"></span>
+							<span class="sr-only">Carica documento</span></a>
 					</li>
-					<li class="nav-item dropdown active"> 
-						<a class="nav-link dropdown-toggle" href="#" id="user-options" data-toggle="dropdown" 
-						aria-haspopup="true" aria-expanded="false"><span
-								class="oi oi-person" title="Preferenze Utente" aria-hidden="true"></span>
+					<li class="nav-item dropdown active">
+						<a class="nav-link dropdown-toggle" href="#" id="user-options" data-toggle="dropdown"
+							aria-haspopup="true" aria-expanded="false"><span class="oi oi-person"
+								title="Preferenze Utente" aria-hidden="true"></span>
 							<span class="sr-only">Utente</span>
 						</a>
 						<div id="user-menu" class="dropdown-menu dropdown-menu-right" aria-labelledby="user-options">
-							<a id="change-password-option"class="dropdown-item" href="#" data-toggle="modal" data-target="#change-password">Cambia password</a>
+							<a id="change-password-option" class="dropdown-item" href="#" data-toggle="modal"
+								data-target="#change-password">Cambia password</a>
 							<a id="logout-option" class="dropdown-item" href="#" data-toggle="modal"
 								data-target="#logout">Esci</a>
 						</div>
 					</li>
 					<li class="nav-item active">
-							<a class="nav-link" href="/markup/documentazione" target=”_blank” role="button"><span
-									class="oi oi-book border-light rounded-circle"
-									title="Documentazione" aria-hidden="true"></span> <span class="sr-only">Documentazione</span></a>
+						<a class="nav-link" href="/markup/documentazione" target=”_blank” role="button"><span
+								class="oi oi-book border-light rounded-circle" title="Documentazione"
+								aria-hidden="true"></span> <span class="sr-only">Documentazione</span></a>
 					</li>
 				</ul>
 			</div>
@@ -170,8 +182,8 @@
 										<a class="nav-link" id="info-tab" data-toggle="tab" href="#infoPane" role="tab"
 											aria-controls="infoPane" aria-selected="false">Info</a>
 									</li>
-									<li class="nav-item ml-auto pointer dropPoint popoverTrash" 
-									 data-level="trash" data-id="trash">
+									<li class="nav-item ml-auto pointer dropPoint popoverTrash" data-level="trash"
+										data-id="trash">
 										<a class="nav-link" id="trash-realtab" data-toggle="tab" href="#trash-realpane"
 											data-target="#trash-realpane"></a>
 									</li>
@@ -187,8 +199,9 @@
 										role="tabpanel" aria-labelledby="info-tab">
 										<h1>Info</h1>
 									</div>
-									<div class="tab-pane scroll-col ug-border ug-border-notop dropPoint h-100" id="trash-realpane"
-										role="tabpanel" aria-labelledby="trash-tab" data-level="trash" data-id="trash">
+									<div class="tab-pane scroll-col ug-border ug-border-notop dropPoint h-100"
+										id="trash-realpane" role="tabpanel" aria-labelledby="trash-tab"
+										data-level="trash" data-id="trash">
 										<ul></ul>
 									</div>
 								</div>
@@ -219,16 +232,20 @@
 										Opzioni di marcatura
 									</div>
 									<label class="small" title="Premenre ALT inverte la funzione">
-										Estendi selezione a parola intera <!--(ALT o ⌥)-->
+										Estendi selezione a parola intera
+										<!--(ALT o ⌥)-->
 										<span class="switch">
-											<input id="extendSel" type="checkbox" checked onchange="prefs('extend', this.checked)">
+											<input id="extendSel" type="checkbox" checked
+												onchange="prefs('extend', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
-									<label id="markAll-label"class="small " title="Premere SHIFT inverte la funzione">
-										Evidenzia tutte le istanze <!--(⇧)-->
+									<label id="markAll-label" class="small " title="Premere SHIFT inverte la funzione">
+										Evidenzia tutte le istanze
+										<!--(⇧)-->
 										<span class="switch">
-											<input id="markAll" type="checkbox" checked onchange="prefs('markAll', this.checked)">
+											<input id="markAll" type="checkbox" checked
+												onchange="prefs('markAll', this.checked)">
 											<span class="slider round"></span>
 										</span>
 									</label>
@@ -236,12 +253,12 @@
 								<div class=" col-3 btn-group-toggle">
 									<div class="h6">
 										Stato della marcatura
-									</div>								
+									</div>
 									<!-- <label class="small" title="Cambia lo stato di marcatura da: Da avviare, In corso e Terminata">
 										
 									</label> -->
-									<button id="status" type="button" class="btn btn-primary btn-sm" 
-											onclick="changeStatus()"></button>
+									<button id="status" type="button" class="btn btn-primary btn-sm"
+										onclick="changeStatus()"></button>
 								</div>
 							</nav>
 						</div>
@@ -254,7 +271,8 @@
 						<div id="file" status="default" data-path="default" class="h-100 scroll-col">
 							<div class="jumbotron">
 								<h1 id="title">Key Words In Context</h1>
-								<h6 id="subtitle">Applicazione web per la visualizzazione e annotazione di documenti digitali.</h6>
+								<h6 id="subtitle">Applicazione web per la visualizzazione e annotazione di documenti
+									digitali.</h6>
 							</div>
 						</div>
 					</div>
@@ -266,25 +284,27 @@
 	<!-- Modals -->
 	<div id="formatting-abstract" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
-		  <div class="modal-content">
-			<div class="modal-header">
-			  <h5 class="modal-title">Introduzione rilevata</h5>
-			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			  </button>
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Introduzione rilevata</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p id="abstract-modal">È stata rilevata l'introduzione: </br> {$abstract}.</br> Si desidera
+						spostarla all'interno dell'abstract dei metadati?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">Continua</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
+				</div>
 			</div>
-			<div class="modal-body">
-			  <p id="abstract-modal">È stata rilevata l'introduzione: </br> {$abstract}.</br> Si desidera spostarla all'interno dell'abstract dei metadati?</p>
-			</div>
-			<div class="modal-footer">
-			  <button type="button" class="btn btn-primary">Continua</button>
-			  <button type="button" class="btn btn-secondary" data-dismiss="modal">Chiudi</button>
-			</div>
-		  </div>
 		</div>
-	  </div>
+	</div>
 
-	<div class="modal fade" id="change-password" tabindex="-1" role="dialog" aria-labelledby="changePassword" aria-hidden="true">
+	<div class="modal fade" id="change-password" tabindex="-1" role="dialog" aria-labelledby="changePassword"
+		aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -298,30 +318,32 @@
 					<p>Inserire due volte la nuova password per cambiarla.</p>
 					<form id="change-password-form">
 						<div class="form-group">
-						<div id="new-password-input" class="input-group">
-							<input id="new-password" class="form-control" type="password" placeholder="Nuova password">
-							<div class="input-group-append">
+							<div id="new-password-input" class="input-group">
+								<input id="new-password" class="form-control" type="password"
+									placeholder="Nuova password">
+								<div class="input-group-append">
 									<a class="input-group-text" id="new-password-eye" href="" onclick="show_hide(this)">
 										<i class="fa fa-eye-slash" aria-hidden="true"></i>
 									</a>
+								</div>
 							</div>
-						</div>
-						<small class="form-text text-muted">La nuova password deve contenere almeno 6 caratteri</small>
+							<small class="form-text text-muted">La nuova password deve contenere almeno 6
+								caratteri</small>
 
 						</div>
 						<div class="form-group">
-						<div id="confirm-password-input" class="input-group">
-							<input id="confirm-password" class="form-control" type="password" placeholder="Ripeti password">
+							<div id="confirm-password-input" class="input-group">
+								<input id="confirm-password" class="form-control" type="password"
+									placeholder="Ripeti password">
 							</div>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<div class="float-right">
-						<button type="button" class="btn btn-primary"
-							onclick="change_password()">Salva</button>
+						<button type="button" class="btn btn-primary" onclick="change_password()">Salva</button>
 					</div>
-					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -337,7 +359,7 @@
 				<div class="modal-body">
 					<p>Desideri uscire dall'applicazione?</p>
 				</div>
-				<div class ="modal-footer">
+				<div class="modal-footer">
 					<div class="float-right">
 						<button type="button" class="btn btn-primary" data-dismiss="modal"
 							onclick="logout()">Si</button>
@@ -477,49 +499,53 @@
 				</div>
 				<div class="modal-body">
 					<div id="msg-upload" class="alert" role="alert" style="display:none"></div>
-					<p><label for="docFile">Seleziona una o più opere in formato <code>.docx</code> (<b style="color: #017BFE">Word</b>) o <code>.html</code> indicando la sezione, il volume e il tomo di appartenenza.</label>
+					<p><label for="docFile">Seleziona una o più opere in formato <code>.docx</code> (<b
+								style="color: #017BFE">Word</b>) o <code>.html</code> indicando la sezione, il volume e
+							il tomo di appartenenza.</label>
 					</p>
 					<form>
-						<div id ="filePath" class="fileParams form-row">
+						<div id="filePath" class="fileParams form-row">
 							<div class="col">
 								<label for="sezNumber">Sezione</label>
-								<input type="number" id="sezNumber" name="sezNumber" min="1" max="2" required />						
+								<input type="number" id="sezNumber" name="sezNumber" min="1" max="2" required />
 							</div>
 							<div class="col">
 								<label for="volNumber">Volume</label>
-								<input type="number" id="volNumber" name="volNumber" min="1" max="4" required />						
+								<input type="number" id="volNumber" name="volNumber" min="1" max="4" required />
 							</div>
 							<div class="col">
 								<label for="tomNumber">Tomo</label>
-								<input type="number" id="tomNumber" name="tomNumber" min="1" max="2" required />						
+								<input type="number" id="tomNumber" name="tomNumber" min="1" max="2" required />
 							</div>
 						</div>
-						<div id ="user-upload" class="fileParams pt-2 form-row">
+						<div id="user-upload" class="fileParams pt-2 form-row">
 							<div class="col">
 								<label for="userUpload">Utente</label>
-								<input type="text" id="userUpload" name="userUpload" required />						
+								<input type="text" id="userUpload" name="userUpload" required />
 							</div>
 						</div>
 						<div id="fileFormat" class="fileParams pt-2 form-row">
 							<div class="col">
 								<span>Formato documento:</span>
 								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio_docx" value="docx">
+									<input class="form-check-input" type="radio" name="inlineRadioOptions"
+										id="inlineRadio_docx" value="docx">
 									<label class="form-check-label" for="inlineRadio_docx">.docx (Word)</label>
-								  </div>
-								  <div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio_html" value="html">
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="inlineRadioOptions"
+										id="inlineRadio_html" value="html">
 									<label class="form-check-label" for="inlineRadio_html">.html</label>
-								  </div>
+								</div>
 							</div>
 						</div>
 					</form>
 					<hr>
-					<input type="file" id="docFile" name="docFile" style="padding-bottom: 1em;"disabled multiple />
+					<input type="file" id="docFile" name="docFile" style="padding-bottom: 1em;" disabled multiple />
 					<div>
-						<ul id="doc-list" class="list-group list-group-flush overflow-auto">						
-						</ul>			
-						</div>
+						<ul id="doc-list" class="list-group list-group-flush overflow-auto">
+						</ul>
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" onclick="emptyUpload()">Svuota</button>
@@ -565,192 +591,266 @@
 	</div>
 
 	<!-- TEMPLATES -->
-<template id="metadataTpl">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="addMetadata">Aggiungi Metadati</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<h6 class="pb-3" id="addMetadata-sub"></h6>
-				<form>
-					<div id="msg" class="alert" role="alert" style="display:none"></div>
-					<div class="form-group">
-						<label for="ident">Numero del documento *</label><br>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre
-							compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi:
-							<samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
-						<input type="text" class="form-control" id="ident" aria-describedby="id-metadata" value="{$ident}">
-					</div>
-					<div class="form-group">
-						<label for="work-title">Titolo dell'opera *</label>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">Inserire il titolo da attribuire all'opera,
-						come valore di default è scelto il nome del documento salvato sulla piattaforma.</small>
-						<input type="text" class="form-control" id="work-title" aria-describedby="work-title-metadata" value="{$title}">
-					</div>
-					<div class="form-group role-group">
-						<label>Ruolo dell'autore *</label>
-						<button style="float:right" type="button"
-							class="btn btn-primary btn-sm" onclick="addRole()"><i class="fa fa-plus"
-								aria-hidden="true"></i>
+	<template id="metadataTpl">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="addMetadata">Aggiungi Metadati</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h6 class="pb-3" id="addMetadata-sub"></h6>
+					<form>
+						<div id="msg" class="alert" role="alert" style="display:none"></div>
+						<div class="form-group">
+							<label for="ident">Numero del documento *</label><br>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Un numero di tre cifre
+								compreso tra 001 e 999, assegnato ai documenti in ordine crescente. Esempi:
+								<samp>001</samp>, <samp>022</samp>, <samp>156</samp>...</small>
+							<input type="text" class="form-control" id="ident" aria-describedby="id-metadata"
+								value="{$ident}">
+						</div>
+						<div class="form-group">
+							<label for="work-title">Titolo dell'opera *</label>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Inserire il titolo da
+								attribuire all'opera,
+								come valore di default è scelto il nome del documento salvato sulla piattaforma.</small>
+							<input type="text" class="form-control" id="work-title"
+								aria-describedby="work-title-metadata" value="{$title}">
+						</div>
+						<div class="form-group role-group">
+							<label>Ruolo dell'autore *</label>
+							<button style="float:right" type="button" class="btn btn-primary btn-sm"
+								onclick="addRole()"><i class="fa fa-plus" aria-hidden="true"></i>
 							</button>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">Il ruolo o incarico
-							istituzionale ricoperto in quel momento dall'autore del documento. Cliccando sull'icona
-							<i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori
-							ruoli.</small>
-						<input name="role" list="roles" class="form-control role" aria-describedby="author-role-metadata">
-						<datalist id="roles">
-							<option class="role-option" value="Delegato Aspirante della Gioventù Cattolica" data-value="role.01">
-							<option class="role-option" value="Studente" data-value="role.02"><option class="role-option" value="Membro della FUCI" data-value="role.03"><option class="role-option" value="Presidente del circolo di Bari della FUCI" data-value="role.04"><option class="role-option" value="Assistente volontario alla cattedra di diritto e procedura penale" data-value="role.05"><option class="role-option" value="Presidente nazionale della FUCI" data-value="role.06"><option class="role-option" value="Professore di Filosofia del Diritto" data-value="role.07"><option class="role-option" value="Membro del Movimento Laureati dell'Azione Cattolica" data-value="role.08"><option class="role-option" value="Membro dell'Ufficio stampa del governo Badoglio" data-value="role.09"><option class="role-option" value="Giornalista e commentatore politico" data-value="role.10"><option class="role-option" value="Presidente del Comitato direttivo provvisorio per la FUCI meridionale" data-value="role.11"><option class="role-option" value="Segretario Centrale del Movimento Laureati dell'Azione Cattolica" data-value="role.12"><option class="role-option" value='Direttore di "Studium"' data-value="role.13"><option class="role-option" value="Membro dell'Assemblea Costituente" data-value="role.14"><option class="role-option" value="Vicepresidente del gruppo democristiano alla Costituente" data-value="role.15"><option class="role-option" value="Membro della Camera dei Deputati" data-value="role.16"><option class="role-option" value="Sottosegretario al ministero degli Affari Esteri con delega per l'Emigrazione" data-value="role.17"><option class="role-option" value="Membro dell'Unione Giuristi Cattolici" data-value="role.18"><option class="role-option" value="Membro di Iniziativa Democratica" data-value="role.19"><option class="role-option" value="Professore di diritto penale" data-value="role.20"><option class="role-option" value="Professore di diritto e procedura penale" data-value="role.21"><option class="role-option" value="Membro della Comissione parlamentare di esame del disegno di legge relativo" data-value="role.22"><option class="role-option" value="Presidente del gruppo DC alla Camera" data-value="role.23"><option class="role-option" value="Ministro di Grazia e Giustizia" data-value="role.24"><option class="role-option" value="Consigliere nazionale della DC" data-value="role.25"><option class="role-option" value="Ministro della Pubblica Istruzione" data-value="role.26"><option class="role-option" value="Segretario politico della DC" data-value="role.27"><option class="role-option" value="Presidente del Consiglio" data-value="role.28"><option class="role-option" value="Titolare ad interim del ministero degli Esteri" data-value="role.29"><option class="role-option" value="Ministero degli Esteri" data-value="role.30"><option class="role-option" value="Presidente della Commissione Affari Esteri della Camera" data-value="role.31"><option class="role-option" value="Presidente di turno della Comunità Europea" data-value="role.32"><option class="role-option" value="Presidente del Consiglio Nazionale della DC" data-value="role.33"></datalist>
-					</div>
-					<div class="form-group">
-						<label for="curator">Ricercatore curatore *</label>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
-							Cognome) del ricercatore che ha curato la trascrizione e marcatura del documento.
-							Esempio: <samp>Mario Rossi</samp>.</small>
-						<input type="text" class="form-control" id="curator" aria-describedby="curator-metadata" value="{$curator}">
-					</div>
-					<div class="form-group">
-						<label for="abstract">Abstract *</label>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale
-							del documento che ne riassume i contenuti e che lo contestualizza all'interno
-							dell'universo biografico di Aldo Moro. Per un esempio di abstract, vedi la sezione <strong>La strutturazione formale dell'opera</strong> nelle Linee Guida.</small>
-						<textarea type="text" class="form-control" id="abstract"
-							aria-describedby="abstract-metadata" rows="3">{$abstract}</textarea>
-					</div>
-					<div class="form-group doctype-group">
-						<label>Tipologia del documento *</label><button style="float:right" type="button"
-							class="btn btn-primary btn-sm" onclick="addDoctype()"><i class="fa fa-plus"
-								aria-hidden="true"></i></button>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">La tipologia testuale che
-							caratterizza il documento. Cliccando sull'icona <i class="fa fa-plus"
-								aria-hidden="true"></i> è possibile aggiungere ulteriori tipologie.</small>
-						<select name="doctype" id="doctype" class="form-control doctype" aria-describedby="doctype-metadata">
-							<option hidden disabled selected value>Scegli una tipologia...</option>
-							<option class="doctype-option" value="doctype.01">Articolo su periodico</option>
-							<option class="doctype-option" value="doctype.02">Articolo su quotidiano</option>
-							<option class="doctype-option" value="doctype.03">Comunicato stampa</option>
-							<option class="doctype-option" value="doctype.04">Discorso in sede pubblica / Comizio
-							</option>
-							<option class="doctype-option" value="doctype.05">Documento interno</option>
-							<option class="doctype-option" value="doctype.06">Intervento di partito</option>
-							<option class="doctype-option" value="doctype.07">Intervento in sede parlamentare
-							</option>
-							<option class="doctype-option" value="doctype.08">Intervento istituzionale</option>
-							<option class="doctype-option" value="doctype.09">Intervento radiofonico/televisivo
-							</option>
-							<option class="doctype-option" value="doctype.10">Intervista</option>
-							<option class="doctype-option" value="doctype.11">Lezione universitaria</option>
-							<option class="doctype-option" value="doctype.12">Libro/intervento in libro</option>
-							<option class="doctype-option" value="doctype.13">Opuscolo</option>
-						</select>
-					</div>
-					<div class="form-group doctopic-group">
-						<label>Tematica del documento *</label><button style="float:right" type="button"
-							class="btn btn-primary btn-sm" onclick="addDoctopic()"><i class="fa fa-plus"
-								aria-hidden="true"></i></button>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">La tematica generale
-							presente nel testo del documento. Cliccando sull'icona <i class="fa fa-plus"
-								aria-hidden="true"></i> è possibile aggiungere ulteriori tematiche.</small>
-						<select name="doctopic" id="doctopic" class="form-control doctopic" aria-describedby="doctopic-metadata">
-							<option hidden disabled selected value>Scegli una tematica...</option>
-							<option class="doctopic-option" value="doctopic.01">Chiesa</option>
-							<option class="doctopic-option" value="doctopic.02">Cultura/Istruzione</option>
-							<option class="doctopic-option" value="doctopic.03">Diritto</option>
-							<option class="doctopic-option" value="doctopic.04">Partito</option>
-							<option class="doctopic-option" value="doctopic.05">Politica interna</option>
-							<option class="doctopic-option" value="doctopic.06">Politica internazionale</option>
-							<option class="doctopic-option" value="doctopic.07">Religione</option>
-							<option class="doctopic-option" value="doctopic.08">Società</option>
-							<option class="doctopic-option" value="doctopic.09">Stato</option>
-							<option class="doctopic-option" value="doctopic.10">Vita locale</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="docstatus">Stato del documento *</label>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il
-							documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata
-							(<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni
-							metadatali differenti.</small>
-						<div id="docstatus">
-							<div class="form-check form-check-inline">
-								<input class="form-check-input docstatus" type="radio" name="docstatus"
-									id="inlineRadio1" value="published" onchange="hideUnpublished(this)">
-								<label class="form-check-label" for="inlineRadio1">Edito</label>
-							</div>
-							<div class="form-check form-check-inline">
-								<input class="form-check-input docstatus" type="radio" name="docstatus"
-									id="inlineRadio2" value="unpublished" onchange="hidePublished(this)">
-								<label class="form-check-label" for="inlineRadio2">Inedito</label>
-							</div>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Il ruolo o incarico
+								istituzionale ricoperto in quel momento dall'autore del documento. Cliccando sull'icona
+								<i class="fa fa-plus" aria-hidden="true"></i> è possibile aggiungere ulteriori
+								ruoli.</small>
+							<input name="role" list="roles" class="form-control role"
+								aria-describedby="author-role-metadata">
+							<datalist id="roles">
+								<option class="role-option" value="Delegato Aspirante della Gioventù Cattolica"
+									data-value="role.01">
+								<option class="role-option" value="Studente" data-value="role.02">
+								<option class="role-option" value="Membro della FUCI" data-value="role.03">
+								<option class="role-option" value="Presidente del circolo di Bari della FUCI"
+									data-value="role.04">
+								<option class="role-option"
+									value="Assistente volontario alla cattedra di diritto e procedura penale"
+									data-value="role.05">
+								<option class="role-option" value="Presidente nazionale della FUCI"
+									data-value="role.06">
+								<option class="role-option" value="Professore di Filosofia del Diritto"
+									data-value="role.07">
+								<option class="role-option" value="Membro del Movimento Laureati dell'Azione Cattolica"
+									data-value="role.08">
+								<option class="role-option" value="Membro dell'Ufficio stampa del governo Badoglio"
+									data-value="role.09">
+								<option class="role-option" value="Giornalista e commentatore politico"
+									data-value="role.10">
+								<option class="role-option"
+									value="Presidente del Comitato direttivo provvisorio per la FUCI meridionale"
+									data-value="role.11">
+								<option class="role-option"
+									value="Segretario Centrale del Movimento Laureati dell'Azione Cattolica"
+									data-value="role.12">
+								<option class="role-option" value='Direttore di "Studium"' data-value="role.13">
+								<option class="role-option" value="Membro dell'Assemblea Costituente"
+									data-value="role.14">
+								<option class="role-option"
+									value="Vicepresidente del gruppo democristiano alla Costituente"
+									data-value="role.15">
+								<option class="role-option" value="Membro della Camera dei Deputati"
+									data-value="role.16">
+								<option class="role-option"
+									value="Sottosegretario al ministero degli Affari Esteri con delega per l'Emigrazione"
+									data-value="role.17">
+								<option class="role-option" value="Membro dell'Unione Giuristi Cattolici"
+									data-value="role.18">
+								<option class="role-option" value="Membro di Iniziativa Democratica"
+									data-value="role.19">
+								<option class="role-option" value="Professore di diritto penale" data-value="role.20">
+								<option class="role-option" value="Professore di diritto e procedura penale"
+									data-value="role.21">
+								<option class="role-option"
+									value="Membro della Comissione parlamentare di esame del disegno di legge relativo"
+									data-value="role.22">
+								<option class="role-option" value="Presidente del gruppo DC alla Camera"
+									data-value="role.23">
+								<option class="role-option" value="Ministro di Grazia e Giustizia" data-value="role.24">
+								<option class="role-option" value="Consigliere nazionale della DC" data-value="role.25">
+								<option class="role-option" value="Ministro della Pubblica Istruzione"
+									data-value="role.26">
+								<option class="role-option" value="Segretario politico della DC" data-value="role.27">
+								<option class="role-option" value="Presidente del Consiglio" data-value="role.28">
+								<option class="role-option" value="Titolare ad interim del ministero degli Esteri"
+									data-value="role.29">
+								<option class="role-option" value="Ministero degli Esteri" data-value="role.30">
+								<option class="role-option"
+									value="Presidente della Commissione Affari Esteri della Camera"
+									data-value="role.31">
+								<option class="role-option" value="Presidente di turno della Comunità Europea"
+									data-value="role.32">
+								<option class="role-option" value="Presidente del Consiglio Nazionale della DC"
+									data-value="role.33">
+							</datalist>
 						</div>
-					</div>
-					<div id="pubMetadata" hidden=true>
-						<div class="form-group bibsource-group">
-							<label>Riferimento bibliografico *</label><button style="float:right" type="button"
-								class="btn btn-primary btn-sm" onclick="addBibsource()"><i class="fa fa-plus"
+						<div class="form-group">
+							<label for="curator">Ricercatore curatore *</label>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Il nome completo (Nome
+								Cognome) del ricercatore che ha curato la trascrizione e marcatura del documento.
+								Esempio: <samp>Mario Rossi</samp>.</small>
+							<input type="text" class="form-control" id="curator" aria-describedby="curator-metadata"
+								value="{$curator}">
+						</div>
+						<div class="form-group">
+							<label for="abstract">Abstract *</label>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Una descrizione generale
+								del documento che ne riassume i contenuti e che lo contestualizza all'interno
+								dell'universo biografico di Aldo Moro. Per un esempio di abstract, vedi la sezione
+								<strong>La strutturazione formale dell'opera</strong> nelle Linee Guida.</small>
+							<textarea type="text" class="form-control" id="abstract"
+								aria-describedby="abstract-metadata" rows="3">{$abstract}</textarea>
+						</div>
+						<div class="form-group doctype-group">
+							<label>Tipologia del documento *</label><button style="float:right" type="button"
+								class="btn btn-primary btn-sm" onclick="addDoctype()"><i class="fa fa-plus"
 									aria-hidden="true"></i></button>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
-								di una fonte secondaria. Cliccando sull'icona <i class="fa fa-plus"
-									aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe.</small>
-							<input type="text" class="form-control bibsource provenance"
-								aria-describedby="bibsource-metadata">
+							<small style="margin-bottom: 10px;" class="form-text text-muted">La tipologia testuale che
+								caratterizza il documento. Cliccando sull'icona <i class="fa fa-plus"
+									aria-hidden="true"></i> è possibile aggiungere ulteriori tipologie.</small>
+							<select name="doctype" id="doctype" class="form-control doctype"
+								aria-describedby="doctype-metadata">
+								<option hidden disabled selected value>Scegli una tipologia...</option>
+								<option class="doctype-option" value="doctype.01">Articolo su periodico</option>
+								<option class="doctype-option" value="doctype.02">Articolo su quotidiano</option>
+								<option class="doctype-option" value="doctype.03">Comunicato stampa</option>
+								<option class="doctype-option" value="doctype.04">Discorso in sede pubblica / Comizio
+								</option>
+								<option class="doctype-option" value="doctype.05">Documento interno</option>
+								<option class="doctype-option" value="doctype.06">Intervento di partito</option>
+								<option class="doctype-option" value="doctype.07">Intervento in sede parlamentare
+								</option>
+								<option class="doctype-option" value="doctype.08">Intervento istituzionale</option>
+								<option class="doctype-option" value="doctype.09">Intervento radiofonico/televisivo
+								</option>
+								<option class="doctype-option" value="doctype.10">Intervista</option>
+								<option class="doctype-option" value="doctype.11">Lezione universitaria</option>
+								<option class="doctype-option" value="doctype.12">Libro/intervento in libro</option>
+								<option class="doctype-option" value="doctype.13">Opuscolo</option>
+							</select>
 						</div>
-					</div>
-					<div id="unpubMetadata" hidden=false>
-						<div class="form-group archsource-group">
-							<label>Segnatura archivistica *</label><button style="float:right" type="button"
-								class="btn btn-primary btn-sm" onclick="addArchsource()"><i class="fa fa-plus"
+						<div class="form-group doctopic-group">
+							<label>Tematica del documento *</label><button style="float:right" type="button"
+								class="btn btn-primary btn-sm" onclick="addDoctopic()"><i class="fa fa-plus"
 									aria-hidden="true"></i></button>
-							<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
-								di una fonte primaria. Cliccando sull'icona <i class="fa fa-plus"
-									aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe. Esempio:
-								<samp>Discorso conclusivo dell’on. Moro al convegno dei dirigenti del partito (3 luglio 1959), in ACS, Archivio Aldo Moro 1953-1978, Busta 1, fascicolo 3, dattiloscritto s.d.</samp>.</small>
-							<input type="text" class="form-control archsource provenance"
-								aria-describedby="archsource-metadata">
+							<small style="margin-bottom: 10px;" class="form-text text-muted">La tematica generale
+								presente nel testo del documento. Cliccando sull'icona <i class="fa fa-plus"
+									aria-hidden="true"></i> è possibile aggiungere ulteriori tematiche.</small>
+							<select name="doctopic" id="doctopic" class="form-control doctopic"
+								aria-describedby="doctopic-metadata">
+								<option hidden disabled selected value>Scegli una tematica...</option>
+								<option class="doctopic-option" value="doctopic.01">Chiesa</option>
+								<option class="doctopic-option" value="doctopic.02">Cultura/Istruzione</option>
+								<option class="doctopic-option" value="doctopic.03">Diritto</option>
+								<option class="doctopic-option" value="doctopic.04">Partito</option>
+								<option class="doctopic-option" value="doctopic.05">Politica interna</option>
+								<option class="doctopic-option" value="doctopic.06">Politica internazionale</option>
+								<option class="doctopic-option" value="doctopic.07">Religione</option>
+								<option class="doctopic-option" value="doctopic.08">Società</option>
+								<option class="doctopic-option" value="doctopic.09">Stato</option>
+								<option class="doctopic-option" value="doctopic.10">Vita locale</option>
+							</select>
 						</div>
-					</div>
-					<div class="form-group event-place-group">
-						<label for="event-place">Luogo dell'evento</label><button id="ep-button" style="float:right"
-							type="button" class="btn btn-primary btn-sm" onclick="addEventPlace()"><i
-								class="fa fa-plus" aria-hidden="true"></i></button>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">Il luogo in cui è avvenuto
-							l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus"
-								aria-hidden="true"></i> è possibile inserire il metadato. Esempio: il luogo
-							originario in cui Moro ha tenuto il discorso successivamente riportato nel
-							documento.</small>
-					</div>
-					<div class="form-group event-date-group">
-						<label for="event-date">Data dell'evento</label><button id="ed-button" style="float:right"
-							type="button" class="btn btn-primary btn-sm" onclick="addEventDate()"><i
-								class="fa fa-plus" aria-hidden="true"></i></button>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">La data in cui è avvenuto
-							l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus"
-								aria-hidden="true"></i> è possibile inserire il metadato. Esempio: l'anno o il giorno originario
-							in cui Moro ha tenuto il discorso successivamente riportato nel documento.</small>
-					</div>
-					<div class="form-group">
-						<label for="additional-notes">Note aggiuntive</label>
-						<small style="margin-bottom: 10px;" class="form-text text-muted">Ulteriori osservazioni su
-							aspetti del documento che non sono stati trattati nelle voci precedenti e che reputi
-							importante segnalare.</small>
-						<textarea type="text" class="form-control" id="additional-notes"
-							aria-describedby="additionalnotes-metadata" rows="3">{$additionalNotes}</textarea>
-					</div>
-				</form>
-				<small>
-					* campo obbligatorio
-				</small>
-			</div>
-			<div class='modal-footer'>
-				<button type="button" id="save-metadata" class="btn btn-primary" onclick="saveMetadata()">Salva</button>
+						<div class="form-group">
+							<label for="docstatus">Stato del documento *</label>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Lo stato in cui il
+								documento si trova in relazione alla sua pubblicazione. A seconda della voce selezionata
+								(<samp>Edito</samp> o <samp>Inedito</samp>), è possibile inserire informazioni
+								metadatali differenti.</small>
+							<div id="docstatus">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input docstatus" type="radio" name="docstatus"
+										id="inlineRadio1" value="published" onchange="hideUnpublished(this)">
+									<label class="form-check-label" for="inlineRadio1">Edito</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input docstatus" type="radio" name="docstatus"
+										id="inlineRadio2" value="unpublished" onchange="hidePublished(this)">
+									<label class="form-check-label" for="inlineRadio2">Inedito</label>
+								</div>
+							</div>
+						</div>
+						<div id="pubMetadata" hidden=true>
+							<div class="form-group bibsource-group">
+								<label>Riferimento bibliografico *</label><button style="float:right" type="button"
+									class="btn btn-primary btn-sm" onclick="addBibsource()"><i class="fa fa-plus"
+										aria-hidden="true"></i></button>
+								<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
+									di una fonte secondaria. Cliccando sull'icona <i class="fa fa-plus"
+										aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe.</small>
+								<input type="text" class="form-control bibsource provenance"
+									aria-describedby="bibsource-metadata">
+							</div>
+						</div>
+						<div id="unpubMetadata" hidden=false>
+							<div class="form-group archsource-group">
+								<label>Segnatura archivistica *</label><button style="float:right" type="button"
+									class="btn btn-primary btn-sm" onclick="addArchsource()"><i class="fa fa-plus"
+										aria-hidden="true"></i></button>
+								<small style="margin-bottom: 10px;" class="form-text text-muted">Stringa catalografica
+									di una fonte primaria. Cliccando sull'icona <i class="fa fa-plus"
+										aria-hidden="true"></i> è possibile aggiungere ulteriori stringhe. Esempio:
+									<samp>Discorso conclusivo dell’on. Moro al convegno dei dirigenti del partito (3
+										luglio 1959), in ACS, Archivio Aldo Moro 1953-1978, Busta 1, fascicolo 3,
+										dattiloscritto s.d.</samp>.</small>
+								<input type="text" class="form-control archsource provenance"
+									aria-describedby="archsource-metadata">
+							</div>
+						</div>
+						<div class="form-group event-place-group">
+							<label for="event-place">Luogo dell'evento</label><button id="ep-button" style="float:right"
+								type="button" class="btn btn-primary btn-sm" onclick="addEventPlace()"><i
+									class="fa fa-plus" aria-hidden="true"></i></button>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Il luogo in cui è avvenuto
+								l'evento descritto nel documento. Cliccando sull'icona <i class="fa fa-plus"
+									aria-hidden="true"></i> è possibile inserire il metadato. Esempio: il luogo
+								originario in cui Moro ha tenuto il discorso successivamente riportato nel
+								documento.</small>
+						</div>
+						<div class="form-group event-date-group">
+							<label for="event-date">Data</label><button id="ed-button" style="float:right" type="button"
+								class="btn btn-primary btn-sm" onclick="addEventDate()"><i class="fa fa-plus"
+									aria-hidden="true"></i></button>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Se il documento è edito, la
+								data della prima pubblicazione. Se il documento è inedito, la data di creazione.
+								Cliccando sull'icona <i class="fa fa-plus" aria-hidden="true"></i> è possibile inserire
+								il metadato.
+							</small>
+						</div>
+						<div class="form-group">
+							<label for="additional-notes">Note aggiuntive</label>
+							<small style="margin-bottom: 10px;" class="form-text text-muted">Ulteriori osservazioni su
+								aspetti del documento che non sono stati trattati nelle voci precedenti e che reputi
+								importante segnalare. Esempio: firma di Moro sul documento.</small>
+							<textarea type="text" class="form-control" id="additional-notes"
+								aria-describedby="additionalnotes-metadata" rows="3">{$additionalNotes}</textarea>
+						</div>
+					</form>
+					<small>
+						* campo obbligatorio
+					</small>
+				</div>
+				<div class='modal-footer'>
+					<button type="button" id="save-metadata" class="btn btn-primary"
+						onclick="saveMetadata()">Salva</button>
+				</div>
 			</div>
 		</div>
-	</div>
-</template>
+	</template>
 	<template id="referenceTpl0">
 		<li class="nav-item dropPoint" id="{$id}-tab" data-level="reference" data-id="{$id}">
 			<a class="nav-link" id="{$id}-tab" data-toggle="tab" href="#{$id}-pane" role="tab" aria-controls="{$id}">
@@ -768,23 +868,23 @@
 	</template>
 	<template id="citationTpl">
 		<li class="citationContainer draggable dropPoint" id="citation-{$id}" data-level="citation" data-id="{$id}">
-				<a href="#"
-					class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded hoverTreeExpand bg-light w-100 treeExpand">
-					<div>
-						<span class="badge badge-primary em3">{$count}</span>
-						<span class="citationLabel">{$label}</span>
-					</div>
-					<span class="d-inline-flex flex-nowrap mr-0">
-						<span onmouseover="overTreeExpand(this)" onmouseout="offTreeExpand(this)">
-							<button type="button" class="btn btn-secondary btn-sm py-0 px-3 editOnly infoButton" 
-									onclick="toggleInfo(event,'#{$id}-menu')" title="Dettagli su {$label}"
-								 style="font-size: small;">
-								<span class="oi oi-info"></span>
-							</button>			
-						</span>							
-						</span>
+			<a href="#"
+				class="d-inline-flex flex-nowrap align-items-center justify-content-between rounded hoverTreeExpand bg-light w-100 treeExpand">
+				<div>
+					<span class="badge badge-primary em3">{$count}</span>
+					<span class="citationLabel">{$label}</span>
+				</div>
+				<span class="d-inline-flex flex-nowrap mr-0">
+					<span onmouseover="overTreeExpand(this)" onmouseout="offTreeExpand(this)">
+						<button type="button" class="btn btn-secondary btn-sm py-0 px-3 editOnly infoButton"
+							onclick="toggleInfo(event,'#{$id}-menu')" title="Dettagli su {$label}"
+							style="font-size: small;">
+							<span class="oi oi-info"></span>
+						</button>
 					</span>
-				</a>
+				</span>
+				</span>
+			</a>
 			<div class="collapse card citationCard" id="{$id}-menu">
 				<h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button"
 					aria-expanded="false" aria-controls="{$id}-menu">
@@ -914,17 +1014,17 @@
 					<span class="entityLabel">{$label}</span>
 				</div>
 				<span class="d-inline-flex flex-nowrap mr-0">
-					{$check}	
+					{$check}
 					<span onmouseover="overTreeExpand(this)" onmouseout="offTreeExpand(this)">
-						<button type="button" class="btn btn-secondary btn-sm py-0 px-3 editOnly infoButton" 
-								onclick="toggleInfo(event,'#{$id}-menu')" title="Dettagli su {$label}"
-							 style="font-size: small;">
+						<button type="button" class="btn btn-secondary btn-sm py-0 px-3 editOnly infoButton"
+							onclick="toggleInfo(event,'#{$id}-menu')" title="Dettagli su {$label}"
+							style="font-size: small;">
 							<span class="oi oi-info"></span>
-						</button>			
-					</span>	
+						</button>
 					</span>
 				</span>
-			</a>	
+				</span>
+			</a>
 			<div class="collapse card entityCard" id="{$id}-menu">
 				<h6 class="card-header" data-toggle="collapse" data-target="#{$id}-menu" role="button"
 					aria-expanded="false" aria-controls="{$id}-menu">
@@ -937,15 +1037,16 @@
 							<div class="col-8 p-0">
 								<div class="input-group mb-1">
 									<input type="text" name="labelData" class="form-control form-control-sm "
-								id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)"
-								value="{$label}">
-								<div class="input-group-append small popoverToggle" id="popoverToggle-{$id}" 
-									data-label="{$label}" data-id="{$id}">
-								<div class="input-group-text cardButton" title="Cerca su Wikidata" aria-hidden="true">											
-									<span class="oi oi-magnifying-glass"></span>
+										id="labelData-{$id}" onchange="changeValue('label','{$id}', this.value)"
+										value="{$label}">
+									<div class="input-group-append small popoverToggle" id="popoverToggle-{$id}"
+										data-label="{$label}" data-id="{$id}">
+										<div class="input-group-text cardButton" title="Cerca su Wikidata"
+											aria-hidden="true">
+											<span class="oi oi-magnifying-glass"></span>
+										</div>
+									</div>
 								</div>
-								</div>
-							</div>
 							</div>
 						</div>
 						<div class="row">
@@ -956,7 +1057,8 @@
 										class="form-control form-control-sm flex-grow-1" id="sortData-{$id}"
 										onchange="changeValue('sort','{$id}', this.value)" value="{$sort}">
 									<div class="input-group-append small">
-										<div class="input-group-text cardButton" onclick="invertValue('{$id}','{$type}','#sortData-{$id}')">
+										<div class="input-group-text cardButton"
+											onclick="invertValue('{$id}','{$type}','#sortData-{$id}')">
 											<span class="oi oi-loop-circular"></span>
 										</div>
 									</div>
@@ -967,23 +1069,24 @@
 							<label for="wikiData-{$id}" class="col-4 small p-1">Wikidata ID: </label>
 							<div class="col-8 p-0">
 								<div class="input-group mb-1">
-									<input type="text" name="wikiData-{$id}"
-										class="flex-grow-1 cardInput" id="wikiData-{$id}"
-										onchange="changeValue('wikidataId','{$id}', this.value)" value="{$wikidataId}" disabled>
+									<input type="text" name="wikiData-{$id}" class="flex-grow-1 cardInput"
+										id="wikiData-{$id}" onchange="changeValue('wikidataId','{$id}', this.value)"
+										value="{$wikidataId}" disabled>
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<label for="treccani-{$id}" class="col-4 small p-1">Treccani ID: </label>
 							<div class="col-8 p-0">
-							<div class="input-group">
-								<a name="treccani-{$id}"
-								class=" cardInput {$treccaniLink} treccani" id="treccani-{$id}"
-								onchange="changeValue('treccaniId','{$id}',this.value)" onclick="openTreccani(this.innerText)" target="_blank" placeholder="{$placeholderTreccani}">
-								{$treccaniId} {$placeholderTreccani}
-								</a>
-							</div>																
-						</div>
+								<div class="input-group">
+									<a name="treccani-{$id}" class=" cardInput {$treccaniLink} treccani"
+										id="treccani-{$id}" onchange="changeValue('treccaniId','{$id}',this.value)"
+										onclick="openTreccani(this.innerText)" target="_blank"
+										placeholder="{$placeholderTreccani}">
+										{$treccaniId} {$placeholderTreccani}
+									</a>
+								</div>
+							</div>
 						</div>
 					</form>
 				</div>
