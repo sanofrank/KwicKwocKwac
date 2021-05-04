@@ -827,7 +827,6 @@ var kwic = new (function () {
 		prop: function(name,value,force = false) {
 			// modify older documents without the newer markup			
 			let id = modifyOlderDocuments ? "#"+this.id : "#"+this.id.toLowerCase()
-			console.log('IIDDDDDD\n',id, modifyOlderDocuments);
 			let prop = ont[name] || ''; //Get property term
 
 			let metaTpl_type = `<meta about="{$id}" typeof="{$prop}:{$value}">`
@@ -2302,7 +2301,7 @@ var kwic = new (function () {
 
 	this.toogleModifyOlderDocs = function() {
 		modifyOlderDocuments = !modifyOlderDocuments;
-		console.log(modifyOlderDocuments,'MODIFY OLDER DOCUMENTS')
+		return modifyOlderDocuments;
 	}	
 	
 	// resets all internal variables to empty
