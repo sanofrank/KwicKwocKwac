@@ -37,45 +37,14 @@ app.get('/markup/', (req,res) => {
     res.redirect('/markup/index')
 })
 
-// app.get('/index', verify, (req,res) => {
-// res.render('index.html')
-// })
-
-// app.get('/login', (req,res) =>{
-//     res.render("login.html");
-// })
-
-// app.get('/documentazione', (req,res) => {
-//     res.render("documentation.html")
-// })
-
-// app.get('/send_email', (req,res) =>{
-//     res.render("send_email.html");
-// })
-
-// app.get('/', verify , function( req, res ) {
-//     res.redirect('/index')
-//    });
-
-// app.get('/read', function(req,res){
-//     let file = req.query.file;
-
-//     fs.readFile(`./doc/${file}`, (err, data) => {
-//         if (err) throw err;
-//         console.log(data);
-
-//         return res.send(data);
-//       });
-// })
-
 app.use('/markup',express.static('public'))
 
 //Middleware
-app.use(express.json({limit: '50mb'})); //json parser per mandare post request
+app.use(express.json({limit: '100mb'})); //json parser per mandare post request
 app.use(fileUpload());
-app.use(express.urlencoded( {extended : false})); //allow us to send data from front end to server
+app.use(express.urlencoded({limit: '50mb',extended : false})); //allow us to send data from front end to server
 //Route Middleware
-app.use('/markup',baseRoute);
+app.use('/markup', baseRoute);
 app.use('/markup/api',listRoute);
 app.use('/markup/api',authRoute);
 app.use('/markup/api',metadataRoute);

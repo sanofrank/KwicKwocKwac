@@ -980,6 +980,7 @@ var kwic = new (function () {
 		// identify the text before and after the mention
 		surroundingContent: function() {
 			var blockElements = ['P', 'DIV', 'FIGCAPTION', 'LI', 'TR', 'DD', 'BODY']
+			console.log(this.node)
 			var thisAtn = this.node.allTextNodes()
 			var container = this.node.parentElement 
 			while (blockElements.indexOf(container.nodeName) == -1) container = container.parentElement //while not arrived at the source
@@ -990,7 +991,7 @@ var kwic = new (function () {
 				inner: this.node.innerHTML,
 				after: ""
 			}
-			
+
 			if (thisAtn[0].position !== 0) {
 				var i = thisAtn[0].position - 1
 				var words = []
