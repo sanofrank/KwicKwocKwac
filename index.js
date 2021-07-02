@@ -6,6 +6,7 @@ const verify = require('./routes/verifyToken');
 const fileUpload = require('express-fileupload');
 const mongo = require('./dbConfig');
 const fs = require('fs')
+const morgan = require('morgan')
 
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(cors({
     origin: 'http://localhost:3001',
     credentials: true
 }));
+app.use(morgan(':method :url :status :res[content-length] :req[Content-Length] - :response-time ms'))
 
 mongo.connect();
 

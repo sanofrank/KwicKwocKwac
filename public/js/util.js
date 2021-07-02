@@ -94,7 +94,6 @@
 			
 			var i = re.exec(input)
 			while (i) {
-				console.log(i);
 				ret.push(i.index)
 				i = re.exec(input)
 			}
@@ -121,7 +120,7 @@
 		// String accent vocal translate
 		String.prototype.formattingEntity = function(special = true) {
 			
-			return replace = this.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s/g,'-')
+			return replace = this.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\./g,"").replace(/\s/g,'-');
 
 			// let translate_re = /([^a-zA-Z0-9]+)/g; //get all special character
 			// let translate = {

@@ -524,7 +524,6 @@ function setupKWIC(location, saveView) {
 		quotes = kwic.findQuotes('.quote', location);
 		bibref = kwic.findBibRef('.bibref', location);
 		list = kwic.organizeQuotes();
-		console.log(list);
 		kwic.clearHeadRef(list);
 		var r0 = kwic.toHTMLref(
 			kwic.allReferences,
@@ -590,7 +589,6 @@ function setupKWIC(location, saveView) {
 				categories: $('#categoryTpl1').html(),
 			}
 		);
-		console.log(list);
 		$('#categoryTab').html(c0)
 		$('#categoryPane').html(c1)
 		$('#categoryTab .nav-link').first().addClass('active')
@@ -943,7 +941,6 @@ function applyFilter() {
 
 // load and show a document
 async function load(item,file) {
-	console.log(file);
 	showSpinner();
 	let response = await fetch("/markup/api/load?file=" + file);
 	if (!response.ok){
@@ -1222,10 +1219,11 @@ function rangeAcceptable(sel, selector) {
 
 // save the currently shown document on the remote server
 async function saveDoc() {
+	const content = $('#file').html();
 
 	var data = {
 		filename: currentFilename,
-		content: $('#file').html(),
+		content: LZString.compress($('#file').html()),
 		editList: kwic.editList,
 		type: 'html'
 	}
@@ -1233,7 +1231,8 @@ async function saveDoc() {
 	var saveOptions = {
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/JSON'
+			//'Content-Encoded': 'gzip'
 		},
 		body: JSON.stringify(data)
 	};
@@ -1420,7 +1419,6 @@ async function changeStatus() {
 function changeValue(field, id, value) {
 	var pp;
 
-	console.log(field,id,value);
 	if (!referenceMode) {		
 		//if(kwic.allEntities[id]){
 			pp = kwic.allEntities[id];
@@ -1428,7 +1426,6 @@ function changeValue(field, id, value) {
 		// else{
 		// 	pp = kwic.allEntities.filter(entity => entity.id.formattingEntity().replace(/(^\d+)/, "entity$1").toLowerCase() == id)[0]
 		// }
-		console.log('PP',pp);
 	} else {
 		pp = kwic.allCitations[id]
 		var ref = pp.reference;
@@ -1677,7 +1674,7 @@ async function deleteDocuments(value = null) {
 		const deleteOptions = {
 			method: 'POST',
 			headers: {
-				'Content-Type' : 'application/json'
+				'Content-Type' : 'application/JSON'
 			},
 			body: JSON.stringify(val)
 		}

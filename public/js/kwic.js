@@ -81,7 +81,6 @@ var kwic = new (function () {
 			if((range.startContainer.parentElement.classList.contains('mention') && range.endContainer.parentElement.classList.contains('mention')) 
 				&& !(range.startContainer.parentElement.classList.contains('trash') || range.endContainer.parentElement.classList.contains('trash'))
 				&& !(range.startContainer.parentElement.classList.contains('scraps') || range.endContainer.parentElement.classList.contains('scraps'))){
-				console.log('RANGE')
 				return false
 			}
 				
@@ -108,18 +107,15 @@ var kwic = new (function () {
 			start = start.parentElement // will remove it anyway
 		if (end.classList.contains('bibref'))
 			end = end.parentElement // will remove it anyway
-		console.log("AFTER RISALITA",start,end)
 		//Check if formatter extreme
 		if(!mention){
 			let start_tag = start.tagName;
 			let end_tag = end.tagName;
-			console.log(start_tag,end_tag);
 			if(formatters.find(el => el == start_tag))
 				start = start.parentElement;
 			if(formatters.find(el => el == end_tag))
 				end = end.parentElement;
 		}
-		console.log(start==end)
 		return  start == end
 	}
 
@@ -127,7 +123,6 @@ var kwic = new (function () {
 		if(supNode){
 			let start = range.startContainer.parentElement;
 			let end = supNode.parentElement.parentElement;
-			console.log("Extremes before",start,end);
 
 			if (start.classList.contains('mention') || start.classList.contains('quote'))
 				start = start.parentElement // will remove it anyway
@@ -138,8 +133,6 @@ var kwic = new (function () {
 			if (end.classList.contains('quote-text'))
 				end = end.parentElement.parentElement
 
-			console.log("Extremes after",start,end);
-
 			return start == end;
 		}else{
 			return compatibleExtremes(range,false);
@@ -149,7 +142,6 @@ var kwic = new (function () {
 	// remove the tag wrapping a mention
 	function unwrap(node) {
 		var p = node.parentElement
-		console.log('unwrap',node);
 		while (node.childNodes.length>0) {
 			p.insertBefore(node.childNodes[0],node)		
 		}
@@ -166,7 +158,6 @@ var kwic = new (function () {
 			ec: range.endContainer, 
 			eo: range.endOffset
 		}
-		console.log("WRAP",range);
 		if (range.startContainer.parentElement.classList.contains('mention') && mention){
 			unwrap(range.startContainer.parentElement)
 		} 			
@@ -274,7 +265,6 @@ var kwic = new (function () {
 		if (range.startContainer.parentElement.classList.contains('quote-text')){
 			let parent = range.startContainer.parentElement;
 			let grandParent = parent.parentElement;
-			console.log("start",parent,grandParent);
 
 			unwrap(parent);
 			unwrap(grandParent);
@@ -282,7 +272,6 @@ var kwic = new (function () {
 		if (range.endContainer.parentElement.classList.contains('quote-text')){
 			let parent = range.endContainer.parentElement;
 			let grandParent = parent.parentElement;
-			console.log("end",parent,grandParent);
 
 			unwrap(parent);
 			unwrap(grandParent);
@@ -304,7 +293,6 @@ var kwic = new (function () {
 		//Set range end after A node if forward
 		if(aNode){
 			range.setEndAfter(aNode.parentNode);
-			console.log("range after unwrap",aNode.parentNode);
 		}else{
 			range.setEnd(r.ec,r.eo);
 		}
@@ -331,7 +319,6 @@ var kwic = new (function () {
 			quote.surroundContents(quoteText);
 		}
 		
-		console.log("NEW QUOTE",quote);
 		
 		quoteText.classList.add('quote-text');
 
@@ -361,7 +348,6 @@ var kwic = new (function () {
 		if (window.getSelection && (sel = window.getSelection()).modify) {
 			sel = window.getSelection();
 			if (xor(alt, boundary && snap)) { //true if different
-				console.log('Before: '+sel.toString() )
 				// Detect if selection is backwards
 				var range = document.createRange();
 				range.setStart(sel.anchorNode, sel.anchorOffset);
@@ -385,7 +371,6 @@ var kwic = new (function () {
 				sel.extend(endNode, endOffset);
 				sel.modify("extend", direction[1], "character");
 				sel.modify("extend", direction[0], boundary);
-				console.log('After: '+sel.toString() )
 			}
 		} else if ( (sel = document.selection) && sel.type != "Control") { // IE below 9
 			if (xor(alt, boundary && snap)) {
@@ -435,7 +420,6 @@ var kwic = new (function () {
 				while(parent.previousSibling == null){
 					parent = parent.parentNode;
 				}
-				console.log(parent);
 
 				endNode = parent, endOffset = parent.length;
 				range.setEndAfter(parent);
@@ -473,17 +457,13 @@ var kwic = new (function () {
 					sel.extend(endNode, endOffset);
 					sel.modify("extend", direction[1], "character");
 					sel.modify("extend", direction[0], boundary);
-					console.log('After: '+sel.toString() )
 					range.setStart(sel.anchorNode,sel.anchorOffset);
-					console.log("after",sel);
 				}else{
 					sel.modify("move", direction[0], "character");
 					sel.modify("move", direction[1], boundary);
 					sel.extend(endNode, endOffset);
 					sel.modify("extend", direction[1], "character");
 					sel.modify("extend", direction[0], boundary);
-					console.log('After: '+sel.toString() )
-					console.log("after",sel);
 				}
 				
 			}
@@ -531,7 +511,6 @@ var kwic = new (function () {
 		var ret = []
 		var atn = context.allTextNodes()	
 		var all = allMatches(text, context.textContent)
-		console.log(all)
 
 		var pos = 0; 
 		var index  = 0
@@ -548,13 +527,11 @@ var kwic = new (function () {
 			var endOffset = end-endPos
 
 			var r = document.createRange();
-			console.log('ATN[index]',atn[index]);
 			r.setStart(atn[index], offset);
 			r.setEnd(atn[endIndex], endOffset);
 
 			ret.push(r)
 		}
-		console.log(ret);
 		return ret
 	}
 
@@ -663,8 +640,8 @@ var kwic = new (function () {
 		if (!options) options = {}         // fallback object for inizialization
 		var mentions = mentions || []   // fallback object for inizialization
 		var prefix = "entity-" ;
-		console.log("MENTION",mentions);
 		this.mentions = []
+
 		var category = ""
 		var label = ""
 		var sort = ""
@@ -678,7 +655,6 @@ var kwic = new (function () {
 		for (var i=0; i<mentions.length; i++) {
 			mentions[i].entity = this.id
 			category = mentions[i].category || category
-			console.log(mentions[i],mentions[i].label);
 			label = mentions[i].label || label
 			// sort = mentions[i].sort || sort
 			// wikidataId = mentions[i].wikidataId || wikidataId
@@ -714,7 +690,6 @@ var kwic = new (function () {
 		this.property = options.property || property
 		
 		if (!this.label) {
-			console.log('NOT LABEL',this.label);
 			var inn = {}
 			var max = 0
 			var el = ''
@@ -794,10 +769,9 @@ var kwic = new (function () {
 		// change a property of this entity by changing the corresponding property of the first mention 
 		change: function(field,value) {
 			var done = false			
-				for (var i=0; i<this.mentions.length; i++) {					
-					console.log('CHANGE not IF',field,value)
+				for (var i=0; i<this.mentions.length; i++) {	
+
 					if (this.mentions[i][field]) {
-						console.log('CHANGE',field,value)
 						if(field == "label"){ // Reset wikidata and treccani if label changed
 							//entity prop
 							this.prop(field,value,true)
@@ -847,7 +821,6 @@ var kwic = new (function () {
 								$('#file #mentionMeta').append(meta_type);												
 							}
 						}else{
-							console.log('REMOVE ID');
 							$(`#file #mentionMeta meta[about='${id}'][typeof]`).remove()
 						}
 					}
@@ -868,7 +841,6 @@ var kwic = new (function () {
 									$('#file #mentionMeta').append(meta_res);
 								}									
 							}
-							console.log(value,valueURI);
 							this[name] = value
 						}else{
 							$(`#file #mentionMeta meta[about='${id}'][property='${prop}']`).remove()
@@ -881,7 +853,6 @@ var kwic = new (function () {
 						//console.log('inside default prop',name,prop,value,force)
 						if(value) {						
 							let meta_prop = metaTpl_prop.tpl({id,prop,value})
-							console.log('MEta_prop',meta_prop);
 							if($(`#mentionMeta meta[about='${id}'][property='${prop}']`).length){
 								$(`#file #mentionMeta meta[about='${id}'][property='${prop}']`).attr('content',value)	
 							}else{							
@@ -980,7 +951,6 @@ var kwic = new (function () {
 		// identify the text before and after the mention
 		surroundingContent: function() {
 			var blockElements = ['P', 'DIV', 'FIGCAPTION', 'LI', 'TR', 'DD', 'BODY']
-			console.log(this.node)
 			var thisAtn = this.node.allTextNodes()
 			var container = this.node.parentElement 
 			while (blockElements.indexOf(container.nodeName) == -1) container = container.parentElement //while not arrived at the source
@@ -1059,7 +1029,6 @@ var kwic = new (function () {
 					}
 					break;
 				case 'entity':
-					console.log(value);
 					if (force || this.node.attributes.resource == undefined) {
 						if (value) {							
 							this.node.setAttribute('resource',`#${value}`)																						
@@ -1074,7 +1043,6 @@ var kwic = new (function () {
 							//$(`meta[about="#${this.entity}"][property='${ont[name]}']`).attr('content',value)
 							//this.node.dataset[name] = value
 							this[name] = value // added for first round label
-							console.log(this);
 						} else {
 							//$(`meta[about="#${this.entity}"][property='${ont[name]}']`).remove()
 							//delete this.node.dataset[name]
@@ -1272,7 +1240,6 @@ var kwic = new (function () {
 			this.label = quoteOrbib.label || this.label
 			this.sort = quoteOrbib.sort || this.sort
 		}
-		console.log(type);
 		switch(type) {
 			case 'quote' :
 				this.quotes.push(quoteOrbib)
@@ -1360,7 +1327,6 @@ var kwic = new (function () {
 							$('#file #referenceMeta').append(meta_type);												
 						}
 					}else{
-						console.log('REMOVE ID');
 						$(`#file #referenceMeta meta[about='${id}'][typeof]`).remove()
 					}
 				}
@@ -1432,7 +1398,6 @@ var kwic = new (function () {
 			this.node = nodeOrRange	
 		} else {
 			let supNode = options.supNode;
-			console.log(supNode);
 			if (!compatibleExtremesRef(nodeOrRange,supNode)) return {}
 			this.node = wrapQuote(nodeOrRange,document.createElement('span'), supNode);			
 		}
@@ -1548,7 +1513,6 @@ var kwic = new (function () {
 			this.node = nodeOrRange	
 		} else {
 			if (!compatibleExtremesRef(nodeOrRange,mention)) return {}
-			console.log('compatible');
 			//this.node = wrap(nodeOrRange,document.createElement('span'),mention)
 			this.node = wrapBib(nodeOrRange,document.createElement('span'));			
 		}
@@ -1767,7 +1731,6 @@ var kwic = new (function () {
 				reference: classes.length>0 ? classes[classes.length-1] : '',
 				position: i
 			})		
-			console.log(b)	;
 			this.allBibRef[b.id] = b
 		}
 		return this.allBibRef;
@@ -1779,7 +1742,6 @@ var kwic = new (function () {
 		var entities = this.allEntities
 		var categories = this.allCategories
 
-		console.log(mentions);
 		for (var i in mentions) {
 			var mention = mentions[i]
 			// mention.entity is the about value ex. mention: Moro mention.entity: AldoMoro
@@ -1860,7 +1822,6 @@ var kwic = new (function () {
 		if(meta.length <= 0){
 			return null
 		}
-		console.log('mentionList',list);
 		// Search entities id
 		for(cat in list){
 			entities = list[cat].entities			
@@ -1898,7 +1859,6 @@ var kwic = new (function () {
 			citations = list[ref].citations			
 			for(cit in citations){
 				let exp = '#' + citations[cit].id
-				console.log(exp);
 				// Grep meta object from id no more included 
 				meta = $.grep(meta,function(tag){										
 					return tag.getAttribute('about') !== exp
@@ -2009,7 +1969,6 @@ var kwic = new (function () {
 			} else if (sourceData.level=='entity' && targetData.level == 'category') {
 				var source = this.allEntities[sourceData.id]
 				var target = this.allCategories[targetData.id]
-				console.log(source);
 				if(source.id != "trash" && source.id != "scraps"){
 					if (source.category !== target.id) {
 						var ok = confirm(`Vuoi cambiare categoria dell'entità da "{$source}" a "{$target}"?`.tpl(
@@ -2207,7 +2166,6 @@ var kwic = new (function () {
 
 						if(q.id){
 							this.allQuotes[q.id] = q;
-							console.log(this.allQuotes);
 						}
 					}
 					if(ref.action == 'wrap-bib'){
@@ -2220,7 +2178,6 @@ var kwic = new (function () {
 								reference: ref.entity,
 								citation: exp
 							})
-							console.log(b);
 						}
 					}
 					ret = true;

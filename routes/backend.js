@@ -9,6 +9,7 @@ const cheerio = require('cheerio');
 const roman = require('romannumerals')
 const jwt = require('jsonwebtoken');
 const Metadata = require('../model/Metadata');
+const LZString = require('lz-string')
 
 const dir = 'public/files';
 //clean only src and href without #footnote or #endnote
@@ -459,6 +460,7 @@ router.post('/upload', async (req, res) => {
 // Save document
 router.post('/save' , async (req,res) => {
     try{
+        console.log('Arrivati')
         let filename = req.body.filename;
         let path = `${dir}/${filename}`;
         let htmlPath = `${path}/index.html`;
@@ -471,7 +473,7 @@ router.post('/save' , async (req,res) => {
         }
 
         let newPath = `files/${filename}`;
-        let out = req.body.content;
+        let out = LZString.decompress(req.body.content);
         let regex;
 
         // Handle - charcter in regex 
@@ -488,10 +490,10 @@ router.post('/save' , async (req,res) => {
         if(content!== "" && !content.includes("Key Words In Context")){
             fs.writeFile(htmlPath,content, (err) => {
                 if(err) return res.status(400).send(`File non salvato corretamente`);
-            });
+            });            
             return res.send(`File salvato correttamente`);
         };
-
+        
         return res.send('File empty');
 
     }catch(err){
