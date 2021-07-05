@@ -1220,10 +1220,15 @@ function rangeAcceptable(sel, selector) {
 // save the currently shown document on the remote server
 async function saveDoc() {
 	const content = $('#file').html();
+	//console.log(content)
 
+	// var blob = new Blob([content],
+    //             { type: "text/plain;charset=utf-8" });
+    //         saveAs(blob, "content.text");	
+	
 	var data = {
 		filename: currentFilename,
-		content: LZString.compress($('#file').html()),
+		content: LZString.compressToBase64(content),
 		editList: kwic.editList,
 		type: 'html'
 	}

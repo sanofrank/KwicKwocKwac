@@ -473,7 +473,7 @@ router.post('/save' , async (req,res) => {
         }
 
         let newPath = `files/${filename}`;
-        let out = LZString.decompress(req.body.content);
+        let out = LZString.decompressFromBase64(req.body.content);
         let regex;
 
         // Handle - charcter in regex 
