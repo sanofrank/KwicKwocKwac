@@ -314,7 +314,14 @@ router.post('/upload', async (req, res) => {
 
                 let docFile = files[i].data;
 
-                const result = await mammoth.convertToHtml({buffer: docFile});   
+                // option for underline text
+                let options = {
+                    styleMap: [
+                        "u => u"
+                    ]
+                };                
+
+                const result = await mammoth.convertToHtml({buffer: docFile}, options);   
                 content = await result.value;
                 
                 let $ = cheerio.load(content)

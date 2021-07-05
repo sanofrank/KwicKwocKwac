@@ -88,14 +88,16 @@
 
 		// returns an array of the positions of all matches of a regular expression
 		// inside an input
+		// toUpperCase matches all the different cases
 		function allMatches(r, input) {					
-			var re = new RegExp(r, 'g')						
+			//var re = new RegExp(r, 'g')						
+			var re = new RegExp(r.toUpperCase(),'g')
 			var ret = []
 			
-			var i = re.exec(input)
+			var i = re.exec(input.toUpperCase())
 			while (i) {
 				ret.push(i.index)
-				i = re.exec(input)
+				i = re.exec(input.toUpperCase())
 			}
 			return ret
 		}

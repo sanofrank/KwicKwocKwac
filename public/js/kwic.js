@@ -2099,7 +2099,7 @@ var kwic = new (function () {
 				var sel = snapSelection(cat.type, this.prefs.extend, alt)
 				if (sel) {
 					if (xor(shift, this.prefs.markAll && cat.markAll)) { //if just one of them is true, but not both.
-						var ranges = searchAll(context, sel.toString() )
+						var ranges = searchAll(context, sel.toString())
 					} else {
 						var ranges = [sel.getRangeAt(0)]
 					}
