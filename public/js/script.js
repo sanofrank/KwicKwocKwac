@@ -1229,10 +1229,10 @@ async function saveDoc() {
 	var data = {
 		filename: currentFilename,
 		content: LZString.compressToBase64(content),
-		editList: kwic.editList,
+		//editList: kwic.editList,
 		type: 'html'
 	}
-
+	
 	var saveOptions = {
 		method: 'POST',
 		headers: {
