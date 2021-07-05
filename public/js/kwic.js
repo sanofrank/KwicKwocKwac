@@ -1052,7 +1052,7 @@ var kwic = new (function () {
 					break;
 			}
 			var afterEdit = this.before + this.node.outerHTML +this.after
-			kwic.addToEditList(beforeEdit, afterEdit)
+			//kwic.addToEditList(beforeEdit, afterEdit)
 		},
 		referenceString: function(rs,label) {
 			if(rs) this.node.classList.remove('metion-rs')
