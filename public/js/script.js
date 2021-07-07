@@ -63,7 +63,10 @@ async function main() {
 	a.collapse(nullSelection, 0) //collapses the current selection to a single point. The document is not modified.
 	kwic.setPrefs('loggedUser', 'Mario Rossi')  // fake login
 	$('#extendSel').prop('checked',false)
+	$('#markWords').prop('checked',false)
 	kwic.setPrefs('extend',false,false)
+	kwic.setPrefs('markWords',false,false)
+
 
 	//Setting width and height of left and bottom panel, setting active class on current style and current sort
 	layoutSetup()
@@ -1121,7 +1124,7 @@ function goto(id) {
 	//footnote A tag with href reference inside SUP element
 	if(element.tagName == 'A') element = element.parentElement 
 			
-	var t = element.offsetTop - 100;
+	var t = element.offsetTop - 150;
 	$('#file').animate({ scrollTop: t }, 400);
 
 	$(id).addClass('animate');

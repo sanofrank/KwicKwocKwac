@@ -507,10 +507,12 @@ var kwic = new (function () {
 	}
 
 	// search for a text and return the text node(s) containing the text (even across text nodes)
-	function searchAll(context, text) {
+	function searchAll(context, sel, markWords) {
+		var text = sel.toString()
 		var ret = []
 		var atn = context.allTextNodes()	
-		var all = allMatches(text, context.textContent)
+		var all = allMatches(text, context.textContent, markWords)
+		//console.log(sel.getRangeAt(0))		
 
 		var pos = 0; 
 		var index  = 0
@@ -548,7 +550,8 @@ var kwic = new (function () {
 		style: "KWIC",
 		sort: 'alpha',	
 		extend: true,
-		markAll: true
+		markAll: true,
+		markWords: false,
 	}
 
 	// list of editing operations performed. Currently not used. 
@@ -2099,7 +2102,10 @@ var kwic = new (function () {
 				var sel = snapSelection(cat.type, this.prefs.extend, alt)
 				if (sel) {
 					if (xor(shift, this.prefs.markAll && cat.markAll)) { //if just one of them is true, but not both.
-						var ranges = searchAll(context, sel.toString())
+						var ranges = searchAll(context, sel, this.prefs.markWords)
+						console.log(ranges, sel.getRangeAt(0));
+						//console.log(STOP);
+						if(this.prefs.markWords && (ranges.filter(range => range.startOffset === sel.getRangeAt(0).startOffset && range.startContainer === sel.getRangeAt(0).startContainer ).length == 0)) ranges.push(sel.getRangeAt(0))						
 					} else {
 						var ranges = [sel.getRangeAt(0)]
 					}
@@ -2137,7 +2143,7 @@ var kwic = new (function () {
 						range = selection.range;
 					} else {
 						if (xor(shift, this.prefs.markAll && ref.markAll)) { //if just one of them is true, but not both.
-							range = searchAll(context, selection.sel.toString())
+							range = searchAll(context, selection.sel.toString(), false)
 							if(range.length === 0){
 								range = [selection.sel.getRangeAt(0)];
 							}
@@ -2240,7 +2246,7 @@ var kwic = new (function () {
 		}
 		for (var i=0; i<entityListItem.variants.length; i++) {
 			var s = entityListItem.variants[i]
-			var ranges = searchAll(context, s)
+			var ranges = searchAll(context, s, false)
 			var m0
 			for (var j in ranges) {
 				var m = new this.Mention(ranges[j], data)

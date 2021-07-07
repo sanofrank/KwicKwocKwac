@@ -89,16 +89,20 @@
 		// returns an array of the positions of all matches of a regular expression
 		// inside an input
 		// toUpperCase matches all the different cases
-		function allMatches(r, input) {					
-			//var re = new RegExp(r, 'g')						
-			var re = new RegExp(r.toUpperCase(),'g')
+		function allMatches(r, input, markWords = false) {					
+			//var re = new RegExp(r, 'g')	
+			//console.log(selIndex);		
+			var re = markWords ? new RegExp(String.raw`\s(${r})\W`,'gi') : new RegExp(r, 'g')	
 			var ret = []
 			
-			var i = re.exec(input.toUpperCase())
+			var i = re.exec(input)
 			while (i) {
-				ret.push(i.index)
-				i = re.exec(input.toUpperCase())
+				//if((i.index + 1) > selIndex > ret[ret.length - 1]) ret.push(selIndex)
+				markWords ? ret.push(i.index + 1) : ret.push(i.index) 													
+				i = re.exec(input)
 			}
+
+			//if(ret.length === 0) ret.push(selIndex)
 			return ret
 		}
 		
