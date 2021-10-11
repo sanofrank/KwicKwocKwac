@@ -317,6 +317,15 @@ router.post('/upload', async (req, res) => {
                 // option for underline text
                 let options = {
                     styleMap: [
+                        "p[style-name='Title'] => h1.title:fresh",
+                        "p[style-name='Heading 1'] => h1.title-1:fresh",
+                        "p[style-name='Heading 2'] => h2.title-2:fresh",
+                        "p[style-name='Heading 3'] => h3.title-3:fresh",
+                        "p[style-name='Heading 4'] => h4.title-4:fresh",                        
+                        "p[style-name='Heading 5'] => h5.title-5:fresh",                        
+                        "p[style-name='Subtitle'] => h3.subtitle:fresh",
+                        "p[style-name='Section Title'] => h1.section-title:fresh",
+                        "p[style-name='Subsection Title'] => h2.subsection-title:fresh",
                         "u => u"
                     ]
                 };                
