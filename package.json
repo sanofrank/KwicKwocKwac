@@ -9,7 +9,18 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "author": "",
+  "contributors": [{
+    "name": "Fabio Vitali",
+    "email": "fabio.vitali@unibo.it"
+  },
+  {
+    "name": "Francesco Paolucci",
+    "email": "francesco.paolucci7@unibo.it"
+  },
+  {
+    "name": "Sebastian Barzaghi",
+    "email": "sebastian.barzaghi2@unibo.it"
+  }],
   "license": "MIT",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
