@@ -1,6 +1,6 @@
 ## MIT License
 
-Copyright (c) 2024 Fabio Vitali, Sebastian Barzaghi, Francesco Paolucci
+Copyright (c) 2024 Fabio Vitali, Francesco Paolucci, Sebastian Barzaghi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

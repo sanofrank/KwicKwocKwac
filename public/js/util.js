@@ -1,10 +1,9 @@
 ﻿/*!
  * Kwic Kwoc Kwac - utility file util.js 
- * Version 1.0 - 01/05/2020
+  * Version 1.9 - 18/09/2024
  * Ideation and first prototype: Fabio Vitali, ©2020
- * Author: Fabio Vitali, May 2020
- * All rights reserved. This software is NOT open source at the moment. Permission to use and modify this 
-   file is granted to individuals requesting it explicitly to the author. This may change in the future.
+ * Authors: Fabio Vitali, Francesco Paolucci, Sebastian Barzaghi September 2024
+ * License: https://github.com/sanofrank/KwicKwocKwac/blob/master/LICENSE.md (MIT)
    
    Rules to edit this file: 
    * Change and modify and reshuffle and refactor and throw away as you see fit. 

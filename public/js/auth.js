@@ -1,3 +1,21 @@
+/*!
+ * Kwic Kwoc Kwac - authentication auth.js 
+ * Version 1.9 - 18/09/2024
+ * Ideation and first prototype: Fabio Vitali, ©2020
+ * Authors: Fabio Vitali, Francesco Paolucci, Sebastian Barzaghi September 2024
+ * License: https://github.com/sanofrank/KwicKwocKwac/blob/master/LICENSE.md (MIT)
+  
+   Rules to edit this file: 
+   * Change and modify and reshuffle and refactor and throw away as you see fit. 
+   * Never remove this comment
+   * Never change the line "Ideation and first prototype"
+   * If you fixed some bugs or did some minor refactoring, ADD a new line "Contributor" with your name and date. 
+   * If you did some major reshuffling or refactoring, ADD your name to the authors' list. 
+   * Switching to ES2015 is NOT major refactoring.
+   * If my code has basically disappeared, remove my name from the authors' list. 
+   * Do NOT inform me of this. 
+ */
+
 //Change password
 async function change_password(){
     event.preventDefault();
